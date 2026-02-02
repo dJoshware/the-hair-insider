@@ -24,3 +24,12 @@ body {
     color: var(--foreground);
     font-family: Arial, Helvetica, sans-serif;
 }
+
+@layer utilities {
+    .font-bodoni {
+        font-family: var(--font-bodoni-moda);
+    }
+    .font-script {
+        font-family: var(--font-luxurious-script);
+    }
+}

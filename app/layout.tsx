@@ -1,6 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import {
+    Bodoni_Moda,
+    Geist,
+    Geist_Mono,
+    Luxurious_Script,
+} from "next/font/google";
 import "./globals.css";
+
+const bodoniModa = Bodoni_Moda({
+    variable: "--font-bodoni-moda",
+    subsets: ["latin"],
+});
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -10,6 +20,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
     variable: "--font-geist-mono",
     subsets: ["latin"],
+});
+
+const luxuriousScript = Luxurious_Script({
+    variable: "--font-luxurious-script",
+    subsets: ["latin"],
+    weight: '400',
 });
 
 export const metadata: Metadata = {
@@ -25,7 +41,13 @@ export default function RootLayout({
     return (
         <html lang='en'>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+                className={`
+                    ${bodoniModa.variable}
+                    ${geistSans.variable}
+                    ${geistMono.variable}
+                    ${luxuriousScript.variable}
+                    antialiased
+                `}>
                 {children}
             </body>
         </html>

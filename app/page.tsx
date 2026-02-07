@@ -1,61 +1,287 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Navbar } from "@/components/site/navbar";
+import { Footer } from "@/components/site/footer";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 export default function Home() {
     return (
-        <div className='flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black'>
-            <main className='flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start'>
-                <Image
-                    className='dark:invert'
-                    src='/next.svg'
-                    alt='Next.js logo'
-                    width={100}
-                    height={20}
-                    priority
-                />
-                <div className='flex flex-col items-center gap-6 text-center sm:items-start sm:text-left'>
-                    <h1 className='max-w-xs text-3xl font-semibold font-bodoni leading-10 tracking-tight text-black dark:text-zinc-50'>
-                        To get started, edit the page.tsx file.
-                    </h1>
-                    <p className='max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400'>
-                        Looking for a starting point or more instructions? Head
-                        over to{" "}
-                        <a
-                            href='https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app'
-                            className='font-medium text-zinc-950 dark:text-zinc-50'>
-                            Templates
-                        </a>{" "}
-                        or the{" "}
-                        <a
-                            href='https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app'
-                            className='font-medium text-zinc-950 dark:text-zinc-50'>
-                            Learning
-                        </a>{" "}
-                        center.
-                    </p>
-                </div>
-                <div className='flex flex-col gap-4 text-base font-medium sm:flex-row'>
-                    <a
-                        className='flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]'
-                        href='https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app'
-                        target='_blank'
-                        rel='noopener noreferrer'>
-                        <Image
-                            className='dark:invert'
-                            src='/vercel.svg'
-                            alt='Vercel logomark'
-                            width={16}
-                            height={16}
-                        />
-                        Deploy Now
-                    </a>
-                    <a
-                        className='flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]'
-                        href='https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app'
-                        target='_blank'
-                        rel='noopener noreferrer'>
-                        Documentation
-                    </a>
-                </div>
+        <div className='min-h-screen bg-background text-foreground'>
+            <Navbar />
+
+            <main>
+                {/* Hero */}
+                <section className='mx-auto max-w-6xl px-6 pb-14 pt-14 sm:pb-20 sm:pt-20'>
+                    <div className='grid gap-10 md:grid-cols-2 md:items-center'>
+                        <div className='space-y-6'>
+                            <Badge
+                                variant='secondary'
+                                className='w-fit'>
+                                Education-first hair care
+                            </Badge>
+
+                            <h1 className='text-4xl font-semibold tracking-tight sm:text-5xl'>
+                                Healthy hair, explained simply.
+                            </h1>
+
+                            <p className='max-w-xl text-lg leading-8 text-muted-foreground'>
+                                The Hair Insider is a guided course library that
+                                teaches you what your hair actually needs, how
+                                to stop guessing, and how to build a routine you
+                                can stick to.
+                            </p>
+
+                            <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
+                                <Button
+                                    asChild
+                                    className='h-12 px-6'>
+                                    <Link href='/courses/hair-insider-mini-course'>Start here</Link>
+                                </Button>
+                            </div>
+
+                            <div className='flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground'>
+                                <span>Short lessons</span>
+                                <span>Downloadable guides</span>
+                                <span>Simple routines</span>
+                            </div>
+                        </div>
+
+                        <Card className='rounded-3xl'>
+                            <CardHeader className='flex-row items-center justify-between'>
+                                <CardTitle className='text-base'>
+                                    Included in the course
+                                </CardTitle>
+                                <Badge variant='outline'>MVP</Badge>
+                            </CardHeader>
+                            <CardContent className='space-y-4'>
+                                <ul className='space-y-3 text-sm text-muted-foreground'>
+                                    <li>
+                                        <p className='font-medium text-foreground'>
+                                            Hair type clarity
+                                        </p>
+                                        <p>
+                                            Stop trial and error and understand
+                                            what applies to you.
+                                        </p>
+                                    </li>
+                                    <li>
+                                        <p className='font-medium text-foreground'>
+                                            Routine builder
+                                        </p>
+                                        <p>
+                                            A routine you can do weekly without
+                                            overthinking.
+                                        </p>
+                                    </li>
+                                    <li>
+                                        <p className='font-medium text-foreground'>
+                                            Downloadable guides
+                                        </p>
+                                        <p>
+                                            PDFs and checklists inside your
+                                            library.
+                                        </p>
+                                    </li>
+                                </ul>
+
+                                <Separator />
+
+                                <div className='rounded-2xl bg-muted p-4'>
+                                    <p className='text-xs font-medium text-muted-foreground'>
+                                        Quick promise
+                                    </p>
+                                    <p className='mt-1 text-sm text-foreground'>
+                                        If you can wash your hair, you can do
+                                        this. We keep it simple, practical, and
+                                        consistent.
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </section>
+
+                {/* What it is */}
+                <section
+                    id='what'
+                    className='border-t'>
+                    <div className='mx-auto max-w-6xl px-6 py-14 sm:py-20'>
+                        <div className='grid gap-10 md:grid-cols-2'>
+                            <div className='space-y-4'>
+                                <h2 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
+                                    What we are
+                                </h2>
+                                <p className='text-lg leading-8 text-muted-foreground'>
+                                    A course-driven education library designed
+                                    to help you build a hair routine that
+                                    protects length, supports the scalp, and
+                                    makes your hair feel consistently good.
+                                </p>
+                            </div>
+
+                            <div className='grid gap-4 sm:grid-cols-2'>
+                                {[
+                                    {
+                                        title: "Education-first",
+                                        desc: "Understand why you’re doing each step.",
+                                    },
+                                    {
+                                        title: "No product overload",
+                                        desc: "Fewer products, better results, less confusion.",
+                                    },
+                                    {
+                                        title: "Designed for busy people",
+                                        desc: "Short lessons and clear routines.",
+                                    },
+                                    {
+                                        title: "Gated library access",
+                                        desc: "Buy once, unlock your content instantly.",
+                                    },
+                                ].map(item => (
+                                    <Card
+                                        key={item.title}
+                                        className='rounded-2xl'>
+                                        <CardHeader>
+                                            <CardTitle className='text-sm'>
+                                                {item.title}
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent className='text-sm text-muted-foreground'>
+                                            {item.desc}
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* How it works */}
+                <section
+                    id='how'
+                    className='border-t'>
+                    <div className='mx-auto max-w-6xl px-6 py-14 sm:py-20'>
+                        <h2 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
+                            How it works
+                        </h2>
+
+                        <div className='mt-10 grid gap-4 md:grid-cols-3'>
+                            {[
+                                {
+                                    step: "01",
+                                    title: "Purchase access",
+                                    desc: "Choose the course offer and check out securely.",
+                                },
+                                {
+                                    step: "02",
+                                    title: "Sign in instantly",
+                                    desc: "Passwordless sign-in keeps it simple and secure.",
+                                },
+                                {
+                                    step: "03",
+                                    title: "Use the library",
+                                    desc: "Watch lessons, download PDFs, build your routine.",
+                                },
+                            ].map(s => (
+                                <Card
+                                    key={s.step}
+                                    className='rounded-3xl'>
+                                    <CardHeader>
+                                        <p className='text-xs font-semibold text-muted-foreground'>
+                                            STEP {s.step}
+                                        </p>
+                                        <CardTitle className='text-lg'>
+                                            {s.title}
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className='text-sm text-muted-foreground'>
+                                        {s.desc}
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+
+                        <div className='mt-10'>
+                            <Button
+                                asChild
+                                className='h-12 px-6'>
+                                <Link href='/courses'>See courses</Link>
+                            </Button>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Meet your stylist */}
+                <section
+                    id='stylist'
+                    className='border-t'>
+                    <div className='mx-auto max-w-6xl px-6 py-14 sm:py-20'>
+                        <div className='grid gap-10 md:grid-cols-2 md:items-center'>
+                            <div className='space-y-4'>
+                                <h2 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
+                                    Meet your stylist
+                                </h2>
+                                <p className='text-lg leading-8 text-muted-foreground'>
+                                    Hi, I’m Lauren. I’ve spent years behind the
+                                    chair helping clients get real results with
+                                    routines that make sense. This course is
+                                    everything I wish people knew before they
+                                    spent money on the wrong products.
+                                </p>
+
+                                <div className='flex flex-wrap gap-2'>
+                                    <Badge variant='secondary'>
+                                        Color + extensions background
+                                    </Badge>
+                                    <Badge variant='secondary'>
+                                        Routine-based education
+                                    </Badge>
+                                    <Badge variant='secondary'>
+                                        Healthy length focus
+                                    </Badge>
+                                </div>
+                            </div>
+
+                            <Card className='rounded-3xl'>
+                                <CardHeader>
+                                    <CardTitle className='text-base'>
+                                        Quick note
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className='space-y-4 text-sm text-muted-foreground'>
+                                    <p>
+                                        The MVP version focuses on a clean
+                                        library experience: sign in, unlock, watch
+                                        lessons, download guides. We’ll expand
+                                        from there.
+                                    </p>
+
+                                    <div className='flex flex-col gap-3 sm:flex-row'>
+                                        <Button
+                                            variant='outline'
+                                            asChild
+                                            className='h-12 flex-1'>
+                                            <Link href='/signin'>
+                                                I already bought it
+                                            </Link>
+                                        </Button>
+                                        <Button
+                                            asChild
+                                            className='h-12 flex-1'>
+                                            <Link href='/courses'>
+                                                Get access
+                                            </Link>
+                                        </Button>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
+                </section>
+
+                <Footer />
             </main>
         </div>
     );

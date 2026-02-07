@@ -2,7 +2,11 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+function getStripe() {
+    const key = process.env.STRIPE_SECRET_KEY;
+    if (!key) throw new Error('Missing STRIPE_SECRET_KEY');
+    return new Stripe(key);
+}
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -10,6 +14,7 @@ const supabase = createClient(
 );
 
 export async function POST(req: Request) {
+    const stripe = getStripe();
     try {
         const authHeader = req.headers.get('authorization') || '';
         const token = authHeader.startsWith('Bearer ')

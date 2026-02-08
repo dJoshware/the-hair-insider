@@ -1,6 +1,8 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -13,15 +15,30 @@ import { useAuth } from "@/lib/auth/useAuth";
 import { supabase } from "@/lib/supabase/client";
 import { useAdminStatus } from "@/lib/admin/useAdminStatus";
 
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+    SheetClose,
+} from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
+
 export function Navbar() {
     const { signedIn, loading } = useAuth();
     const admin = useAdminStatus();
+    const showAdmin = !admin.loading && admin.signedIn && admin.isAdmin;
+
+    const pathname = usePathname();
+    const onHome = pathname === "/";
 
     async function signOut() {
         await supabase.auth.signOut();
     }
 
-    const showAdmin = !admin.loading && admin.signedIn && admin.isAdmin;
+    // Use /#hash on home, and /?scroll=... on other pages (optional)
+    const hashHref = (hash: string) => (onHome ? `/#${hash}` : `/#${hash}`);
 
     return (
         <header className='sticky top-0 z-50 border-b bg-background/80 backdrop-blur'>
@@ -32,11 +49,12 @@ export function Navbar() {
                     Hair Insider
                 </Link>
 
+                {/* Desktop anchors */}
                 <NavigationMenu className='hidden md:flex'>
                     <NavigationMenuList className='gap-6'>
                         <NavigationMenuItem>
                             <Link
-                                href='/#what'
+                                href={hashHref("what")}
                                 passHref>
                                 <NavigationMenuLink
                                     className={cn(
@@ -49,7 +67,7 @@ export function Navbar() {
 
                         <NavigationMenuItem>
                             <Link
-                                href='/#how'
+                                href={hashHref("how")}
                                 passHref>
                                 <NavigationMenuLink
                                     className={cn(
@@ -62,7 +80,7 @@ export function Navbar() {
 
                         <NavigationMenuItem>
                             <Link
-                                href='/#stylist'
+                                href={hashHref("stylist")}
                                 passHref>
                                 <NavigationMenuLink
                                     className={cn(
@@ -76,6 +94,7 @@ export function Navbar() {
                 </NavigationMenu>
 
                 <div className='flex items-center gap-3'>
+                    {/* Desktop auth links */}
                     {!loading && signedIn ? (
                         <>
                             <Button
@@ -110,9 +129,126 @@ export function Navbar() {
                         </Button>
                     )}
 
-                    <Button asChild>
+                    <Button
+                        asChild
+                        className='hidden sm:inline-flex'>
                         <Link href='/courses'>View courses</Link>
                     </Button>
+
+                    {/* Mobile hamburger */}
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button
+                                variant='ghost'
+                                size='icon'
+                                className='sm:hidden'
+                                aria-label='Open menu'>
+                                <Menu className='h-5 w-5' />
+                            </Button>
+                        </SheetTrigger>
+
+                        <SheetContent
+                            side='right'
+                            className='w-[320px] sm:w-[360px]'>
+                            <SheetHeader>
+                                <SheetTitle>Menu</SheetTitle>
+                            </SheetHeader>
+
+                            <div className='mt-6 flex flex-col gap-2'>
+                                <SheetClose asChild>
+                                    <Button
+                                        variant='ghost'
+                                        asChild
+                                        className='justify-start'>
+                                        <Link href={hashHref("what")}>
+                                            What it is
+                                        </Link>
+                                    </Button>
+                                </SheetClose>
+
+                                <SheetClose asChild>
+                                    <Button
+                                        variant='ghost'
+                                        asChild
+                                        className='justify-start'>
+                                        <Link href={hashHref("how")}>
+                                            How it works
+                                        </Link>
+                                    </Button>
+                                </SheetClose>
+
+                                <SheetClose asChild>
+                                    <Button
+                                        variant='ghost'
+                                        asChild
+                                        className='justify-start'>
+                                        <Link href={hashHref("stylist")}>
+                                            Meet your stylist
+                                        </Link>
+                                    </Button>
+                                </SheetClose>
+
+                                <div className='my-2 border-t' />
+
+                                <SheetClose asChild>
+                                    <Button
+                                        variant='ghost'
+                                        asChild
+                                        className='justify-start'>
+                                        <Link href='/courses'>
+                                            View courses
+                                        </Link>
+                                    </Button>
+                                </SheetClose>
+
+                                {!loading && signedIn ? (
+                                    <>
+                                        <SheetClose asChild>
+                                            <Button
+                                                variant='ghost'
+                                                asChild
+                                                className='justify-start'>
+                                                <Link href='/library'>
+                                                    Library
+                                                </Link>
+                                            </Button>
+                                        </SheetClose>
+
+                                        {showAdmin ? (
+                                            <SheetClose asChild>
+                                                <Button
+                                                    variant='ghost'
+                                                    asChild
+                                                    className='justify-start'>
+                                                    <Link href='/admin/courses'>
+                                                        Admin
+                                                    </Link>
+                                                </Button>
+                                            </SheetClose>
+                                        ) : null}
+
+                                        <Button
+                                            variant='ghost'
+                                            className='justify-start'
+                                            onClick={async () => {
+                                                await signOut();
+                                            }}>
+                                            Sign out
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <SheetClose asChild>
+                                        <Button
+                                            variant='ghost'
+                                            asChild
+                                            className='justify-start'>
+                                            <Link href='/signin'>Sign in</Link>
+                                        </Button>
+                                    </SheetClose>
+                                )}
+                            </div>
+                        </SheetContent>
+                    </Sheet>
                 </div>
             </div>
         </header>

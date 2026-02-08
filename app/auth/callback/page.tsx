@@ -19,7 +19,7 @@ export default function AuthCallbackPage() {
                     localStorage.removeItem("postAuthRedirect");
                     router.replace(next);
                 } else {
-                    router.replace("/library");
+                    router.replace("/");
                 }
                 return;
             }

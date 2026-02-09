@@ -6,11 +6,11 @@ export function Footer() {
         <footer className='mt-16'>
             <Separator />
             <div className='mx-auto flex max-w-6xl flex-col gap-4 px-6 py-10 sm:flex-row items-center justify-between'>
-                <p className='text-sm text-muted-foreground'>
-                    © {new Date().getFullYear()} Hair Insider. All rights
+                <p className='text-sm'>
+                    © {new Date().getFullYear()} The Hair Insider. All rights
                     reserved.
                 </p>
-                <div className='flex gap-6 text-sm text-muted-foreground'>
+                <div className='flex gap-6 text-sm'>
                     <Link
                         href='/courses'
                         className='hover:text-foreground'>

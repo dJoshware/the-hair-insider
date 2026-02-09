@@ -101,7 +101,7 @@ export default function SigninPage() {
                     <Link
                         href='/'
                         className='text-base font-semibold tracking-tight'>
-                        Hair Insider
+                        The Hair Insider
                     </Link>
                     <Button
                         variant='ghost'

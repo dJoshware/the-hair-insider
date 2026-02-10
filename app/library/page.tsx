@@ -1,7 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import * as React from "react";
+import Link from "next/link";
+import { useInView } from "react-intersection-observer";
+import { FadeIn } from "@/components/site/FadeIn";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -60,6 +62,11 @@ export default function LibraryPage() {
         run();
     }, [router]);
 
+    const { ref: pageRef, inView: pageIn } = useInView({
+        triggerOnce: true,
+        threshold: 0.2,
+    });
+
     return (
         <div className='relative min-h-[100dvh] text-foreground'>
             {/* Fixed background and overlay layer */}
@@ -71,90 +78,97 @@ export default function LibraryPage() {
             {/* Breadcrumbs */}
             <SiteBreadcrumbs />
 
-            <div className='mx-auto max-w-6xl px-6 pt-8'>
-                <div className='flex items-end justify-between gap-6'>
-                    <div>
-                        <h1 className='text-3xl font-semibold tracking-tight'>
-                            My Library
-                        </h1>
-                        <p className='mt-2'>
-                            Your purchased courses live here.
-                        </p>
-                    </div>
-                </div>
-
-                <div className='mt-10'>
-                    {loading ? (
-                        <p className='text-sm text-muted-foreground'>
-                            Loading…
-                        </p>
-                    ) : err ? (
-                        <Card className='rounded-3xl'>
-                            <CardHeader>
-                                <CardTitle className='text-base'>
-                                    Couldn’t load your library
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className='text-sm text-muted-foreground'>
-                                {err}
-                                <div className='mt-4'>
-                                    <Button
-                                        asChild
-                                        variant='outline'>
-                                        <Link href='/courses'>
-                                            Browse courses
-                                        </Link>
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ) : items.length === 0 ? (
-                        <Card className='rounded-3xl'>
-                            <CardHeader>
-                                <CardTitle className='text-base'>
-                                    No access yet
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className='text-sm text-muted-foreground'>
-                                When you purchase a course, it will appear here.
-                                <div className='mt-4'>
-                                    <Button asChild>
-                                        <Link href='/courses'>
-                                            Browse courses
-                                        </Link>
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ) : (
-                        <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-                            {items
-                                .flatMap(row => row.courses ?? [])
-                                .filter(Boolean)
-                                .map(c => (
-                                    <Link
-                                        key={c.id}
-                                        href={`/library/${c.slug}`}>
-                                        <Card className='rounded-3xl transition-shadow hover:shadow-md'>
-                                            <CardHeader>
-                                                <CardTitle className='text-lg'>
-                                                    {c.title}
-                                                </CardTitle>
-                                                {c.subtitle ? (
-                                                    <p className='text-sm text-muted-foreground'>
-                                                        {c.subtitle}
-                                                    </p>
-                                                ) : null}
-                                            </CardHeader>
-                                            <CardContent className='text-sm'>
-                                                Open course →
-                                            </CardContent>
-                                        </Card>
-                                    </Link>
-                                ))}
+            <div
+                ref={pageRef}
+                className='mx-auto max-w-6xl px-6 pt-8'>
+                <FadeIn
+                    inView={pageIn}
+                    delayMs={100}>
+                    <div className='flex items-end justify-between gap-6'>
+                        <div>
+                            <h1 className='text-3xl font-semibold tracking-tight'>
+                                My Library
+                            </h1>
+                            <p className='mt-2'>
+                                Your purchased courses live here.
+                            </p>
                         </div>
-                    )}
-                </div>
+                    </div>
+
+                    <div className='mt-10'>
+                        {loading ? (
+                            <p className='text-sm text-muted-foreground'>
+                                Loading…
+                            </p>
+                        ) : err ? (
+                            <Card className='rounded-3xl'>
+                                <CardHeader>
+                                    <CardTitle className='text-base'>
+                                        Couldn’t load your library
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className='text-sm text-muted-foreground'>
+                                    {err}
+                                    <div className='mt-4'>
+                                        <Button
+                                            asChild
+                                            variant='outline'>
+                                            <Link href='/courses'>
+                                                Browse courses
+                                            </Link>
+                                        </Button>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ) : items.length === 0 ? (
+                            <Card className='rounded-3xl'>
+                                <CardHeader>
+                                    <CardTitle className='text-base'>
+                                        No access yet
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className='text-sm text-muted-foreground'>
+                                    When you purchase a course, it will appear
+                                    here.
+                                    <div className='mt-4'>
+                                        <Button asChild>
+                                            <Link href='/courses'>
+                                                Browse courses
+                                            </Link>
+                                        </Button>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ) : (
+                            <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+                                {items
+                                    .flatMap(row => row.courses ?? [])
+                                    .filter(Boolean)
+                                    .map(c => (
+                                        <Link
+                                            key={c.id}
+                                            href={`/library/${c.slug}`}>
+                                            <Card className='rounded-3xl transition-shadow hover:shadow-md'>
+                                                <CardHeader>
+                                                    <CardTitle className='text-lg'>
+                                                        {c.title}
+                                                    </CardTitle>
+                                                    {c.subtitle ? (
+                                                        <p className='text-sm text-muted-foreground'>
+                                                            {c.subtitle}
+                                                        </p>
+                                                    ) : null}
+                                                </CardHeader>
+                                                <CardContent className='text-sm'>
+                                                    Open course →
+                                                </CardContent>
+                                            </Card>
+                                        </Link>
+                                    ))}
+                            </div>
+                        )}
+                    </div>
+                </FadeIn>
             </div>
         </div>
     );

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useInView } from "react-intersection-observer";
 import { FadeIn } from "@/components/site/FadeIn";
 import { Navbar } from "@/components/site/navbar";
@@ -15,19 +16,19 @@ import { SiteBreadcrumbs } from "@/components/site/breadcrumbs";
 export default function Home() {
     const { ref: heroRef, inView: heroIn } = useInView({
         triggerOnce: true,
-        threshold: 0.12,
+        threshold: 0.2,
     });
     const { ref: whatRef, inView: whatIn } = useInView({
         triggerOnce: true,
-        threshold: 0.12,
+        threshold: 0.2,
     });
     const { ref: howRef, inView: howIn } = useInView({
         triggerOnce: true,
-        threshold: 0.12,
+        threshold: 0.2,
     });
     const { ref: stylistRef, inView: stylistIn } = useInView({
         triggerOnce: true,
-        threshold: 0.12,
+        threshold: 0.2,
     });
     return (
         <div className='relative min-h-[100dvh] text-foreground'>
@@ -47,26 +48,25 @@ export default function Home() {
                     className='mx-auto max-w-6xl px-6 pb-14 pt-14 sm:pb-20 sm:pt-20'>
                     <FadeIn
                         inView={heroIn}
-                        delayMs={0}>
+                        delayMs={100}>
                         <div className='grid gap-10 md:grid-cols-2 md:items-center'>
-                            <div className='space-y-6'>
+                            <div className='space-y-6 border-solid border-2 border-foreground rounded-3xl p-6'>
                                 <Badge
                                     variant='secondary'
                                     className='w-fit'>
-                                    Education-first hair care
+                                    Education-First Hair Care
                                 </Badge>
 
                                 <h1 className='text-4xl font-semibold tracking-tight sm:text-5xl'>
-                                    Healthy hair, explained simply.
+                                    Healthy Hair, Explained Simply.
                                 </h1>
 
                                 <p className='max-w-xl text-lg leading-8'>
-                                    The Hair Insider is a guided course
-                                    focused on the why behind hair health
-                                    so you can stop guessing, understand
-                                    what&#39;s holding your hair back, and
-                                    work <em>with</em> your hair, not against
-                                    it.
+                                    The Hair Insider is a guided course focused
+                                    on the why behind hair health so you can
+                                    stop guessing, understand what&#39;s holding
+                                    your hair back, and work <em>with</em> your
+                                    hair, not against it.
                                 </p>
 
                                 <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
@@ -74,15 +74,15 @@ export default function Home() {
                                         asChild
                                         className='h-12 px-6'>
                                         <Link href='/courses/hair-insider-mini-course'>
-                                            Start here
+                                            Start Here
                                         </Link>
                                     </Button>
                                 </div>
 
                                 <div className='flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm'>
-                                    <span>In-depth lessons</span>
-                                    <span>Downloadable guides</span>
-                                    <span>Simple routines</span>
+                                    <span>In-Depth Lessons</span>
+                                    <span>Downloadable Guides</span>
+                                    <span>Simple Routines</span>
                                 </div>
                             </div>
 
@@ -149,9 +149,9 @@ export default function Home() {
                     <div className='mx-auto max-w-6xl px-6 py-14 sm:py-20'>
                         <FadeIn
                             inView={whatIn}
-                            delayMs={100}>
+                            delayMs={200}>
                             <div className='grid gap-10 md:grid-cols-2'>
-                                <div className='space-y-4'>
+                                <div className='space-y-4 border-solid border-2 border-foreground rounded-3xl p-6'>
                                     <h2 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
                                         What is it
                                     </h2>
@@ -210,7 +210,7 @@ export default function Home() {
                     <div className='mx-auto max-w-6xl px-6 py-14 sm:py-20'>
                         <FadeIn
                             inView={howIn}
-                            delayMs={100}>
+                            delayMs={200}>
                             <h2 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
                                 How it works
                             </h2>
@@ -267,10 +267,12 @@ export default function Home() {
                     ref={stylistRef}
                     id='stylist'
                     className='border-t'>
-                    <div className='mx-auto max-w-6xl px-6 py-14 sm:py-20'>
-                        <FadeIn inView={stylistIn} delayMs={100}>
+                    <div className='mx-auto max-w-6xl px-6 pt-14 sm:py-20'>
+                        <FadeIn
+                            inView={stylistIn}
+                            delayMs={200}>
                             <div className='grid gap-10 md:grid-cols-2 md:items-center'>
-                                <div className='space-y-4'>
+                                <div className='space-y-4 border-solid border-2 border-foreground rounded-3xl p-6'>
                                     <h2 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
                                         Meet your stylist
                                     </h2>
@@ -296,39 +298,27 @@ export default function Home() {
                                     </div>
                                 </div>
 
-                                <Card className='rounded-3xl'>
-                                    <CardHeader>
-                                        <CardTitle className='text-base'>
-                                            Quick note
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className='space-y-4 text-sm'>
-                                        <p>
-                                            The MVP version focuses on a clean
-                                            library experience: sign in, unlock,
-                                            watch lessons, download guides.
-                                            We’ll expand from there.
-                                        </p>
+                                <div className='rounded-3xl border bg-card shadow-sm'>
+                                    <div className='relative aspect-[4/5] overflow-hidden rounded-[22px]'>
+                                        <Image
+                                            src='/Lauren_headshot.jpg'
+                                            alt='Lauren Jackson, founder of The Hair Insider'
+                                            fill
+                                            className='object-cover'
+                                            sizes='(min-width: 768px) 520px, 100vw'
+                                            priority={false}
+                                        />
+                                    </div>
 
-                                        <div className='flex flex-col gap-3 sm:flex-row'>
-                                            <Button
-                                                variant='outline'
-                                                asChild
-                                                className='h-12 flex-1'>
-                                                <Link href='/signin'>
-                                                    I already bought it
-                                                </Link>
-                                            </Button>
-                                            <Button
-                                                asChild
-                                                className='h-12 flex-1'>
-                                                <Link href='/courses'>
-                                                    Get access
-                                                </Link>
-                                            </Button>
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                    <div className='px-2 pb-2 pt-3'>
+                                        <p className='text-sm'>
+                                            Lauren Jackson
+                                        </p>
+                                        <p className='text-xs font-medium'>
+                                            Your Stylist + Educator
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </FadeIn>
                     </div>

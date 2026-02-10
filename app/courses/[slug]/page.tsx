@@ -1,13 +1,14 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import * as React from "react";
+import { useInView } from "react-intersection-observer";
+import { FadeIn } from "@/components/site/FadeIn";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import { startCheckout } from "@/lib/stripe/checkout";
 import { useAuth } from "@/lib/auth/useAuth";
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -130,6 +131,11 @@ export default function CourseDetailPage() {
         run();
     }, [course?.stripe_price_id]);
 
+    const { ref: pageRef, inView: pageIn } = useInView({
+        triggerOnce: true,
+        threshold: 0.2,
+    });
+
     if (loading) {
         return (
             <div className='mx-auto max-w-6xl px-6 py-14'>
@@ -168,153 +174,42 @@ export default function CourseDetailPage() {
 
             {/* Breadcrumbs */}
             <SiteBreadcrumbs />
-            <div className='mx-auto max-w-6xl px-6 pt-8'>
-                <div className='flex flex-col gap-10 md:flex-row md:items-start md:justify-between'>
-                    {/* Left: Content */}
-                    <div className='max-w-2xl'>
-                        <div className='flex items-center gap-3'>
-                            <Badge variant='secondary'>Course</Badge>
-                        </div>
+            <div
+                ref={pageRef}
+                className='mx-auto max-w-6xl px-6 pt-8'>
+                <FadeIn
+                    inView={pageIn}
+                    delayMs={100}>
+                    <div className='flex flex-col gap-10 md:flex-row md:items-start md:justify-between'>
+                        {/* Left: Content */}
+                        <div className='max-w-2xl'>
+                            <div className='flex items-center gap-3'>
+                                <Badge variant='secondary'>Course</Badge>
+                            </div>
 
-                        <h1 className='mt-4 text-3xl font-semibold tracking-tight sm:text-4xl'>
-                            {course.title}
-                        </h1>
+                            <h1 className='mt-4 text-3xl font-semibold tracking-tight sm:text-4xl'>
+                                {course.title}
+                            </h1>
 
-                        {course.subtitle ? (
-                            <p className='mt-3 text-lg'>
-                                {course.subtitle}
-                            </p>
-                        ) : null}
+                            {course.subtitle ? (
+                                <p className='mt-3 text-lg'>
+                                    {course.subtitle}
+                                </p>
+                            ) : null}
 
-                        {course.description ? (
-                            <p className='mt-6 text-base leading-7'>
-                                {course.description}
-                            </p>
-                        ) : (
-                            <p className='mt-6 text-base leading-7'>
-                                A short, structured mini-course designed to help
-                                you stop guessing and build a routine that makes
-                                sense.
-                            </p>
-                        )}
-
-                        <div className='mt-8 flex flex-col gap-3 sm:flex-row sm:items-center'>
-                            <Button
-                                className='h-12 px-6'
-                                onClick={onGetAccess}
-                                disabled={buying || !course.stripe_price_id}>
-                                {buying ? "Redirecting…" : "BUY NOW"}
-                            </Button>
-
-                            <Button
-                                asChild
-                                variant='outline'
-                                className='h-12 px-6'>
-                                <Link href='/library'>Go to library</Link>
-                            </Button>
-                        </div>
-                        {buyError ? (
-                            <p className='mt-3 text-sm text-destructive'>
-                                {buyError}
-                            </p>
-                        ) : null}
-
-                        {!authLoading && !signedIn ? (
-                            <p className='mt-4 text-sm'>
-                                Already purchased?{" "}
-                                <Link
-                                    href='/signin'
-                                    className='font-medium text-foreground underline underline-offset-4'>
-                                    Sign in
-                                </Link>
-                                .
-                            </p>
-                        ) : null}
-
-                        <Separator className='my-10' />
-
-                        <div className='grid gap-4 sm:grid-cols-2'>
-                            <Card className='rounded-3xl'>
-                                <CardHeader>
-                                    <CardTitle className='text-base'>
-                                        What you get
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className='text-sm text-muted-foreground'>
-                                    <ul className='space-y-2'>
-                                        <li>4 short video lessons</li>
-                                        <li>Clear routine guidance</li>
-                                        <li>Access inside your library</li>
-                                    </ul>
-                                </CardContent>
-                            </Card>
-
-                            <Card className='rounded-3xl'>
-                                <CardHeader>
-                                    <CardTitle className='text-base'>
-                                        Who it’s for
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className='text-sm text-muted-foreground'>
-                                    <ul className='space-y-2'>
-                                        <li>People tired of guessing</li>
-                                        <li>Anyone wanting healthier length</li>
-                                        <li>
-                                            Busy routines that need simplicity
-                                        </li>
-                                    </ul>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </div>
-
-                    {/* Right: Cover */}
-                    <div className='w-full max-w-md'>
-                        <Card className='overflow-hidden rounded-3xl mb-10 py-0'>
-                            {course.cover_image_url ? (
-                                <div className='relative aspect-[16/10] w-full'>
-                                    <Image
-                                        src={course.cover_image_url}
-                                        alt={`${course.title} cover`}
-                                        fill
-                                        className='object-cover'
-                                        priority
-                                    />
-                                </div>
+                            {course.description ? (
+                                <p className='mt-6 text-base leading-7'>
+                                    {course.description}
+                                </p>
                             ) : (
-                                <div className='flex aspect-[16/10] items-center justify-center bg-muted'>
-                                    <p className='text-sm'>
-                                        Cover image
-                                    </p>
-                                </div>
+                                <p className='mt-6 text-base leading-7'>
+                                    A short, structured mini-course designed to
+                                    help you stop guessing and build a routine
+                                    that makes sense.
+                                </p>
                             )}
 
-                            <CardContent className='space-y-4 p-6'>
-                                <p className='text-sm font-medium'>
-                                    Mini-course format
-                                </p>
-                                <p className='text-sm text-muted-foreground'>
-                                    One course, four lessons. Clean structure.
-                                    Easy to finish.
-                                </p>
-
-                                <Separator />
-
-                                <div className='space-y-2 text-sm text-muted-foreground'>
-                                    <div className='flex items-center justify-between'>
-                                        <span>Lessons</span>
-                                        <span className='text-foreground'>
-                                            4
-                                        </span>
-                                    </div>
-                                    <div className='flex items-center justify-between'>
-                                        <span>Access</span>
-                                        <span className='text-foreground'>
-                                            Library
-                                        </span>
-                                    </div>
-                                </div>
-
+                            <div className='mt-8 flex flex-col gap-3 sm:flex-row sm:items-center'>
                                 <Button
                                     className='h-12 px-6'
                                     onClick={onGetAccess}
@@ -323,30 +218,148 @@ export default function CourseDetailPage() {
                                     }>
                                     {buying ? "Redirecting…" : "BUY NOW"}
                                 </Button>
-                                {buyError ? (
-                                    <p className='mt-3 text-sm text-destructive'>
-                                        {buyError}
-                                    </p>
-                                ) : null}
 
-                                {course.stripe_price_id ? (
-                                    <div className='flex items-center justify-between text-sm pb-2'>
-                                        <span>
-                                            Price
-                                        </span>
-                                        <span className='text-foreground'>
-                                            {priceText ?? "—"}
-                                        </span>
+                                <Button
+                                    asChild
+                                    variant='outline'
+                                    className='h-12 px-6'>
+                                    <Link href='/library'>Go to library</Link>
+                                </Button>
+                            </div>
+                            {buyError ? (
+                                <p className='mt-3 text-sm text-destructive'>
+                                    {buyError}
+                                </p>
+                            ) : null}
+
+                            {!authLoading && !signedIn ? (
+                                <p className='mt-4 text-sm'>
+                                    Already purchased?{" "}
+                                    <Link
+                                        href='/signin'
+                                        className='font-medium text-foreground underline underline-offset-4'>
+                                        Sign in
+                                    </Link>
+                                    .
+                                </p>
+                            ) : null}
+
+                            <Separator className='my-10' />
+
+                            <div className='grid gap-4 sm:grid-cols-2'>
+                                <Card className='rounded-3xl'>
+                                    <CardHeader>
+                                        <CardTitle className='text-base'>
+                                            What you get
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className='text-sm text-muted-foreground'>
+                                        <ul className='space-y-2'>
+                                            <li>4 short video lessons</li>
+                                            <li>Clear routine guidance</li>
+                                            <li>Access inside your library</li>
+                                        </ul>
+                                    </CardContent>
+                                </Card>
+
+                                <Card className='rounded-3xl'>
+                                    <CardHeader>
+                                        <CardTitle className='text-base'>
+                                            Who it’s for
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className='text-sm text-muted-foreground'>
+                                        <ul className='space-y-2'>
+                                            <li>People tired of guessing</li>
+                                            <li>
+                                                Anyone wanting healthier length
+                                            </li>
+                                            <li>
+                                                Busy routines that need
+                                                simplicity
+                                            </li>
+                                        </ul>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        </div>
+
+                        {/* Right: Cover */}
+                        <div className='w-full max-w-md'>
+                            <Card className='overflow-hidden rounded-3xl mb-10 py-0'>
+                                {course.cover_image_url ? (
+                                    <div className='relative aspect-[16/10] w-full'>
+                                        <Image
+                                            src={course.cover_image_url}
+                                            alt={`${course.title} cover`}
+                                            fill
+                                            className='object-cover'
+                                            priority
+                                        />
                                     </div>
                                 ) : (
-                                    <p className='text-xs'>
-                                        Price not set yet.
-                                    </p>
+                                    <div className='flex aspect-[16/10] items-center justify-center bg-muted'>
+                                        <p className='text-sm'>Cover image</p>
+                                    </div>
                                 )}
-                            </CardContent>
-                        </Card>
+
+                                <CardContent className='space-y-4 p-6'>
+                                    <p className='text-sm font-medium'>
+                                        Mini-course format
+                                    </p>
+                                    <p className='text-sm text-muted-foreground'>
+                                        One course, four lessons. Clean
+                                        structure. Easy to finish.
+                                    </p>
+
+                                    <Separator />
+
+                                    <div className='space-y-2 text-sm text-muted-foreground'>
+                                        <div className='flex items-center justify-between'>
+                                            <span>Lessons</span>
+                                            <span className='text-foreground'>
+                                                4
+                                            </span>
+                                        </div>
+                                        <div className='flex items-center justify-between'>
+                                            <span>Access</span>
+                                            <span className='text-foreground'>
+                                                Library
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <Button
+                                        className='h-12 px-6'
+                                        onClick={onGetAccess}
+                                        disabled={
+                                            buying || !course.stripe_price_id
+                                        }>
+                                        {buying ? "Redirecting…" : "BUY NOW"}
+                                    </Button>
+                                    {buyError ? (
+                                        <p className='mt-3 text-sm text-destructive'>
+                                            {buyError}
+                                        </p>
+                                    ) : null}
+
+                                    {course.stripe_price_id ? (
+                                        <div className='flex items-center justify-between text-sm pb-2'>
+                                            <span>Price</span>
+                                            <span className='text-foreground'>
+                                                {priceText ?? "—"}
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        <p className='text-xs'>
+                                            Price not set yet.
+                                        </p>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </div>
                     </div>
-                </div>
+                </FadeIn>
             </div>
         </div>
     );

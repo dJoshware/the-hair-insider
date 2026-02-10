@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useInView } from "react-intersection-observer";
+import { FadeIn } from "@/components/site/FadeIn";
 import { supabase } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
@@ -95,6 +97,11 @@ export default function SigninPage() {
         window.location.href = "/library";
     }
 
+    const { ref: pageRef, inView: pageIn } = useInView({
+        triggerOnce: true,
+        threshold: 0.2,
+    });
+
     return (
         <div className='relative min-h-[100dvh] text-foreground'>
             {/* Fixed background and overlay layer */}
@@ -103,110 +110,122 @@ export default function SigninPage() {
             {/* Main content */}
             <Navbar />
 
-            <main className='mx-auto flex max-w-6xl flex-col items-center px-6 py-14 sm:py-20'>
-                <div className='w-full max-w-md'>
-                    <Card className='rounded-3xl'>
-                        <CardHeader>
-                            <CardTitle className='text-2xl'>Sign in</CardTitle>
-                            <CardDescription>
-                                Enter your email and we’ll send you a secure
-                                sign-in link.
-                            </CardDescription>
-                        </CardHeader>
+            <main
+                ref={pageRef}
+                className='mx-auto flex max-w-6xl flex-col items-center px-6 py-14 sm:py-20'>
+                <FadeIn
+                    inView={pageIn}
+                    delayMs={100}>
+                    <div className='w-full max-w-md'>
+                        <Card className='rounded-3xl'>
+                            <CardHeader>
+                                <CardTitle className='text-2xl'>
+                                    Sign in
+                                </CardTitle>
+                                <CardDescription>
+                                    Enter your email and we’ll send you a secure
+                                    sign-in link.
+                                </CardDescription>
+                            </CardHeader>
 
-                        <CardContent className='space-y-6'>
-                            <form
-                                onSubmit={onSubmit}
-                                className='space-y-4'>
-                                <div className='space-y-2'>
-                                    <Label htmlFor='email'>Email</Label>
-                                    <Input
-                                        id='email'
-                                        type='email'
-                                        autoComplete='email'
-                                        placeholder='you@example.com'
-                                        value={email}
-                                        onChange={e => setEmail(e.target.value)}
-                                        disabled={
-                                            status === "sending" ||
-                                            status === "success"
-                                        }
-                                    />
-                                </div>
-
-                                <Button
-                                    type='submit'
-                                    className='w-full'
-                                    disabled={!canSubmit}>
-                                    {status === "sending"
-                                        ? "Sending link..."
-                                        : "Email me a sign-in link"}
-                                </Button>
-                            </form>
-
-                            {process.env.NODE_ENV === "development" && (
+                            <CardContent className='space-y-6'>
                                 <form
-                                    onSubmit={onDevPasswordLogin}
-                                    className='mt-8 space-y-4 border-t pt-6'>
-                                    <p className='text-xs text-muted-foreground'>
-                                        Dev login (password)
-                                    </p>
-
-                                    <input
-                                        type='password'
-                                        value={password}
-                                        onChange={e =>
-                                            setPassword(e.target.value)
-                                        }
-                                        placeholder='Password'
-                                        className='w-full rounded-md border px-3 py-2 text-sm'
-                                    />
+                                    onSubmit={onSubmit}
+                                    className='space-y-4'>
+                                    <div className='space-y-2'>
+                                        <Label htmlFor='email'>Email</Label>
+                                        <Input
+                                            id='email'
+                                            type='email'
+                                            autoComplete='email'
+                                            placeholder='you@example.com'
+                                            value={email}
+                                            onChange={e =>
+                                                setEmail(e.target.value)
+                                            }
+                                            disabled={
+                                                status === "sending" ||
+                                                status === "success"
+                                            }
+                                        />
+                                    </div>
 
                                     <Button
                                         type='submit'
-                                        variant='secondary'
-                                        className='w-full'>
-                                        Sign in (dev)
+                                        className='w-full'
+                                        disabled={!canSubmit}>
+                                        {status === "sending"
+                                            ? "Sending link..."
+                                            : "Email me a sign-in link"}
                                     </Button>
                                 </form>
-                            )}
 
-                            {status === "success" && (
-                                <Alert className='bg-green-300'>
-                                    <AlertTitle>Link sent</AlertTitle>
-                                    <AlertDescription>
-                                        {message} If you don’t see it in a
-                                        minute, check spam/promotions.
-                                    </AlertDescription>
-                                </Alert>
-                            )}
+                                {process.env.NODE_ENV === "development" && (
+                                    <form
+                                        onSubmit={onDevPasswordLogin}
+                                        className='mt-8 space-y-4 border-t pt-6'>
+                                        <p className='text-xs text-muted-foreground'>
+                                            Dev login (password)
+                                        </p>
 
-                            {status === "error" && (
-                                <Alert variant='destructive'>
-                                    <AlertTitle>Couldn’t send link</AlertTitle>
-                                    <AlertDescription>
-                                        {message}
-                                    </AlertDescription>
-                                </Alert>
-                            )}
+                                        <input
+                                            type='password'
+                                            value={password}
+                                            onChange={e =>
+                                                setPassword(e.target.value)
+                                            }
+                                            placeholder='Password'
+                                            className='w-full rounded-md border px-3 py-2 text-sm'
+                                        />
 
-                            <div className='text-sm text-muted-foreground'>
-                                <p className='leading-6'>
-                                    Use the same email you used at checkout.
-                                </p>
-                                <p className='mt-2 leading-6'>
-                                    Don’t have access yet?{" "}
-                                    <Link
-                                        href='/courses'
-                                        className='font-medium text-foreground underline underline-offset-4'>
-                                        View courses
-                                    </Link>
-                                    .
-                                </p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
+                                        <Button
+                                            type='submit'
+                                            variant='secondary'
+                                            className='w-full'>
+                                            Sign in (dev)
+                                        </Button>
+                                    </form>
+                                )}
+
+                                {status === "success" && (
+                                    <Alert className='bg-green-300'>
+                                        <AlertTitle>Link sent</AlertTitle>
+                                        <AlertDescription>
+                                            {message} If you don’t see it in a
+                                            minute, check spam/promotions.
+                                        </AlertDescription>
+                                    </Alert>
+                                )}
+
+                                {status === "error" && (
+                                    <Alert variant='destructive'>
+                                        <AlertTitle>
+                                            Couldn’t send link
+                                        </AlertTitle>
+                                        <AlertDescription>
+                                            {message}
+                                        </AlertDescription>
+                                    </Alert>
+                                )}
+
+                                <div className='text-sm text-muted-foreground'>
+                                    <p className='leading-6'>
+                                        Use the same email you used at checkout.
+                                    </p>
+                                    <p className='mt-2 leading-6'>
+                                        Don’t have access yet?{" "}
+                                        <Link
+                                            href='/courses'
+                                            className='font-medium text-foreground underline underline-offset-4'>
+                                            View courses
+                                        </Link>
+                                        .
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </FadeIn>
             </main>
         </div>
     );

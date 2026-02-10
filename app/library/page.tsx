@@ -4,10 +4,12 @@ import Link from "next/link";
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Overlay } from "@/components/site/Overlay";
+import { Navbar } from "@/components/site/navbar";
+import { SiteBreadcrumbs } from "@/components/site/breadcrumbs";
 
 type EntitledCourseRow = {
     status: string;
@@ -59,92 +61,100 @@ export default function LibraryPage() {
     }, [router]);
 
     return (
-        <div className='mx-auto max-w-6xl px-6 py-14'>
-            <div className='flex items-end justify-between gap-6'>
-                <div>
-                    <h1 className='text-3xl font-semibold tracking-tight'>
-                        My Library
-                    </h1>
-                    <p className='mt-2 text-muted-foreground'>
-                        Your purchased courses live here.
-                    </p>
-                </div>
-                <Badge variant='secondary'>Library</Badge>
-            </div>
+        <div className='relative min-h-[100dvh] text-foreground'>
+            {/* Fixed background and overlay layer */}
+            <Overlay />
 
-            <div className='mt-10'>
-                {loading ? (
-                    <p className='text-sm text-muted-foreground'>Loading…</p>
-                ) : err ? (
-                    <Card className='rounded-3xl'>
-                        <CardHeader>
-                            <CardTitle className='text-base'>
-                                Couldn’t load your library
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className='text-sm text-muted-foreground'>
-                            {err}
-                            <div className='mt-4'>
-                                <Button
-                                    asChild
-                                    variant='outline'>
-                                    <Link href='/courses'>Browse courses</Link>
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ) : items.length === 0 ? (
-                    <Card className='rounded-3xl'>
-                        <CardHeader>
-                            <CardTitle className='text-base'>
-                                No access yet
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className='text-sm text-muted-foreground'>
-                            When you purchase a course, it will appear here.
-                            <div className='mt-4'>
-                                <Button asChild>
-                                    <Link href='/courses'>Browse courses</Link>
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ) : (
-                    <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-                        {items
-                            .flatMap(row => row.courses ?? [])
-                            .filter(Boolean)
-                            .map(c => (
-                                <Link
-                                    key={c.id}
-                                    href={`/library/${c.slug}`}>
-                                    <Card className='rounded-3xl transition-shadow hover:shadow-md'>
-                                        <CardHeader>
-                                            <CardTitle className='text-lg'>
-                                                {c.title}
-                                            </CardTitle>
-                                            {c.subtitle ? (
-                                                <p className='text-sm text-muted-foreground'>
-                                                    {c.subtitle}
-                                                </p>
-                                            ) : null}
-                                        </CardHeader>
-                                        <CardContent className='text-sm text-muted-foreground'>
-                                            Open course →
-                                        </CardContent>
-                                    </Card>
-                                </Link>
-                            ))}
+            {/* Main content */}
+            <Navbar />
+
+            {/* Breadcrumbs */}
+            <SiteBreadcrumbs />
+
+            <div className='mx-auto max-w-6xl px-6 pt-8'>
+                <div className='flex items-end justify-between gap-6'>
+                    <div>
+                        <h1 className='text-3xl font-semibold tracking-tight'>
+                            My Library
+                        </h1>
+                        <p className='mt-2'>
+                            Your purchased courses live here.
+                        </p>
                     </div>
-                )}
-            </div>
+                </div>
 
-            <div className='mt-10'>
-                <Button
-                    asChild
-                    variant='ghost'>
-                    <Link href='/'>← Back to home page</Link>
-                </Button>
+                <div className='mt-10'>
+                    {loading ? (
+                        <p className='text-sm text-muted-foreground'>
+                            Loading…
+                        </p>
+                    ) : err ? (
+                        <Card className='rounded-3xl'>
+                            <CardHeader>
+                                <CardTitle className='text-base'>
+                                    Couldn’t load your library
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className='text-sm text-muted-foreground'>
+                                {err}
+                                <div className='mt-4'>
+                                    <Button
+                                        asChild
+                                        variant='outline'>
+                                        <Link href='/courses'>
+                                            Browse courses
+                                        </Link>
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ) : items.length === 0 ? (
+                        <Card className='rounded-3xl'>
+                            <CardHeader>
+                                <CardTitle className='text-base'>
+                                    No access yet
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className='text-sm text-muted-foreground'>
+                                When you purchase a course, it will appear here.
+                                <div className='mt-4'>
+                                    <Button asChild>
+                                        <Link href='/courses'>
+                                            Browse courses
+                                        </Link>
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+                            {items
+                                .flatMap(row => row.courses ?? [])
+                                .filter(Boolean)
+                                .map(c => (
+                                    <Link
+                                        key={c.id}
+                                        href={`/library/${c.slug}`}>
+                                        <Card className='rounded-3xl transition-shadow hover:shadow-md'>
+                                            <CardHeader>
+                                                <CardTitle className='text-lg'>
+                                                    {c.title}
+                                                </CardTitle>
+                                                {c.subtitle ? (
+                                                    <p className='text-sm text-muted-foreground'>
+                                                        {c.subtitle}
+                                                    </p>
+                                                ) : null}
+                                            </CardHeader>
+                                            <CardContent className='text-sm'>
+                                                Open course →
+                                            </CardContent>
+                                        </Card>
+                                    </Link>
+                                ))}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

@@ -6,7 +6,9 @@ import { supabase } from "@/lib/supabase/client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Overlay } from "@/components/site/Overlay";
+import { Navbar } from "@/components/site/navbar";
+import { SiteBreadcrumbs } from "@/components/site/breadcrumbs";
 
 type Course = {
     id: string;
@@ -38,81 +40,85 @@ export default function CoursesPage() {
     }, []);
 
     return (
-        <div className='mx-auto max-w-6xl px-6 py-14'>
-            <div className='flex items-end justify-between gap-6'>
-                <div>
-                    <h1 className='text-3xl font-semibold tracking-tight'>
-                        Courses
-                    </h1>
-                    <p className='mt-2 text-muted-foreground'>
-                        Choose a course to learn, then unlock your library
-                        access.
-                    </p>
-                </div>
-                <Badge variant='secondary'>MVP</Badge>
-            </div>
+        <div className='relative min-h-[100dvh] text-foreground'>
+            {/* Fixed background and overlay layer */}
+            <Overlay />
 
-            <div className='mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-                {loading ? (
-                    <Card className='rounded-3xl'>
-                        <CardHeader>
-                            <CardTitle className='text-base'>
-                                Loading…
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className='text-sm text-muted-foreground'>
-                            Fetching published courses.
-                        </CardContent>
-                    </Card>
-                ) : courses.length === 0 ? (
-                    <Card className='rounded-3xl'>
-                        <CardHeader>
-                            <CardTitle className='text-base'>
-                                No courses yet
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className='text-sm text-muted-foreground'>
-                            Publish a course in Supabase to see it here.
-                        </CardContent>
-                    </Card>
-                ) : (
-                    courses.map(c => (
-                        <Link
-                            key={c.id}
-                            href={`/courses/${c.slug}`}
-                            className='group'>
-                            <Card className='h-full rounded-3xl transition-shadow group-hover:shadow-md'>
-                                <CardHeader>
-                                    <CardTitle className='text-lg'>
-                                        {c.title}
-                                    </CardTitle>
-                                    {c.subtitle ? (
-                                        <p className='text-sm text-muted-foreground'>
-                                            {c.subtitle}
-                                        </p>
-                                    ) : null}
-                                </CardHeader>
-                                <CardContent className='text-sm text-muted-foreground'>
-                                    {c.description ? (
-                                        <p className='line-clamp-3'>
-                                            {c.description}
-                                        </p>
-                                    ) : (
-                                        <p>View details and access options.</p>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        </Link>
-                    ))
-                )}
-            </div>
-            
-            <div className='mt-10'>
-                <Button
-                    asChild
-                    variant='ghost'>
-                    <Link href='/'>← Back to home page</Link>
-                </Button>
+            {/* Main content */}
+            <Navbar />
+
+            {/* Breadcrumbs */}
+            <SiteBreadcrumbs />
+
+            <div className='mx-auto max-w-6xl px-6 pt-8'>
+                <div className='flex items-end justify-between gap-6'>
+                    <div>
+                        <h1 className='text-3xl font-semibold tracking-tight'>
+                            Courses
+                        </h1>
+                        <p className='mt-2'>
+                            Choose a course to learn, then unlock your library
+                            access.
+                        </p>
+                    </div>
+                </div>
+
+                <div className='mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+                    {loading ? (
+                        <Card className='rounded-3xl'>
+                            <CardHeader>
+                                <CardTitle className='text-base'>
+                                    Loading…
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className='text-sm text-muted-foreground'>
+                                Fetching published courses.
+                            </CardContent>
+                        </Card>
+                    ) : courses.length === 0 ? (
+                        <Card className='rounded-3xl'>
+                            <CardHeader>
+                                <CardTitle className='text-base'>
+                                    No courses yet
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className='text-sm text-muted-foreground'>
+                                Publish a course to see it here.
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        courses.map(c => (
+                            <Link
+                                key={c.id}
+                                href={`/courses/${c.slug}`}
+                                className='group'>
+                                <Card className='h-full rounded-3xl transition-shadow group-hover:shadow-md'>
+                                    <CardHeader>
+                                        <CardTitle className='text-lg'>
+                                            {c.title}
+                                        </CardTitle>
+                                        {c.subtitle ? (
+                                            <p className='text-sm text-muted-foreground'>
+                                                {c.subtitle}
+                                            </p>
+                                        ) : null}
+                                    </CardHeader>
+                                    <CardContent className='text-sm text-muted-foreground'>
+                                        {c.description ? (
+                                            <p className='line-clamp-3'>
+                                                {c.description}
+                                            </p>
+                                        ) : (
+                                            <p>
+                                                View details and access options.
+                                            </p>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            </Link>
+                        ))
+                    )}
+                </div>
             </div>
         </div>
     );

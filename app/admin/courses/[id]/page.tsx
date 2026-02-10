@@ -13,6 +13,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Overlay } from "@/components/site/Overlay";
+import { Navbar } from "@/components/site/navbar";
+import { SiteBreadcrumbs } from "@/components/site/breadcrumbs";
 
 type Course = {
     id: string;
@@ -154,7 +157,7 @@ export default function AdminEditCoursePage() {
     if (loading) {
         return (
             <div className='mx-auto max-w-4xl px-6 py-14'>
-                <p className='text-sm text-muted-foreground'>Loading…</p>
+                <p className='text-sm'>Loading…</p>
             </div>
         );
     }
@@ -186,146 +189,161 @@ export default function AdminEditCoursePage() {
     }
 
     return (
-        <div className='mx-auto max-w-4xl px-6 py-14'>
-            <div className='flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between'>
-                <div>
-                    <div className='flex items-center gap-3'>
-                        <Badge variant='secondary'>Admin</Badge>
-                        <Badge variant='outline'>Edit</Badge>
+        <div className='relative min-h-[100dvh] text-foreground'>
+            {/* Fixed background and overlay layer */}
+            <Overlay />
+
+            {/* Main content */}
+            <Navbar />
+
+            {/* Breadcrumbs */}
+            <SiteBreadcrumbs />
+
+            <div className='mx-auto max-w-4xl px-6 pt-8'>
+                <div className='flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between'>
+                    <div>
+                        <div className='flex items-center gap-3'>
+                            <Badge variant='secondary'>Admin</Badge>
+                        </div>
+                        <h1 className='mt-3 text-3xl font-semibold tracking-tight'>
+                            {course?.title ?? "Edit course"}
+                        </h1>
+                        <p className='mt-2'>
+                            Update details, pricing, and publish status.
+                        </p>
                     </div>
-                    <h1 className='mt-3 text-3xl font-semibold tracking-tight'>
-                        {course?.title ?? "Edit course"}
-                    </h1>
-                    <p className='mt-2 text-muted-foreground'>
-                        Update details, pricing, and publish status.
-                    </p>
+
+                    <div className='flex gap-3'>
+                        <Button asChild>
+                            <Link href={`/admin/courses/${courseId}/lessons`}>
+                                Lessons
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
 
-                <div className='flex gap-3'>
-                    <Button
-                        asChild
-                        variant='outline'>
-                        <Link href='/admin/courses'>Back</Link>
-                    </Button>
-                    <Button asChild>
-                        <Link href={`/admin/courses/${courseId}/lessons`}>
-                            Lessons
-                        </Link>
-                    </Button>
-                </div>
+                <Separator className='my-8' />
+
+                <Card className='rounded-3xl mb-6'>
+                    <CardHeader>
+                        <CardTitle className='text-base'>
+                            Course details
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className='space-y-6'>
+                        {err ? (
+                            <p className='text-sm text-destructive'>{err}</p>
+                        ) : null}
+                        {ok ? (
+                            <p className='text-sm text-emerald-600'>{ok}</p>
+                        ) : null}
+
+                        <div className='grid gap-4 sm:grid-cols-2'>
+                            <div className='space-y-2'>
+                                <Label htmlFor='title'>Title</Label>
+                                <Input
+                                    id='title'
+                                    value={title}
+                                    onChange={e => setTitle(e.target.value)}
+                                />
+                            </div>
+
+                            <div className='space-y-2'>
+                                <Label htmlFor='slug'>Slug</Label>
+                                <Input
+                                    id='slug'
+                                    value={slug}
+                                    onChange={e => setSlug(e.target.value)}
+                                />
+                                <p className='text-xs text-muted-foreground'>
+                                    Used in /courses/{slug || "your-slug"}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className='space-y-2'>
+                            <Label htmlFor='subtitle'>Subtitle</Label>
+                            <Input
+                                id='subtitle'
+                                value={subtitle}
+                                onChange={e => setSubtitle(e.target.value)}
+                            />
+                        </div>
+
+                        <div className='space-y-2'>
+                            <Label htmlFor='description'>Description</Label>
+                            <Textarea
+                                id='description'
+                                value={description}
+                                onChange={e => setDescription(e.target.value)}
+                                rows={5}
+                            />
+                        </div>
+
+                        <div className='grid gap-4 sm:grid-cols-2'>
+                            <div className='space-y-2'>
+                                <Label htmlFor='cover'>Cover image URL</Label>
+                                <Input
+                                    id='cover'
+                                    value={coverImageUrl}
+                                    onChange={e =>
+                                        setCoverImageUrl(e.target.value)
+                                    }
+                                />
+                                <p className='text-xs text-muted-foreground'>
+                                    For MVP, paste the Supabase public URL here.
+                                </p>
+                            </div>
+
+                            <div className='space-y-2'>
+                                <Label htmlFor='stripe'>Stripe Price ID</Label>
+                                <Input
+                                    id='stripe'
+                                    value={stripePriceId}
+                                    onChange={e =>
+                                        setStripePriceId(e.target.value)
+                                    }
+                                />
+                            </div>
+                        </div>
+
+                        <div className='flex items-center justify-between rounded-2xl border p-4'>
+                            <div>
+                                <p className='text-sm font-medium'>Published</p>
+                                <p className='text-xs text-muted-foreground'>
+                                    If off, this course won’t show publicly.
+                                </p>
+                            </div>
+                            <Switch
+                                checked={isPublished}
+                                onCheckedChange={setIsPublished}
+                            />
+                        </div>
+
+                        <div className='flex items-center justify-end gap-3'>
+                            <Button
+                                type='button'
+                                variant='outline'
+                                onClick={() =>
+                                    router.push(
+                                        `/courses/${course?.slug ?? ""}`,
+                                    )
+                                }
+                                disabled={!course?.slug}>
+                                View public page
+                            </Button>
+                            <Button
+                                type='button'
+                                onClick={onSave}
+                                disabled={
+                                    saving || !title.trim() || !slug.trim()
+                                }>
+                                {saving ? "Saving…" : "Save changes"}
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
-
-            <Separator className='my-8' />
-
-            <Card className='rounded-3xl'>
-                <CardHeader>
-                    <CardTitle className='text-base'>Course details</CardTitle>
-                </CardHeader>
-                <CardContent className='space-y-6'>
-                    {err ? (
-                        <p className='text-sm text-destructive'>{err}</p>
-                    ) : null}
-                    {ok ? (
-                        <p className='text-sm text-emerald-600'>{ok}</p>
-                    ) : null}
-
-                    <div className='grid gap-4 sm:grid-cols-2'>
-                        <div className='space-y-2'>
-                            <Label htmlFor='title'>Title</Label>
-                            <Input
-                                id='title'
-                                value={title}
-                                onChange={e => setTitle(e.target.value)}
-                            />
-                        </div>
-
-                        <div className='space-y-2'>
-                            <Label htmlFor='slug'>Slug</Label>
-                            <Input
-                                id='slug'
-                                value={slug}
-                                onChange={e => setSlug(e.target.value)}
-                            />
-                            <p className='text-xs text-muted-foreground'>
-                                Used in /courses/{slug || "your-slug"}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className='space-y-2'>
-                        <Label htmlFor='subtitle'>Subtitle</Label>
-                        <Input
-                            id='subtitle'
-                            value={subtitle}
-                            onChange={e => setSubtitle(e.target.value)}
-                        />
-                    </div>
-
-                    <div className='space-y-2'>
-                        <Label htmlFor='description'>Description</Label>
-                        <Textarea
-                            id='description'
-                            value={description}
-                            onChange={e => setDescription(e.target.value)}
-                            rows={5}
-                        />
-                    </div>
-
-                    <div className='grid gap-4 sm:grid-cols-2'>
-                        <div className='space-y-2'>
-                            <Label htmlFor='cover'>Cover image URL</Label>
-                            <Input
-                                id='cover'
-                                value={coverImageUrl}
-                                onChange={e => setCoverImageUrl(e.target.value)}
-                            />
-                            <p className='text-xs text-muted-foreground'>
-                                For MVP, paste the Supabase public URL here.
-                            </p>
-                        </div>
-
-                        <div className='space-y-2'>
-                            <Label htmlFor='stripe'>Stripe Price ID</Label>
-                            <Input
-                                id='stripe'
-                                value={stripePriceId}
-                                onChange={e => setStripePriceId(e.target.value)}
-                            />
-                        </div>
-                    </div>
-
-                    <div className='flex items-center justify-between rounded-2xl border p-4'>
-                        <div>
-                            <p className='text-sm font-medium'>Published</p>
-                            <p className='text-xs text-muted-foreground'>
-                                If off, this course won’t show publicly.
-                            </p>
-                        </div>
-                        <Switch
-                            checked={isPublished}
-                            onCheckedChange={setIsPublished}
-                        />
-                    </div>
-
-                    <div className='flex items-center justify-end gap-3'>
-                        <Button
-                            type='button'
-                            variant='outline'
-                            onClick={() =>
-                                router.push(`/courses/${course?.slug ?? ""}`)
-                            }
-                            disabled={!course?.slug}>
-                            View public page
-                        </Button>
-                        <Button
-                            type='button'
-                            onClick={onSave}
-                            disabled={saving || !title.trim() || !slug.trim()}>
-                            {saving ? "Saving…" : "Save changes"}
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
         </div>
     );
 }

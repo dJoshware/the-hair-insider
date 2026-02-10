@@ -3,7 +3,6 @@
 import * as React from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase/client";
-
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -15,6 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Overlay } from "@/components/site/Overlay";
+import { Navbar } from "@/components/site/navbar";
 
 type Status = "idle" | "sending" | "success" | "error";
 
@@ -95,21 +96,12 @@ export default function SigninPage() {
     }
 
     return (
-        <div className='min-h-screen bg-background text-foreground'>
-            <header className='border-b'>
-                <div className='mx-auto flex h-16 max-w-6xl items-center justify-between px-6'>
-                    <Link
-                        href='/'
-                        className='text-base font-semibold tracking-tight'>
-                        The Hair Insider
-                    </Link>
-                    <Button
-                        variant='ghost'
-                        asChild>
-                        <Link href='/courses'>View courses</Link>
-                    </Button>
-                </div>
-            </header>
+        <div className='relative min-h-[100dvh] text-foreground'>
+            {/* Fixed background and overlay layer */}
+            <Overlay />
+
+            {/* Main content */}
+            <Navbar />
 
             <main className='mx-auto flex max-w-6xl flex-col items-center px-6 py-14 sm:py-20'>
                 <div className='w-full max-w-md'>

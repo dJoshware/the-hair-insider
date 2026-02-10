@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Overlay } from "@/components/site/Overlay";
+import { SiteBreadcrumbs } from "@/components/site/breadcrumbs";
 
 export default function Home() {
     const { ref: heroRef, inView: heroIn } = useInView({
@@ -29,19 +31,14 @@ export default function Home() {
     });
     return (
         <div className='relative min-h-[100dvh] text-foreground'>
-            {/* Fixed background layer */}
-            <div
-                className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
-                style={{
-                    backgroundImage: 'var(--home-bg)'
-                }}
-            />
-
-            {/* Overlay layer (for readability) */}
-            <div className="pointer-events-none fixed inset-0 -z-10 bg-background/0 backdrop-blur-[5px]" />
+            {/* Fixed background and overlay layer */}
+            <Overlay />
 
             {/* Main content */}
             <Navbar />
+
+            {/* Breadcrumbs */}
+            <SiteBreadcrumbs />
 
             <main>
                 {/* Hero */}
@@ -65,9 +62,11 @@ export default function Home() {
 
                                 <p className='max-w-xl text-lg leading-8'>
                                     The Hair Insider is a guided course
-                                    that teaches you what your hair actually
-                                    needs, how to stop guessing, and how to
-                                    build a routine you can stick to.
+                                    focused on the why behind hair health
+                                    so you can stop guessing, understand
+                                    what&#39;s holding your hair back, and
+                                    work <em>with</em> your hair, not against
+                                    it.
                                 </p>
 
                                 <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
@@ -80,7 +79,8 @@ export default function Home() {
                                     </Button>
                                 </div>
 
-                                <div className='flex justify-center gap-x-6 gap-y-2 text-sm'>
+                                <div className='flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm'>
+                                    <span>In-depth lessons</span>
                                     <span>Downloadable guides</span>
                                     <span>Simple routines</span>
                                 </div>
@@ -91,7 +91,6 @@ export default function Home() {
                                     <CardTitle className='text-base'>
                                         Included in the course
                                     </CardTitle>
-                                    <Badge variant='outline'>MVP</Badge>
                                 </CardHeader>
                                 <CardContent className='space-y-4'>
                                     <ul className='space-y-3 text-sm'>
@@ -154,7 +153,7 @@ export default function Home() {
                             <div className='grid gap-10 md:grid-cols-2'>
                                 <div className='space-y-4'>
                                     <h2 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
-                                        What we are
+                                        What is it
                                     </h2>
                                     <p className='text-lg leading-8'>
                                         A course-driven education library

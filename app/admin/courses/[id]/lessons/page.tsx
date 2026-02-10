@@ -11,6 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Overlay } from "@/components/site/Overlay";
+import { Navbar } from "@/components/site/navbar";
+import { SiteBreadcrumbs } from "@/components/site/breadcrumbs";
 
 type LessonDraft = {
     id?: string;
@@ -132,67 +135,128 @@ export default function AdminLessonsPage() {
     if (!ready) return null;
 
     return (
-        <div className='mx-auto max-w-4xl px-6 py-14 space-y-6'>
-            <Card className='rounded-3xl'>
-                <CardHeader className="flex flex-row justify-between items-center">
-                    <CardTitle>Add lessons (paste Vimeo links)</CardTitle>
-                    <Button
-                        asChild
-                        variant='ghost'>
-                        <Link href='/admin/courses'>← Back to courses</Link>
-                    </Button>
-                </CardHeader>
-                <CardContent className='space-y-4'>
-                    {error ? (
-                        <p className='text-sm text-destructive'>{error}</p>
-                    ) : null}
-                    {success ? (
-                        <p className='text-sm text-emerald-600'>{success}</p>
-                    ) : null}
+        <div className='relative min-h-[100dvh] text-foreground'>
+            {/* Fixed background and overlay layer */}
+            <Overlay />
 
-                    {!moduleId ? (
-                        <p className='text-sm text-destructive'>
-                            Missing module id. Go back and create the course
-                            again (or add ?module=...).
-                        </p>
-                    ) : null}
+            {/* Main content */}
+            <Navbar />
 
-                    <div className='grid gap-4'>
-                        {items.map((l, idx) => (
-                            <div
-                                key={idx}
-                                className='rounded-2xl border p-4 space-y-3'>
-                                <div className='grid gap-3 sm:grid-cols-[80px_1fr]'>
-                                    <div className='space-y-2'>
-                                        <Label>Order</Label>
-                                        <Input
-                                            type='number'
-                                            value={l.order}
-                                            onChange={e => {
-                                                const v = Number(
-                                                    e.target.value || 1,
-                                                );
-                                                setItems(prev =>
-                                                    prev.map((x, i) =>
-                                                        i === idx
-                                                            ? { ...x, order: v }
-                                                            : x,
-                                                    ),
-                                                );
-                                            }}
-                                        />
+            {/* Breadcrumbs */}
+            <SiteBreadcrumbs />
+
+            <div className='mx-auto max-w-4xl px-6 pt-8 space-y-6'>
+                <Card className='rounded-3xl mb-6'>
+                    <CardHeader className='flex flex-row justify-between items-center'>
+                        <CardTitle>Add lessons (paste Vimeo links)</CardTitle>
+                    </CardHeader>
+                    <CardContent className='space-y-4'>
+                        {error ? (
+                            <p className='text-sm text-destructive'>{error}</p>
+                        ) : null}
+                        {success ? (
+                            <p className='text-sm text-emerald-600'>
+                                {success}
+                            </p>
+                        ) : null}
+
+                        {!moduleId ? (
+                            <p className='text-sm text-destructive'>
+                                Missing module id. Go back and create the course
+                                again (or add ?module=...).
+                            </p>
+                        ) : null}
+
+                        <div className='grid gap-4'>
+                            {items.map((l, idx) => (
+                                <div
+                                    key={idx}
+                                    className='rounded-2xl border p-4 space-y-3'>
+                                    <div className='grid gap-3 sm:grid-cols-[80px_1fr]'>
+                                        <div className='space-y-2'>
+                                            <Label>Order</Label>
+                                            <Input
+                                                type='number'
+                                                value={l.order}
+                                                onChange={e => {
+                                                    const v = Number(
+                                                        e.target.value || 1,
+                                                    );
+                                                    setItems(prev =>
+                                                        prev.map((x, i) =>
+                                                            i === idx
+                                                                ? {
+                                                                      ...x,
+                                                                      order: v,
+                                                                  }
+                                                                : x,
+                                                        ),
+                                                    );
+                                                }}
+                                            />
+                                        </div>
+
+                                        <div className='space-y-2'>
+                                            <Label>Title</Label>
+                                            <Input
+                                                value={l.title}
+                                                onChange={e => {
+                                                    const v = e.target.value;
+                                                    setItems(prev =>
+                                                        prev.map((x, i) =>
+                                                            i === idx
+                                                                ? {
+                                                                      ...x,
+                                                                      title: v,
+                                                                  }
+                                                                : x,
+                                                        ),
+                                                    );
+                                                }}
+                                            />
+                                        </div>
                                     </div>
 
                                     <div className='space-y-2'>
-                                        <Label>Title</Label>
+                                        <Label>Vimeo link</Label>
                                         <Input
-                                            value={l.title}
+                                            value={l.video_url}
                                             onChange={e => {
                                                 const v = e.target.value;
                                                 setItems(prev =>
                                                     prev.map((x, i) =>
                                                         i === idx
-                                                            ? { ...x, title: v }
+                                                            ? {
+                                                                  ...x,
+                                                                  video_url: v,
+                                                              }
+                                                            : x,
+                                                    ),
+                                                );
+                                            }}
+                                            placeholder='Paste vimeo.com/123 or player.vimeo.com/video/123'
+                                        />
+                                        <p className='text-xs text-muted-foreground'>
+                                            Paste any Vimeo URL. We’ll store it
+                                            as an embeddable link automatically.
+                                        </p>
+                                    </div>
+
+                                    <div className='flex items-center justify-between rounded-xl bg-muted p-3'>
+                                        <p className='text-sm font-medium'>
+                                            Published
+                                        </p>
+                                        <Switch
+                                            checked={l.is_published}
+                                            onCheckedChange={checked => {
+                                                setItems(prev =>
+                                                    prev.map((x, i) =>
+                                                        i === idx
+                                                            ? {
+                                                                  ...x,
+                                                                  is_published:
+                                                                      checked,
+                                                              }
                                                             : x,
                                                     ),
                                                 );
@@ -200,74 +264,30 @@ export default function AdminLessonsPage() {
                                         />
                                     </div>
                                 </div>
+                            ))}
+                        </div>
 
-                                <div className='space-y-2'>
-                                    <Label>Vimeo link</Label>
-                                    <Input
-                                        value={l.video_url}
-                                        onChange={e => {
-                                            const v = e.target.value;
-                                            setItems(prev =>
-                                                prev.map((x, i) =>
-                                                    i === idx
-                                                        ? { ...x, video_url: v }
-                                                        : x,
-                                                ),
-                                            );
-                                        }}
-                                        placeholder='Paste vimeo.com/123 or player.vimeo.com/video/123'
-                                    />
-                                    <p className='text-xs text-muted-foreground'>
-                                        Paste any Vimeo URL. We’ll store it as
-                                        an embeddable link automatically.
-                                    </p>
-                                </div>
+                        <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+                            <Button
+                                variant='outline'
+                                onClick={() => router.push("/courses")}>
+                                Preview courses
+                            </Button>
+                            <Button
+                                className='h-12'
+                                onClick={save}
+                                disabled={busy || !moduleId}>
+                                {busy ? "Saving…" : "Save lessons"}
+                            </Button>
+                        </div>
 
-                                <div className='flex items-center justify-between rounded-xl bg-muted p-3'>
-                                    <p className='text-sm font-medium'>
-                                        Published
-                                    </p>
-                                    <Switch
-                                        checked={l.is_published}
-                                        onCheckedChange={checked => {
-                                            setItems(prev =>
-                                                prev.map((x, i) =>
-                                                    i === idx
-                                                        ? {
-                                                              ...x,
-                                                              is_published:
-                                                                  checked,
-                                                          }
-                                                        : x,
-                                                ),
-                                            );
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
-                        <Button
-                            variant='outline'
-                            onClick={() => router.push("/courses")}>
-                            Preview courses
-                        </Button>
-                        <Button
-                            className='h-12'
-                            onClick={save}
-                            disabled={busy || !moduleId}>
-                            {busy ? "Saving…" : "Save lessons"}
-                        </Button>
-                    </div>
-
-                    <p className='text-xs text-muted-foreground'>
-                        After saving, purchase the course (or use your test
-                        entitlement) and verify the player loads.
-                    </p>
-                </CardContent>
-            </Card>
+                        <p className='text-xs text-muted-foreground'>
+                            After saving, purchase the course (or use your test
+                            entitlement) and verify the player loads.
+                        </p>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 }

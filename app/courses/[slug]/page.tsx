@@ -12,6 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Overlay } from "@/components/site/Overlay";
+import { SiteBreadcrumbs } from "@/components/site/breadcrumbs";
+import { Navbar } from "@/components/site/navbar";
 
 type Course = {
     id: string;
@@ -156,185 +159,193 @@ export default function CourseDetailPage() {
     }
 
     return (
-        <div className='mx-auto max-w-6xl px-6 py-14'>
-            <div className='flex flex-col gap-10 md:flex-row md:items-start md:justify-between'>
-                {/* Left: Content */}
-                <div className='max-w-2xl'>
-                    <div className='flex items-center gap-3'>
-                        <Badge variant='secondary'>Course</Badge>
-                        <Badge variant='outline'>MVP</Badge>
-                    </div>
+        <div className='relative min-h-[100dvh] text-foreground'>
+            {/* Fixed background and overlay layer */}
+            <Overlay />
 
-                    <h1 className='mt-4 text-3xl font-semibold tracking-tight sm:text-4xl'>
-                        {course.title}
-                    </h1>
+            {/* Main content */}
+            <Navbar />
 
-                    {course.subtitle ? (
-                        <p className='mt-3 text-lg text-muted-foreground'>
-                            {course.subtitle}
-                        </p>
-                    ) : null}
+            {/* Breadcrumbs */}
+            <SiteBreadcrumbs />
+            <div className='mx-auto max-w-6xl px-6 pt-8'>
+                <div className='flex flex-col gap-10 md:flex-row md:items-start md:justify-between'>
+                    {/* Left: Content */}
+                    <div className='max-w-2xl'>
+                        <div className='flex items-center gap-3'>
+                            <Badge variant='secondary'>Course</Badge>
+                        </div>
 
-                    {course.description ? (
-                        <p className='mt-6 text-base leading-7 text-muted-foreground'>
-                            {course.description}
-                        </p>
-                    ) : (
-                        <p className='mt-6 text-base leading-7 text-muted-foreground'>
-                            A short, structured mini-course designed to help you
-                            stop guessing and build a routine that makes sense.
-                        </p>
-                    )}
+                        <h1 className='mt-4 text-3xl font-semibold tracking-tight sm:text-4xl'>
+                            {course.title}
+                        </h1>
 
-                    <div className='mt-8 flex flex-col gap-3 sm:flex-row sm:items-center'>
-                        <Button
-                            className='h-12 px-6'
-                            onClick={onGetAccess}
-                            disabled={buying || !course.stripe_price_id}>
-                            {buying ? "Redirecting…" : "Get access"}
-                        </Button>
+                        {course.subtitle ? (
+                            <p className='mt-3 text-lg'>
+                                {course.subtitle}
+                            </p>
+                        ) : null}
 
-                        <Button
-                            asChild
-                            variant='outline'
-                            className='h-12 px-6'>
-                            <Link href='/library'>Go to library</Link>
-                        </Button>
-                    </div>
-                    {buyError ? (
-                        <p className='mt-3 text-sm text-destructive'>
-                            {buyError}
-                        </p>
-                    ) : null}
-
-                    {!authLoading && !signedIn ? (
-                        <p className='mt-4 text-sm text-muted-foreground'>
-                            Already purchased?{" "}
-                            <Link
-                                href='/signin'
-                                className='font-medium text-foreground underline underline-offset-4'>
-                                Sign in
-                            </Link>
-                            .
-                        </p>
-                    ) : null}
-
-                    <Separator className='my-10' />
-
-                    <div className='grid gap-4 sm:grid-cols-2'>
-                        <Card className='rounded-3xl'>
-                            <CardHeader>
-                                <CardTitle className='text-base'>
-                                    What you get
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className='text-sm text-muted-foreground'>
-                                <ul className='space-y-2'>
-                                    <li>4 short video lessons</li>
-                                    <li>Clear routine guidance</li>
-                                    <li>Access inside your library</li>
-                                </ul>
-                            </CardContent>
-                        </Card>
-
-                        <Card className='rounded-3xl'>
-                            <CardHeader>
-                                <CardTitle className='text-base'>
-                                    Who it’s for
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className='text-sm text-muted-foreground'>
-                                <ul className='space-y-2'>
-                                    <li>People tired of guessing</li>
-                                    <li>Anyone wanting healthier length</li>
-                                    <li>Busy routines that need simplicity</li>
-                                </ul>
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    <div className='mt-10'>
-                        <Button
-                            asChild
-                            variant='ghost'>
-                            <Link href='/courses'>← Back to courses</Link>
-                        </Button>
-                    </div>
-                </div>
-
-                {/* Right: Cover */}
-                <div className='w-full max-w-md'>
-                    <Card className='overflow-hidden rounded-3xl'>
-                        {course.cover_image_url ? (
-                            <div className='relative aspect-[16/10] w-full'>
-                                <Image
-                                    src={course.cover_image_url}
-                                    alt={`${course.title} cover`}
-                                    fill
-                                    className='object-cover'
-                                    priority
-                                />
-                            </div>
+                        {course.description ? (
+                            <p className='mt-6 text-base leading-7'>
+                                {course.description}
+                            </p>
                         ) : (
-                            <div className='flex aspect-[16/10] items-center justify-center bg-muted'>
-                                <p className='text-sm text-muted-foreground'>
-                                    Cover image
-                                </p>
-                            </div>
+                            <p className='mt-6 text-base leading-7'>
+                                A short, structured mini-course designed to help
+                                you stop guessing and build a routine that makes
+                                sense.
+                            </p>
                         )}
 
-                        <CardContent className='space-y-4 p-6'>
-                            <p className='text-sm font-medium'>
-                                Mini-course format
-                            </p>
-                            <p className='text-sm text-muted-foreground'>
-                                One course, four lessons. Clean structure. Easy
-                                to finish.
-                            </p>
-
-                            <Separator />
-
-                            <div className='space-y-2 text-sm text-muted-foreground'>
-                                <div className='flex items-center justify-between'>
-                                    <span>Lessons</span>
-                                    <span className='text-foreground'>4</span>
-                                </div>
-                                <div className='flex items-center justify-between'>
-                                    <span>Access</span>
-                                    <span className='text-foreground'>
-                                        Library
-                                    </span>
-                                </div>
-                            </div>
-
+                        <div className='mt-8 flex flex-col gap-3 sm:flex-row sm:items-center'>
                             <Button
                                 className='h-12 px-6'
                                 onClick={onGetAccess}
                                 disabled={buying || !course.stripe_price_id}>
-                                {buying ? "Redirecting…" : "Get access"}
+                                {buying ? "Redirecting…" : "BUY NOW"}
                             </Button>
-                            {buyError ? (
-                                <p className='mt-3 text-sm text-destructive'>
-                                    {buyError}
-                                </p>
-                            ) : null}
 
-                            {course.stripe_price_id ? (
-                                <div className='flex items-center justify-between text-sm'>
-                                    <span className='text-muted-foreground'>
-                                        Price
-                                    </span>
-                                    <span className='text-foreground'>
-                                        {priceText ?? "—"}
-                                    </span>
+                            <Button
+                                asChild
+                                variant='outline'
+                                className='h-12 px-6'>
+                                <Link href='/library'>Go to library</Link>
+                            </Button>
+                        </div>
+                        {buyError ? (
+                            <p className='mt-3 text-sm text-destructive'>
+                                {buyError}
+                            </p>
+                        ) : null}
+
+                        {!authLoading && !signedIn ? (
+                            <p className='mt-4 text-sm'>
+                                Already purchased?{" "}
+                                <Link
+                                    href='/signin'
+                                    className='font-medium text-foreground underline underline-offset-4'>
+                                    Sign in
+                                </Link>
+                                .
+                            </p>
+                        ) : null}
+
+                        <Separator className='my-10' />
+
+                        <div className='grid gap-4 sm:grid-cols-2'>
+                            <Card className='rounded-3xl'>
+                                <CardHeader>
+                                    <CardTitle className='text-base'>
+                                        What you get
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className='text-sm text-muted-foreground'>
+                                    <ul className='space-y-2'>
+                                        <li>4 short video lessons</li>
+                                        <li>Clear routine guidance</li>
+                                        <li>Access inside your library</li>
+                                    </ul>
+                                </CardContent>
+                            </Card>
+
+                            <Card className='rounded-3xl'>
+                                <CardHeader>
+                                    <CardTitle className='text-base'>
+                                        Who it’s for
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className='text-sm text-muted-foreground'>
+                                    <ul className='space-y-2'>
+                                        <li>People tired of guessing</li>
+                                        <li>Anyone wanting healthier length</li>
+                                        <li>
+                                            Busy routines that need simplicity
+                                        </li>
+                                    </ul>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
+
+                    {/* Right: Cover */}
+                    <div className='w-full max-w-md'>
+                        <Card className='overflow-hidden rounded-3xl mb-10 py-0'>
+                            {course.cover_image_url ? (
+                                <div className='relative aspect-[16/10] w-full'>
+                                    <Image
+                                        src={course.cover_image_url}
+                                        alt={`${course.title} cover`}
+                                        fill
+                                        className='object-cover'
+                                        priority
+                                    />
                                 </div>
                             ) : (
-                                <p className='text-xs text-muted-foreground'>
-                                    Price not set yet.
-                                </p>
+                                <div className='flex aspect-[16/10] items-center justify-center bg-muted'>
+                                    <p className='text-sm'>
+                                        Cover image
+                                    </p>
+                                </div>
                             )}
-                        </CardContent>
-                    </Card>
+
+                            <CardContent className='space-y-4 p-6'>
+                                <p className='text-sm font-medium'>
+                                    Mini-course format
+                                </p>
+                                <p className='text-sm text-muted-foreground'>
+                                    One course, four lessons. Clean structure.
+                                    Easy to finish.
+                                </p>
+
+                                <Separator />
+
+                                <div className='space-y-2 text-sm text-muted-foreground'>
+                                    <div className='flex items-center justify-between'>
+                                        <span>Lessons</span>
+                                        <span className='text-foreground'>
+                                            4
+                                        </span>
+                                    </div>
+                                    <div className='flex items-center justify-between'>
+                                        <span>Access</span>
+                                        <span className='text-foreground'>
+                                            Library
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <Button
+                                    className='h-12 px-6'
+                                    onClick={onGetAccess}
+                                    disabled={
+                                        buying || !course.stripe_price_id
+                                    }>
+                                    {buying ? "Redirecting…" : "BUY NOW"}
+                                </Button>
+                                {buyError ? (
+                                    <p className='mt-3 text-sm text-destructive'>
+                                        {buyError}
+                                    </p>
+                                ) : null}
+
+                                {course.stripe_price_id ? (
+                                    <div className='flex items-center justify-between text-sm pb-2'>
+                                        <span>
+                                            Price
+                                        </span>
+                                        <span className='text-foreground'>
+                                            {priceText ?? "—"}
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <p className='text-xs'>
+                                        Price not set yet.
+                                    </p>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
             </div>
         </div>

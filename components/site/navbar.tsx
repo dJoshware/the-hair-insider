@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -42,7 +41,7 @@ export function Navbar() {
     const hashHref = (hash: string) => (onHome ? `/#${hash}` : `/#${hash}`);
 
     return (
-        <header className='sticky top-0 z-50 border-b bg-background/80 backdrop-blur font-bodoni'>
+        <header className='sticky top-0 z-50 border-b bg-background/80 backdrop-blur'>
             <div className='mx-auto flex h-16 max-w-6xl items-center justify-between px-6'>
                 <Link
                     href='/'>
@@ -61,6 +60,19 @@ export function Navbar() {
                 {/* Desktop anchors */}
                 <NavigationMenu className='hidden md:flex'>
                     <NavigationMenuList className='gap-6'>
+                        <NavigationMenuItem>
+                            <Link
+                                href={hashHref("hero")}
+                                passHref>
+                                <NavigationMenuLink
+                                    className={cn(
+                                        "text-sm font-medium transition-colors hover:text-foreground",
+                                    )}>
+                                    Start here
+                                </NavigationMenuLink>
+                            </Link>
+                        </NavigationMenuItem>
+
                         <NavigationMenuItem>
                             <Link
                                 href={hashHref("what")}
@@ -164,6 +176,17 @@ export function Navbar() {
                             </SheetHeader>
 
                             <div className='mt-6 flex flex-col gap-2'>
+                                <SheetClose asChild>
+                                    <Button
+                                        variant='ghost'
+                                        asChild
+                                        className='justify-start'>
+                                        <Link href={hashHref("hero")}>
+                                            Start here
+                                        </Link>
+                                    </Button>
+                                </SheetClose>
+
                                 <SheetClose asChild>
                                     <Button
                                         variant='ghost'

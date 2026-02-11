@@ -56,6 +56,10 @@ export function SiteBreadcrumbs({ className = "" }: { className?: string }) {
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem>
                                     {isLast ? (
+                                        <BreadcrumbPage className='capitalize underline'>
+                                            {label}
+                                        </BreadcrumbPage>
+                                    ) : seg === "admin" ? (
                                         <BreadcrumbPage className='capitalize'>
                                             {label}
                                         </BreadcrumbPage>

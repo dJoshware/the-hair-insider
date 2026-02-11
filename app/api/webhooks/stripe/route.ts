@@ -6,7 +6,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 const admin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SECRET_KEY!, // server-only
+    process.env.SUPABASE_SECRET_KEY!,
 );
 
 export async function POST(req: Request) {
@@ -46,8 +46,9 @@ export async function POST(req: Request) {
             );
         }
 
-        console.log("Stripe event:", event.type);
         console.log("Session:", session.id, session.metadata);
+        console.log("Stripe event:", event.type);
+        console.log("Stripe customer_id:", session.customer);
 
         // Upsert entitlement
         const { error } = await admin.from('entitlements').upsert(

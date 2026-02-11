@@ -40,22 +40,22 @@ export async function POST(req: Request) {
         const user = userData.user;
 
         // Check if we already have a stripe customer id
-        const { data: prof, error: profErr } = await admin
+        const { data: _stripe, error: _stripeErr } = await admin
             .from('stripe')
             .select('stripe_customer_id')
-            .eq('user_id', user.id)
+            .eq('id', user.id)
             .maybeSingle();
 
-        if (profErr) {
+        if (_stripeErr) {
             return NextResponse.json(
-                { error: profErr.message },
+                { error: _stripeErr.message },
                 { status: 500 },
             );
         }
 
-        if (prof?.stripe_customer_id) {
+        if (_stripe?.stripe_customer_id) {
             return NextResponse.json({
-                stripe_customer_id: prof.stripe_customer_id,
+                stripe_customer_id: _stripe.stripe_customer_id,
             });
         }
 
@@ -67,7 +67,7 @@ export async function POST(req: Request) {
 
         // Store it
         const { error: upsertErr } = await admin.from('stripe').upsert({
-            user_id: user.id,
+            id: user.id,
             stripe_customer_id: customer.id,
         });
 

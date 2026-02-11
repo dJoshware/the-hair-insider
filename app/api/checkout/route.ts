@@ -8,9 +8,9 @@ function getStripe() {
     return new Stripe(key);
 }
 
-const supabase = createClient(
+const admin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    process.env.SUPABASE_SECRET_KEY!,
 );
 
 export async function POST(req: Request) {
@@ -29,13 +29,14 @@ export async function POST(req: Request) {
         }
 
         const { data: userData, error: userErr } =
-            await supabase.auth.getUser(token);
+            await admin.auth.getUser(token);
         if (userErr || !userData.user) {
             return NextResponse.json(
                 { error: 'Invalid session.' },
                 { status: 401 },
             );
         }
+        console.log('[/checkout] userData:', userData.user.id);
 
         const { courseSlug } = (await req.json()) as { courseSlug?: string };
         if (!courseSlug) {
@@ -45,7 +46,7 @@ export async function POST(req: Request) {
             );
         }
 
-        const { data: course, error: courseErr } = await supabase
+        const { data: course, error: courseErr } = await admin
             .from('courses')
             .select('id, slug, title, stripe_price_id, is_published')
             .eq('slug', courseSlug)
@@ -65,7 +66,7 @@ export async function POST(req: Request) {
             );
         }
 
-        const { data: stripeDB, error: stripeDBErr } = await supabase
+        const { data: stripeDB, error: stripeDBErr } = await admin
             .from('stripe')
             .select('stripe_customer_id')
             .eq('id', userData.user.id)
@@ -79,6 +80,7 @@ export async function POST(req: Request) {
         }
 
         const stripeCustomerId = stripeDB?.stripe_customer_id ?? null;
+        console.log('[/checkout] Stripe Customer ID', stripeDB);
 
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
         const session = await stripe.checkout.sessions.create({
@@ -86,10 +88,7 @@ export async function POST(req: Request) {
             line_items: [{ price: course.stripe_price_id, quantity: 1 }],
             success_url: `${siteUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${siteUrl}/courses/${course.slug}`,
-            // Prefer Stripe customer if exists
-            ...(stripeCustomerId
-                ? { customer: stripeCustomerId }
-                : { customer_email: userData.user.email ?? undefined }),
+            customer: stripeCustomerId,
             metadata: {
                 course_id: course.id,
                 user_id: userData.user.id,

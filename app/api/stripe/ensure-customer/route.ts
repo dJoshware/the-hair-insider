@@ -15,6 +15,16 @@ const admin = createClient(
 
 export async function POST(req: Request) {
     const stripe = getStripe();
+    console.log('[ensure-customer] hit', new Date().toISOString());
+    console.log(
+        '[ensure-customer] has STRIPE_SECRET_KEY?',
+        !!process.env.STRIPE_SECRET_KEY,
+    );
+    console.log(
+        '[ensure-customer] has SUPABASE_SECRET_KEY?',
+        !!process.env.SUPABASE_SECRET_KEY,
+    );
+
     try {
         const authHeader = req.headers.get('authorization') || '';
         const token = authHeader.startsWith('Bearer ')

@@ -9,28 +9,57 @@ export default function AuthCallbackPage() {
     const [status, setStatus] = React.useState("Signing you in...");
 
     React.useEffect(() => {
-        // Supabase will parse tokens from the URL hash automatically.
-        // We just wait for the session to appear, then redirect.
+        let cancelled = false;
+
         const run = async () => {
-            const { data } = await supabase.auth.getSession();
-            if (data.session) {
-                const next = localStorage.getItem("postAuthRedirect");
-                if (next) {
-                    localStorage.removeItem("postAuthRedirect");
-                    router.replace(next);
-                } else {
-                    router.replace("/");
+            // retry a few times in case session isn't available immediately
+            for (let i = 0; i < 10; i++) {
+                const { data } = await supabase.auth.getSession();
+                if (data.session) {
+                    if (cancelled) return;
+
+                    setStatus("Finalizing your account...");
+
+                    const token = data.session.access_token;
+
+                    // Ensure Stripe customer exists (non-blocking)
+                    try {
+                        const res = await fetch("/api/stripe/ensure-customer", {
+                            method: "POST",
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({}),
+                        });
+                        // If it fails, ignore so login still succeeds
+                        // (but ensure-customer route should be idempotent)
+                        void res;
+                    } catch {}
+
+                    const next = localStorage.getItem("postAuthRedirect");
+                    if (next) localStorage.removeItem("postAuthRedirect");
+
+                    router.replace(next || "/");
+                    return;
                 }
-                return;
+
+                // wait 150ms then try again
+                await new Promise(r => setTimeout(r, 150));
             }
 
-            // If no session, user may have clicked an expired link or redirect URL misconfigured.
-            setStatus(
-                "Couldn’t complete sign-in. Please try logging in again.",
-            );
+            if (!cancelled) {
+                setStatus(
+                    "Couldn’t complete sign-in. Please try logging in again.",
+                );
+            }
         };
 
         run();
+
+        return () => {
+            cancelled = true;
+        };
     }, [router]);
 
     return (

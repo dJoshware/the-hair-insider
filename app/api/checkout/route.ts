@@ -65,13 +65,31 @@ export async function POST(req: Request) {
             );
         }
 
+        const { data: stripeDB, error: stripeDBErr } = await supabase
+            .from('stripe')
+            .select('stripe_customer_id')
+            .eq('id', userData.user.id)
+            .maybeSingle();
+
+        if (stripeDBErr) {
+            return NextResponse.json(
+                { error: stripeDBErr.message },
+                { status: 500 },
+            );
+        }
+
+        const stripeCustomerId = stripeDB?.stripe_customer_id ?? null;
+
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
         const session = await stripe.checkout.sessions.create({
             mode: 'payment',
             line_items: [{ price: course.stripe_price_id, quantity: 1 }],
             success_url: `${siteUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${siteUrl}/courses/${course.slug}`,
-            customer_email: userData.user.email ?? undefined,
+            // Prefer Stripe customer if exists
+            ...(stripeCustomerId
+                ? { customer: stripeCustomerId }
+                : { customer_email: userData.user.email ?? undefined }),
             metadata: {
                 course_id: course.id,
                 user_id: userData.user.id,

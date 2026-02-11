@@ -188,7 +188,7 @@ export default function SigninPage() {
                                 )}
 
                                 {status === "success" && (
-                                    <Alert className='bg-green-300'>
+                                    <Alert className='bg-green-400'>
                                         <AlertTitle>Link sent</AlertTitle>
                                         <AlertDescription>
                                             {message} If you don’t see it in a

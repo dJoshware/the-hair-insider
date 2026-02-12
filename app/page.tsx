@@ -80,9 +80,9 @@ export default function Home() {
                                 </div>
 
                                 <div className='flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm'>
-                                    <span>In-Depth Lessons</span>
-                                    <span>Downloadable Guides</span>
-                                    <span>Simple Routines</span>
+                                    <Badge variant="secondary">In-Depth Lessons</Badge>
+                                    <Badge variant="secondary">Downloadable Guides</Badge>
+                                    <Badge variant="secondary">Simple Routines</Badge>
                                 </div>
                             </div>
 

@@ -87,6 +87,7 @@ export async function POST(req: Request) {
             success_url: `${siteUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${siteUrl}/courses/${course.slug}`,
             customer: stripeCustomerId,
+            // customer_email: userData.user.email ?? undefined, // dev bypass
             metadata: {
                 course_id: course.id,
                 user_id: userData.user.id,

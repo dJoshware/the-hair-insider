@@ -51,12 +51,6 @@ export default function Home() {
                         delayMs={100}>
                         <div className='grid gap-10 md:grid-cols-2 md:items-center'>
                             <div className='space-y-6 border-solid border-2 border-foreground rounded-3xl p-6'>
-                                <Badge
-                                    variant='secondary'
-                                    className='w-fit'>
-                                    Education-First Hair Care
-                                </Badge>
-
                                 <h1 className='text-4xl font-semibold tracking-tight sm:text-5xl'>
                                     Healthy Hair, Explained Simply.
                                 </h1>
@@ -152,6 +146,11 @@ export default function Home() {
                             delayMs={200}>
                             <div className='grid gap-10 md:grid-cols-2'>
                                 <div className='space-y-4 border-solid border-2 border-foreground rounded-3xl p-6'>
+                                    <Badge
+                                        variant='secondary'
+                                        className='w-fit'>
+                                        Education-First Hair Care
+                                    </Badge>
                                     <h2 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
                                         What is it
                                     </h2>

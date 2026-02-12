@@ -31,6 +31,7 @@ export default function CourseDetailPage() {
     const params = useParams<{ slug: string }>();
     const slug = React.useMemo(() => String(params?.slug ?? ""), [params]);
 
+    const [owned, setOwned] = React.useState(false);
     const [course, setCourse] = React.useState<Course | null>(null);
     const [priceText, setPriceText] = React.useState<string | null>(null);
     const [buying, setBuying] = React.useState(false);
@@ -41,6 +42,7 @@ export default function CourseDetailPage() {
 
     async function onGetAccess() {
         if (!course) return;
+        if (owned) return;
 
         setBuyError(null);
         setBuying(true);
@@ -131,6 +133,49 @@ export default function CourseDetailPage() {
         run();
     }, [course?.stripe_price_id]);
 
+    React.useEffect(() => {
+        const run = async () => {
+            if (!course?.id) {
+                setOwned(false);
+                return;
+            }
+
+            const { data: sessionData } = await supabase.auth.getSession();
+            const userId = sessionData.session?.user?.id;
+
+            if (!userId) {
+                setOwned(false);
+                return;
+            }
+
+            const { data: ent, error } = await supabase
+                .from("entitlements")
+                .select("id")
+                .eq("user_id", userId)
+                .eq("course_id", course.id)
+                .eq("status", "active")
+                .maybeSingle();
+
+            if (error) {
+                setOwned(false);
+                return;
+            }
+
+            setOwned(!!ent);
+        };
+
+        run();
+    }, [course?.id]);
+
+    React.useEffect(() => {
+        const onFocus = () => {
+            // triggers the effect by re-setting course id (or just call your entitlement fetch fn)
+            setOwned(prev => prev);
+        };
+        window.addEventListener("focus", onFocus);
+        return () => window.removeEventListener("focus", onFocus);
+    }, []);
+
     const { ref: pageRef, inView: pageIn } = useInView({
         triggerOnce: true,
         threshold: 0.2,
@@ -210,22 +255,49 @@ export default function CourseDetailPage() {
                             )}
 
                             <div className='mt-8 flex flex-col gap-3 sm:flex-row sm:items-center'>
-                                <Button
-                                    className='h-12 px-6'
-                                    onClick={onGetAccess}
-                                    disabled={
-                                        buying || !course.stripe_price_id
-                                    }>
-                                    {buying ? "Redirecting…" : "BUY NOW"}
-                                </Button>
+                                {owned ? (
+                                    <>
+                                        <Badge
+                                            variant='default'
+                                            className='h-12 px-6 inline-flex items-center'>
+                                            Owned
+                                        </Badge>
 
-                                <Button
-                                    asChild
-                                    variant='outline'
-                                    className='h-12 px-6'>
-                                    <Link href='/library'>Go to library</Link>
-                                </Button>
+                                        <Button
+                                            asChild
+                                            variant='secondary'
+                                            className='h-12 px-6'>
+                                            <Link href={`/library/${slug}`}>
+                                                Go to course
+                                            </Link>
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Button
+                                            className='h-12 px-6'
+                                            onClick={onGetAccess}
+                                            disabled={
+                                                buying ||
+                                                !course.stripe_price_id
+                                            }>
+                                            {buying
+                                                ? "Redirecting…"
+                                                : "BUY NOW"}
+                                        </Button>
+
+                                        <Button
+                                            asChild
+                                            variant='secondary'
+                                            className='h-12 px-6'>
+                                            <Link href='/library'>
+                                                Go to library
+                                            </Link>
+                                        </Button>
+                                    </>
+                                )}
                             </div>
+
                             {buyError ? (
                                 <p className='mt-3 text-sm text-destructive'>
                                     {buyError}
@@ -329,14 +401,22 @@ export default function CourseDetailPage() {
                                         </div>
                                     </div>
 
-                                    <Button
-                                        className='h-12 px-6'
-                                        onClick={onGetAccess}
-                                        disabled={
-                                            buying || !course.stripe_price_id
-                                        }>
-                                        {buying ? "Redirecting…" : "BUY NOW"}
-                                    </Button>
+                                    {!owned ? (
+                                        <Button
+                                            className='h-12 px-6'
+                                            onClick={onGetAccess}
+                                            disabled={
+                                                buying ||
+                                                !course.stripe_price_id
+                                            }>
+                                            {buying
+                                                ? "Redirecting…"
+                                                : "BUY NOW"}
+                                        </Button>
+                                    ) : (
+                                        ""
+                                    )}
+
                                     {buyError ? (
                                         <p className='mt-3 text-sm text-destructive'>
                                             {buyError}
@@ -344,12 +424,20 @@ export default function CourseDetailPage() {
                                     ) : null}
 
                                     {course.stripe_price_id ? (
-                                        <div className='flex items-center justify-between text-sm pb-2'>
-                                            <span>Price</span>
-                                            <span className='text-foreground'>
-                                                {priceText ?? "—"}
-                                            </span>
-                                        </div>
+                                        owned ? (
+                                            <div className='flex items-center justify-between pb-2'>
+                                                <span className='text-foreground text-md font-semibold'>
+                                                    You already own this course.
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <div className='flex items-center justify-between pb-2'>
+                                                <span>Price</span>
+                                                <span className='text-foreground text-4xl font-semibold'>
+                                                    {priceText ?? "—"}
+                                                </span>
+                                            </div>
+                                        )
                                     ) : (
                                         <p className='text-xs'>
                                             Price not set yet.

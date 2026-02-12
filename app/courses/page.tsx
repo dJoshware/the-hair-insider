@@ -23,20 +23,49 @@ type Course = {
 export default function CoursesPage() {
     const [courses, setCourses] = React.useState<Course[]>([]);
     const [loading, setLoading] = React.useState(true);
+    const [ownedCourseIds, setOwnedCourseIds] = React.useState<Set<string>>(
+        new Set(),
+    );
 
     React.useEffect(() => {
         const run = async () => {
-            const { data, error } = await supabase
-                .from("courses")
-                .select(
-                    "id, slug, title, subtitle, description, cover_image_url",
-                )
-                .eq("is_published", true)
-                .order("created_at", { ascending: false });
+            setLoading(true);
 
-            if (!error && data) setCourses(data);
+            const [{ data: sessionData }, coursesRes] = await Promise.all([
+                supabase.auth.getSession(),
+                supabase
+                    .from("courses")
+                    .select(
+                        "id, slug, title, subtitle, description, cover_image_url",
+                    )
+                    .eq("is_published", true)
+                    .order("created_at", { ascending: false }),
+            ]);
+
+            if (!coursesRes.error && coursesRes.data) {
+                setCourses(coursesRes.data);
+            }
+
+            const userId = sessionData.session?.user?.id;
+
+            // If signed in, fetch entitlements
+            if (userId) {
+                const { data: ents, error: entsErr } = await supabase
+                    .from("entitlements")
+                    .select("course_id")
+                    .eq("user_id", userId)
+                    .eq("status", "active");
+
+                if (!entsErr && ents) {
+                    setOwnedCourseIds(new Set(ents.map(e => e.course_id)));
+                }
+            } else {
+                setOwnedCourseIds(new Set());
+            }
+
             setLoading(false);
         };
+
         run();
     }, []);
 
@@ -98,37 +127,50 @@ export default function CoursesPage() {
                                 </CardContent>
                             </Card>
                         ) : (
-                            courses.map(c => (
-                                <Link
-                                    key={c.id}
-                                    href={`/courses/${c.slug}`}
-                                    className='group'>
-                                    <Card className='h-full rounded-3xl transition-shadow group-hover:shadow-md'>
-                                        <CardHeader>
-                                            <CardTitle className='text-lg'>
-                                                {c.title}
-                                            </CardTitle>
-                                            {c.subtitle ? (
-                                                <p className='text-sm text-muted-foreground'>
-                                                    {c.subtitle}
-                                                </p>
-                                            ) : null}
-                                        </CardHeader>
-                                        <CardContent className='text-sm text-muted-foreground'>
-                                            {c.description ? (
-                                                <p className='line-clamp-3'>
-                                                    {c.description}
-                                                </p>
-                                            ) : (
-                                                <p>
-                                                    View details and access
-                                                    options.
-                                                </p>
-                                            )}
-                                        </CardContent>
-                                    </Card>
-                                </Link>
-                            ))
+                            courses.map(c => {
+                                const owned = ownedCourseIds.has(c.id);
+                                return (
+                                    <Link
+                                        key={c.id}
+                                        href={`/courses/${c.slug}`}
+                                        className='group'>
+                                        <Card className='h-full rounded-3xl transition-shadow group-hover:shadow-md'>
+                                            <CardHeader>
+                                                <div className='flex items-start justify-between gap-3'>
+                                                    <CardTitle className='text-lg leading-snug'>
+                                                        {c.title}
+                                                    </CardTitle>
+
+                                                    {owned ? (
+                                                        <Badge className='shrink-0 bg-neutral-500'>
+                                                            Owned
+                                                        </Badge>
+                                                    ) : null}
+                                                </div>
+
+                                                {c.subtitle ? (
+                                                    <p className='text-sm text-muted-foreground'>
+                                                        {c.subtitle}
+                                                    </p>
+                                                ) : null}
+                                            </CardHeader>
+
+                                            <CardContent className='text-sm text-muted-foreground'>
+                                                {c.description ? (
+                                                    <p className='line-clamp-3'>
+                                                        {c.description}
+                                                    </p>
+                                                ) : (
+                                                    <p>
+                                                        View details and access
+                                                        options.
+                                                    </p>
+                                                )}
+                                            </CardContent>
+                                        </Card>
+                                    </Link>
+                                );
+                            })
                         )}
                     </div>
                 </FadeIn>

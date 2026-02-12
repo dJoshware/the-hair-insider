@@ -58,7 +58,7 @@ export default function SuccessPage() {
                     </Button>
                     <Button
                         asChild
-                        variant='outline'>
+                        variant='secondary'>
                         <Link href='/courses'>Back to courses</Link>
                     </Button>
                 </div>

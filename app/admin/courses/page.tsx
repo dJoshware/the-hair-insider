@@ -127,7 +127,7 @@ export default function AdminCoursesListPage() {
                             </Button>
                             <Button
                                 asChild
-                                variant='outline'>
+                                variant='secondary'>
                                 <Link href='/library'>Library</Link>
                             </Button>
                         </div>

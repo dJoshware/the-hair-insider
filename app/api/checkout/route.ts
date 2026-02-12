@@ -36,7 +36,6 @@ export async function POST(req: Request) {
                 { status: 401 },
             );
         }
-        console.log('[/checkout] userData:', userData.user.id);
 
         const { courseSlug } = (await req.json()) as { courseSlug?: string };
         if (!courseSlug) {
@@ -80,7 +79,6 @@ export async function POST(req: Request) {
         }
 
         const stripeCustomerId = stripeDB?.stripe_customer_id ?? null;
-        console.log('[/checkout] Stripe Customer ID', stripeDB);
 
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
         const session = await stripe.checkout.sessions.create({

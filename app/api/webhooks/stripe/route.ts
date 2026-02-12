@@ -46,10 +46,6 @@ export async function POST(req: Request) {
             );
         }
 
-        console.log("Session:", session.id, session.metadata);
-        console.log("Stripe event:", event.type);
-        console.log("Stripe customer_id:", session.customer);
-
         // Upsert entitlement
         const { error } = await admin.from('entitlements').upsert(
             {

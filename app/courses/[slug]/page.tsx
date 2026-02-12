@@ -230,6 +230,7 @@ export default function CourseDetailPage() {
                         <div className='max-w-2xl'>
                             <div className='flex items-center gap-3'>
                                 <Badge variant='secondary'>Course</Badge>
+                                <Badge variant='default'>Owned</Badge>
                             </div>
 
                             <h1 className='mt-4 text-3xl font-semibold tracking-tight sm:text-4xl'>
@@ -257,12 +258,6 @@ export default function CourseDetailPage() {
                             <div className='mt-8 flex flex-col gap-3 sm:flex-row sm:items-center'>
                                 {owned ? (
                                     <>
-                                        <Badge
-                                            variant='default'
-                                            className='h-12 px-6 inline-flex items-center'>
-                                            Owned
-                                        </Badge>
-
                                         <Button
                                             asChild
                                             variant='secondary'

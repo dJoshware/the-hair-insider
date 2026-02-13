@@ -230,7 +230,9 @@ export default function CourseDetailPage() {
                         <div className='max-w-2xl'>
                             <div className='flex items-center gap-3'>
                                 <Badge variant='secondary'>Course</Badge>
-                                <Badge variant='default'>Owned</Badge>
+                                {owned ? (
+                                    <Badge variant='default'>Owned</Badge>
+                                ) : null}
                             </div>
 
                             <h1 className='mt-4 text-3xl font-semibold tracking-tight sm:text-4xl'>

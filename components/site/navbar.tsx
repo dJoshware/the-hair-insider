@@ -41,13 +41,13 @@ export function Navbar() {
     const hashHref = (hash: string) => (onHome ? `/#${hash}` : `/#${hash}`);
 
     return (
-        <header className='sticky top-0 z-50 border-b bg-background'>
+        <header className='top-0 z-50 border-b bg-background'>
             <div className='mx-auto flex h-16 max-w-6xl items-center justify-between px-6'>
                 <Link
                     href='/'>
                     <Image
                         src="/thi_navbar_logo.svg"
-                        alt="The Hair Insider logo"
+                        alt="The Hair Insider"
                         height={1}
                         width={222}
                         style={{
@@ -220,6 +220,17 @@ export function Navbar() {
                                     </Button>
                                 </SheetClose>
 
+                                <SheetClose asChild>
+                                    <Button
+                                        variant='ghost'
+                                        asChild
+                                        className='justify-start'>
+                                        <Link href='/contact'>
+                                            Contact Us
+                                        </Link>
+                                    </Button>
+                                </SheetClose>
+
                                 <div className='my-2 border-t' />
 
                                 <SheetClose asChild>
@@ -278,6 +289,30 @@ export function Navbar() {
                                         </Button>
                                     </SheetClose>
                                 )}
+
+                                <div className='my-2 border-t' />
+
+                                <SheetClose asChild>
+                                    <Button
+                                        variant='ghost'
+                                        asChild
+                                        className='justify-start'>
+                                        <Link href={hashHref("how")}>
+                                            How it works
+                                        </Link>
+                                    </Button>
+                                </SheetClose>
+
+                                <SheetClose asChild>
+                                    <Button
+                                        variant='ghost'
+                                        asChild
+                                        className='justify-start'>
+                                        <Link href={hashHref("how")}>
+                                            How it works
+                                        </Link>
+                                    </Button>
+                                </SheetClose>
                             </div>
                         </SheetContent>
                     </Sheet>

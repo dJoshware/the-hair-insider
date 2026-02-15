@@ -190,7 +190,7 @@ export default function SigninPage() {
                                 {status === "success" && (
                                     <Alert className='bg-green-400'>
                                         <AlertTitle>Link sent</AlertTitle>
-                                        <AlertDescription>
+                                        <AlertDescription className='text-foreground'>
                                             {message} If you don’t see it in a
                                             minute, check spam/promotions.
                                         </AlertDescription>
@@ -198,11 +198,11 @@ export default function SigninPage() {
                                 )}
 
                                 {status === "error" && (
-                                    <Alert variant='destructive'>
+                                    <Alert className='bg-red-400'>
                                         <AlertTitle>
                                             Couldn’t send link
                                         </AlertTitle>
-                                        <AlertDescription>
+                                        <AlertDescription className='text-foreground'>
                                             {message}
                                         </AlertDescription>
                                     </Alert>

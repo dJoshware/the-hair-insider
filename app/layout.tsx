@@ -33,9 +33,13 @@ export const metadata: Metadata = {
         title: "The Hair Insider",
         description:
             "Education-first hair care. Simple routines, clear guidance, and a calm library experience.",
-        url: "/",
         siteName: "The Hair Insider",
         type: "website",
+    },
+    // optional baseline
+    robots: {
+        index: true,
+        follow: true,
     },
 };
 

@@ -6,7 +6,6 @@ import confetti from "canvas-confetti";
 import { Button } from "@/components/ui/button";
 import { Overlay } from "@/components/site/Overlay";
 
-
 export default function SuccessClient() {
     React.useEffect(() => {
         const key = "thi_confetti_success";
@@ -51,6 +50,15 @@ export default function SuccessClient() {
                 <p className='mt-3'>
                     Your access is being activated. If it takes a moment,
                     refresh your library.
+                </p>
+                <p className='mt-3 text-sm'>
+                    If you experience a problem with your content, please{" "}
+                    <a
+                        href='/contact'
+                        className='underline font-bold'>
+                        contact us
+                    </a>
+                    .
                 </p>
 
                 <div className='mt-8 flex gap-3'>

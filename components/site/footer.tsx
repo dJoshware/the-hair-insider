@@ -21,7 +21,7 @@ const LEGAL_LINKS = [
 // Update these when ready
 const SOCIAL_LINKS = [
     { href: "https://instagram.com/", label: "Instagram" },
-    { href: "https://youtube.com/", label: "YouTube" },
+    // { href: "https://youtube.com/", label: "YouTube" },
     { href: "https://tiktok.com/", label: "TikTok" },
 ];
 

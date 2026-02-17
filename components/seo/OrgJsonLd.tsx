@@ -10,7 +10,7 @@ export function OrgJsonLd() {
         logo: `${siteUrl}/thi_navbar_logo.svg`,
         // Add real socials when ready:
         sameAs: [
-            // "https://www.instagram.com/yourhandle",
+            "https://www.instagram.com/thehairinsider",
             // "https://www.youtube.com/@yourhandle",
             "https://www.tiktok.com/@thehairinsider",
         ],

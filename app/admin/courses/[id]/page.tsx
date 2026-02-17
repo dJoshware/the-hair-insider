@@ -7,6 +7,12 @@ export const metadata: Metadata = {
     robots: { index: false, follow: false },
 };
 
-export default function EditCoursePage({ params }: { params: { id: string } }) {
-    return <EditCourseClient id={params.id}/>;
+export default async function EditCoursePage({
+    params,
+}: {
+    params: Promise<{ id: string }>;
+}) {
+    const { id } = await params;
+
+    return <EditCourseClient id={id} />;
 }

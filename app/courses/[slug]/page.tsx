@@ -5,9 +5,11 @@ import { getPublishedCourseBySlug } from "@/lib/data/courses.server";
 export async function generateMetadata({
     params,
 }: {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-    const course = await getPublishedCourseBySlug(params.slug);
+    const { slug } = await params;
+
+    const course = await getPublishedCourseBySlug(slug);
 
     if (!course) {
         return {
@@ -30,15 +32,17 @@ export async function generateMetadata({
 export default async function CourseDetailPage({
     params,
 }: {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }) {
-    const course = await getPublishedCourseBySlug(params.slug);
+    const { slug } = await params;
+
+    const course = await getPublishedCourseBySlug(slug);
 
     // If you prefer, you can render a not-found UI server-side here too,
     // but keeping it in the client is fine for MVP.
     return (
         <CourseDetailClient
-            slug={params.slug}
+            slug={slug}
             initialCourse={course}
         />
     );

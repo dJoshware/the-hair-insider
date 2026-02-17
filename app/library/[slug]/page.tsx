@@ -7,10 +7,12 @@ export const metadata: Metadata = {
     robots: { index: false, follow: false },
 };
 
-export default function CoursePlayerPage({
+export default async function CoursePlayerPage({
     params,
 }: {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }) {
-    return <CoursePlayerClient slug={params.slug} />;
+    const { slug } = await params;
+
+    return <CoursePlayerClient slug={slug} />;
 }

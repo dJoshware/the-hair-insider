@@ -8,8 +8,7 @@ const SITE_LINKS = [
     { href: "/#how", label: "How it works" },
     { href: "/#stylist", label: "Meet your stylist" },
     { href: "/courses", label: "Courses" },
-    { href: "/library", label: "Library" },
-    { href: "/signin", label: "Sign in" },
+    { href: "/about", label: "About" },
     { href: "/contact", label: "Contact Us" },
 ];
 

@@ -123,7 +123,7 @@ export default function CoursesClient() {
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className='text-sm text-muted-foreground'>
-                                    Publish a course to see it here.
+                                    Our content is processing...
                                 </CardContent>
                             </Card>
                         ) : (

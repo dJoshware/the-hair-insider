@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useInView } from "react-intersection-observer";
+import { useRouter } from "next/navigation";
 import { FadeIn } from "@/components/site/FadeIn";
 import { supabase } from "@/lib/supabase/client";
 import { useAdminGuard } from "@/lib/admin/useAdminGuard";
@@ -30,6 +31,7 @@ type Course = {
 };
 
 export default function EditCourseClient({ id }: { id: string }) {
+    const router = useRouter();
     const { ready } = useAdminGuard();
 
     const [loading, setLoading] = React.useState(true);

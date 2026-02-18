@@ -7,6 +7,11 @@ export const metadata: Metadata = {
     robots: { index: false, follow: false },
 };
 
-export default function LessonsPage({ params }: { params: { id: string } }) {
-    return <LessonsClient id={params.id}/>;
+export default async function LessonsPage({
+    params,
+}: {
+    params: Promise<{ id: string }>;
+}) {
+    const { id } = await params;
+    return <LessonsClient id={id} />;
 }

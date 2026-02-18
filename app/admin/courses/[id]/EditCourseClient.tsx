@@ -91,19 +91,16 @@ export default function EditCourseClient({ id }: { id: string }) {
     }, [ready, id]);
 
     async function onSave() {
+        if (!ready) return;
         if (!id) return;
+
         setErr(null);
         setOk(null);
         setSaving(true);
 
         const { data: sessionData } = await supabase.auth.getSession();
         const token = sessionData.session?.access_token;
-        if (!token) {
-            router.replace(
-                `/signin?next=${encodeURIComponent(`/admin/courses/${id}`)}`,
-            );
-            return;
-        }
+        if (!token) return;
 
         const res = await fetch(`/api/admin/courses/${id}`, {
             method: "PATCH",
@@ -122,7 +119,10 @@ export default function EditCourseClient({ id }: { id: string }) {
             }),
         });
 
-        const json = (await res.json()) as { course?: Course; error?: string };
+        const json = (await res.json()) as {
+            course?: Course;
+            error?: string;
+        };
 
         if (!res.ok) {
             setErr(json.error || "Failed to save.");

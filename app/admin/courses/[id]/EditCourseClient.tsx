@@ -4,8 +4,8 @@ import * as React from "react";
 import Link from "next/link";
 import { useInView } from "react-intersection-observer";
 import { FadeIn } from "@/components/site/FadeIn";
-import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
+import { useAdminGuard } from "@/lib/admin/useAdminGuard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,7 +30,7 @@ type Course = {
 };
 
 export default function EditCourseClient({ id }: { id: string }) {
-    const router = useRouter();
+    const { ready } = useAdminGuard();
 
     const [loading, setLoading] = React.useState(true);
     const [saving, setSaving] = React.useState(false);
@@ -48,38 +48,22 @@ export default function EditCourseClient({ id }: { id: string }) {
     const [isPublished, setIsPublished] = React.useState(false);
 
     React.useEffect(() => {
-        const run = async () => {
+        if (!ready) return;
+        if (!id) return;
+
+        (async () => {
             setErr(null);
             setOk(null);
             setLoading(true);
 
             const { data: sessionData } = await supabase.auth.getSession();
-            if (!sessionData.session) {
-                router.replace(
-                    `/signin?next=${encodeURIComponent(`/admin/courses/${id}`)}`,
-                );
-                return;
-            }
+            const token = sessionData.session?.access_token;
+            if (!token) return; // guard should've redirected already
 
-            const token = sessionData.session.access_token;
-
-            // confirm admin
-            const meRes = await fetch("/api/admin/me", {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            const meJson = (await meRes.json()) as {
-                isAdmin?: boolean;
-                error?: string;
-            };
-            if (!meRes.ok || !meJson.isAdmin) {
-                router.replace("/library");
-                return;
-            }
-
-            // fetch course
             const res = await fetch(`/api/admin/courses/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+
             const json = (await res.json()) as {
                 course?: Course;
                 error?: string;
@@ -103,10 +87,8 @@ export default function EditCourseClient({ id }: { id: string }) {
             setIsPublished(Boolean(c.is_published));
 
             setLoading(false);
-        };
-
-        if (id) run();
-    }, [router, id]);
+        })();
+    }, [ready, id]);
 
     async function onSave() {
         if (!id) return;
@@ -224,8 +206,7 @@ export default function EditCourseClient({ id }: { id: string }) {
 
                         <div className='flex gap-3'>
                             <Button asChild>
-                                <Link
-                                    href={`/admin/courses/${id}/lessons`}>
+                                <Link href={`/admin/courses/${id}/lessons`}>
                                     Lessons
                                 </Link>
                             </Button>

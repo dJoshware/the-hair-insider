@@ -25,11 +25,11 @@ type CourseRow = {
 };
 
 export default function CoursesClient() {
+    const { ready } = useAdminGuard();
+
     const [loading, setLoading] = React.useState(true);
     const [err, setErr] = React.useState<string | null>(null);
     const [courses, setCourses] = React.useState<CourseRow[]>([]);
-
-    const { ready } = useAdminGuard();
 
     React.useEffect(() => {
         if (!ready) return;

@@ -64,12 +64,7 @@ export default function NewCourseClient() {
         try {
             const { data: sessionData } = await supabase.auth.getSession();
             const token = sessionData.session?.access_token;
-            if (!token) {
-                router.replace(
-                    `/signin?next=${encodeURIComponent("/admin/courses/new")}`,
-                );
-                return;
-            }
+            if (!token) return; // guard should've redirected already
 
             const res = await fetch("/api/admin/courses", {
                 method: "POST",

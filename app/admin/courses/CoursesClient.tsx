@@ -94,15 +94,12 @@ export default function CoursesClient() {
                         </div>
 
                         <div className='flex gap-3'>
-                            <Button asChild>
-                                <Link href='/admin/courses/new'>
-                                    New course
-                                </Link>
-                            </Button>
                             <Button
                                 asChild
                                 variant='secondary'>
-                                <Link href='/library'>Library</Link>
+                                <Link href='/admin/courses/new'>
+                                    New course
+                                </Link>
                             </Button>
                         </div>
                     </div>
@@ -183,13 +180,15 @@ export default function CoursesClient() {
                                                 variant='outline'>
                                                 <Link
                                                     href={`/admin/courses/${c.id}`}>
-                                                    Edit
+                                                    Edit Details
                                                 </Link>
                                             </Button>
-                                            <Button asChild>
+                                            <Button
+                                                asChild
+                                                variant='outline'>
                                                 <Link
                                                     href={`/admin/courses/${c.id}/lessons`}>
-                                                    Lessons
+                                                    Edit Lessons
                                                 </Link>
                                             </Button>
                                         </div>

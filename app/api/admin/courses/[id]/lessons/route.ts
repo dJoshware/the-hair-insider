@@ -129,7 +129,6 @@ export async function POST(
     const body = await req.json();
 
     const module_id = String(body.module_id || '');
-    const lessons = Array.isArray(body.lessons) ? body.lessons : [];
 
     if (!module_id) {
         return NextResponse.json(

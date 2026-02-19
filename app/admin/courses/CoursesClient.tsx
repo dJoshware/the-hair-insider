@@ -175,17 +175,13 @@ export default function CoursesClient() {
                                         </div>
 
                                         <div className='flex flex-col gap-2 sm:flex-row'>
-                                            <Button
-                                                asChild
-                                                variant='outline'>
+                                            <Button asChild>
                                                 <Link
                                                     href={`/admin/courses/${c.id}`}>
                                                     Edit Details
                                                 </Link>
                                             </Button>
-                                            <Button
-                                                asChild
-                                                variant='outline'>
+                                            <Button asChild>
                                                 <Link
                                                     href={`/admin/courses/${c.id}/lessons`}>
                                                     Edit Lessons

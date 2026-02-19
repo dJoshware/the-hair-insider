@@ -345,7 +345,7 @@ export default function CourseDetailClient({
                                         <ul className='space-y-2'>
                                             <li>High-end industry knowledge</li>
                                             <li>Clear routine guidance</li>
-                                            <li>Downloadable PDF for each module</li>
+                                            <li>Downloadable PDFs for each module</li>
                                             <li>Lifetime access</li>
                                         </ul>
                                     </CardContent>

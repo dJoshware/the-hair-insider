@@ -414,16 +414,16 @@ export default function CourseDetailClient({
                                             {/* If modules exist, fetch and render */}
                                             <span>Modules</span>
                                             <span className='text-foreground'>
-                                                {stats ? stats.modulesCount : '—'}
+                                                {stats ? stats.lessonsCount : '—'}
                                             </span>
                                         </div>
-                                        <div className='flex items-center justify-between'>
-                                            {/* Lessons *should* exists, fetch and render */}
+                                        {/* <div className='flex items-center justify-between'>
+                                             Lessons *should* exists, fetch and render 
                                             <span>Lessons</span>
                                             <span className='text-foreground'>
                                                 {stats ? stats.lessonsCount : '—'}
                                             </span>
-                                        </div>
+                                        </div> */}
                                         <div className='flex items-center justify-between'>
                                             {/* Fetch and render total duration */}
                                             <span>Duration</span>

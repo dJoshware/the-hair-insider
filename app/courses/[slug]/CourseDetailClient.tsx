@@ -41,6 +41,11 @@ export default function CourseDetailClient({
     const { signedIn, loading: authLoading } = useAuth();
     const [loading, setLoading] = React.useState(!initialCourse);
     const [notFound, setNotFound] = React.useState(false);
+    const [stats, setStats] = React.useState<{
+        modulesCount: number;
+        lessonsCount: number;
+        durationSeconds: number;
+    } | null>(null);
 
     async function onGetAccess() {
         if (!course) return;
@@ -58,6 +63,27 @@ export default function CourseDetailClient({
             setBuying(false);
         }
     }
+
+    function formatDuration(seconds: number) {
+        const m = Math.round(seconds / 60);
+        if (m < 60) return `${m} min`;
+        const h = Math.floor(m / 60);
+        const rem = m % 60;
+        return rem ? `${h} hr ${rem} min` : `${h} hr`;
+    }
+
+    React.useEffect(() => {
+        if (!slug) return;
+
+        (async () => {
+            const res = await fetch(
+                `/api/courses/${encodeURIComponent(slug)}/stats`,
+            );
+            if (!res.ok) return;
+            const json = await res.json();
+            setStats(json);
+        })();
+    }, [slug]);
 
     React.useEffect(() => {
         if (!slug) return;
@@ -317,9 +343,10 @@ export default function CourseDetailClient({
                                     </CardHeader>
                                     <CardContent className='text-sm text-muted-foreground'>
                                         <ul className='space-y-2'>
-                                            <li>4 short video lessons</li>
+                                            <li>High-end industry knowledge</li>
                                             <li>Clear routine guidance</li>
-                                            <li>Access inside your library</li>
+                                            <li>Downloadable PDF for each module</li>
+                                            <li>Lifetime access</li>
                                         </ul>
                                     </CardContent>
                                 </Card>
@@ -366,7 +393,7 @@ export default function CourseDetailClient({
                                 )}
 
                                 <CardContent className='space-y-4 p-6'>
-                                    <p className='text-sm font-medium'>
+                                    {/* <p className='text-sm font-medium'>
                                         Mini-course format
                                     </p>
                                     <p className='text-sm text-muted-foreground'>
@@ -374,38 +401,37 @@ export default function CourseDetailClient({
                                         structure. Easy to finish.
                                     </p>
 
-                                    <Separator />
+                                    <Separator /> */}
 
                                     <div className='space-y-2 text-sm text-muted-foreground'>
-                                        <div className='flex items-center justify-between'>
-                                            <span>Lessons</span>
-                                            <span className='text-foreground'>
-                                                4
-                                            </span>
-                                        </div>
                                         <div className='flex items-center justify-between'>
                                             <span>Access</span>
                                             <span className='text-foreground'>
                                                 Library
                                             </span>
                                         </div>
+                                        <div className='flex items-center justify-between'>
+                                            {/* If modules exist, fetch and render */}
+                                            <span>Modules</span>
+                                            <span className='text-foreground'>
+                                                {stats ? stats.modulesCount : '—'}
+                                            </span>
+                                        </div>
+                                        <div className='flex items-center justify-between'>
+                                            {/* Lessons *should* exists, fetch and render */}
+                                            <span>Lessons</span>
+                                            <span className='text-foreground'>
+                                                {stats ? stats.lessonsCount : '—'}
+                                            </span>
+                                        </div>
+                                        <div className='flex items-center justify-between'>
+                                            {/* Fetch and render total duration */}
+                                            <span>Duration</span>
+                                            <span className='text-foreground'>
+                                                {stats ? formatDuration(stats.durationSeconds) : '—'}
+                                            </span>
+                                        </div>
                                     </div>
-
-                                    {!owned ? (
-                                        <Button
-                                            className='h-12 px-6'
-                                            onClick={onGetAccess}
-                                            disabled={
-                                                buying ||
-                                                !course.stripe_price_id
-                                            }>
-                                            {buying
-                                                ? "Redirecting…"
-                                                : "BUY NOW"}
-                                        </Button>
-                                    ) : (
-                                        ""
-                                    )}
 
                                     {buyError ? (
                                         <p className='mt-3 text-sm text-destructive'>
@@ -432,6 +458,22 @@ export default function CourseDetailClient({
                                         <p className='text-xs'>
                                             Price not set yet.
                                         </p>
+                                    )}
+
+                                    {!owned ? (
+                                        <Button
+                                            className='h-12 px-6'
+                                            onClick={onGetAccess}
+                                            disabled={
+                                                buying ||
+                                                !course.stripe_price_id
+                                            }>
+                                            {buying
+                                                ? "Redirecting…"
+                                                : "BUY NOW"}
+                                        </Button>
+                                    ) : (
+                                        ""
                                     )}
                                 </CardContent>
                             </Card>

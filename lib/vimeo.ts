@@ -1,38 +1,79 @@
 import 'server-only';
 
 /**
- * Accepts:
+ * Extract numeric Vimeo video ID from:
  * - "123456789"
  * - "https://vimeo.com/123456789"
  * - "https://player.vimeo.com/video/123456789"
  * - "https://vimeo.com/manage/videos/123456789"
- * - URLs with query params like "?h=abc"
+ * - private-link URLs like "https://vimeo.com/123456789/abcdef"
  */
 export function extractVideoId(input: string): string | null {
     const raw = (input || '').trim();
     if (!raw) return null;
 
-    // If they already stored a plain numeric ID
     if (/^\d+$/.test(raw)) return raw;
 
-    // Try URL parse first
     try {
         const url = new URL(raw);
 
-        // Common: player.vimeo.com/video/<id>
+        // player.vimeo.com/video/<id>
         const playerMatch = url.pathname.match(/\/video\/(\d+)/);
         if (playerMatch?.[1]) return playerMatch[1];
 
-        // Common: vimeo.com/<id> or vimeo.com/manage/videos/<id>
+        // vimeo.com/<id> or vimeo.com/manage/videos/<id> or vimeo.com/<id>/<hash>
         const pathMatch = url.pathname.match(/\/(\d+)(?:$|\/)/);
         if (pathMatch?.[1]) return pathMatch[1];
 
         return null;
     } catch {
-        // Not a valid URL, fall back to regex scan
         const anyMatch = raw.match(/(?:vimeo\.com\/(?:video\/)?)(\d+)/);
         return anyMatch?.[1] ?? null;
     }
+}
+
+/**
+ * Extract the "h" privacy hash from:
+ * - https://player.vimeo.com/video/<id>?h=<hash>
+ * - https://vimeo.com/<id>/<hash>
+ */
+export function extractVimeoHash(input: string): string | null {
+    const raw = (input || '').trim();
+    if (!raw) return null;
+
+    try {
+        const url = new URL(raw);
+
+        // If already in player format with ?h=
+        const h = url.searchParams.get('h');
+        if (h) return h;
+
+        // vimeo.com/<id>/<hash>
+        const privateMatch = url.pathname.match(/^\/\d+\/([a-zA-Z0-9]+)\/?$/);
+        if (privateMatch?.[1]) return privateMatch[1];
+
+        return null;
+    } catch {
+        const m = raw.match(/vimeo\.com\/\d+\/([a-zA-Z0-9]+)/);
+        return m?.[1] ?? null;
+    }
+}
+
+/**
+ * Normalize anything the admin pastes into a reliable embeddable URL.
+ * Preserves the privacy hash when present.
+ */
+export function normalizeVimeoEmbedUrl(input: string): string {
+    const raw = (input || '').trim();
+    if (!raw) return raw;
+
+    const id = extractVideoId(raw);
+    if (!id) return raw;
+
+    const hash = extractVimeoHash(raw);
+    return hash
+        ? `https://player.vimeo.com/video/${id}?h=${hash}`
+        : `https://player.vimeo.com/video/${id}`;
 }
 
 export async function getVimeoVideoDurationSeconds(videoId: string) {

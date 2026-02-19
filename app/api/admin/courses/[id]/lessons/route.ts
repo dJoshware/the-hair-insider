@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { requireAdminFromRequest } from '@/lib/admin/requireAdmin';
+import { normalizeVimeoEmbedUrl } from '@/lib/vimeo';
 
 type LessonInput = {
     title?: unknown;
@@ -23,18 +24,6 @@ const adminDb = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SECRET_KEY!,
 );
-
-function normalizeVimeoEmbed(url: string) {
-    const trimmed = (url || '').trim();
-    if (!trimmed) return trimmed;
-
-    if (trimmed.includes('player.vimeo.com')) return trimmed;
-
-    const match = trimmed.match(/vimeo\.com\/(\d+)/);
-    if (match?.[1]) return `https://player.vimeo.com/video/${match[1]}`;
-
-    return trimmed;
-}
 
 async function verifyModuleBelongsToCourse(moduleId: string, courseId: string) {
     const { data: mod, error: modErr } = await adminDb
@@ -157,7 +146,7 @@ export async function POST(
             module_id,
             title: String(l.title ?? '').trim(),
             order: Number(l.order ?? 1),
-            video_url: normalizeVimeoEmbed(String(l.video_url ?? '')),
+            video_url: normalizeVimeoEmbedUrl(String(l.video_url || '')),
             is_published: l.is_published === false ? false : true,
         }))
         .filter(p => p.title && p.video_url)

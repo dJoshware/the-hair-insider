@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import { extractVideoId, getVimeoVideoDurationSeconds } from '@/lib/vimeo';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(
     _req: Request,
     ctx: { params: Promise<{ slug: string }> },
@@ -45,11 +49,12 @@ export async function GET(
     let durationSeconds = 0;
 
     if (moduleIds.length > 0) {
-        const { data: lessons, error: lesErr } = await createSupabaseAdminClient()
-            .from('lessons')
-            .select('video_url')
-            .in('module_id', moduleIds)
-            .eq('is_published', true);
+        const { data: lessons, error: lesErr } =
+            await createSupabaseAdminClient()
+                .from('lessons')
+                .select('video_url')
+                .in('module_id', moduleIds)
+                .eq('is_published', true);
 
         if (lesErr) {
             return NextResponse.json(

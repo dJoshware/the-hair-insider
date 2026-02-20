@@ -4,6 +4,7 @@ import * as React from "react";
 import { useInView } from "react-intersection-observer";
 import { FadeIn } from "@/components/site/FadeIn";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase/client";
 import { useAdminGuard } from "@/lib/admin/useAdminGuard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -261,15 +262,34 @@ export default function LessonsClient({ id }: { id: string }) {
 
             <div
                 ref={pageRef}
-                className='mx-auto max-w-4xl px-6 pt-8 space-y-6'>
+                className='mx-auto max-w-4xl px-6 pt-8'>
                 <FadeIn
                     inView={pageIn}
                     delayMs={100}>
+                    <div className='flex items-end justify-between gap-4'>
+                        <div>
+                            <h1 className='text-3xl font-semibold tracking-tight'>
+                                Lessons
+                            </h1>
+                            <p className='mt-2 text-sm'>
+                                Edit each lesson for a course.
+                            </p>
+                        </div>
+
+                        <Button
+                            asChild
+                            variant='secondary'>
+                            <Link href='/admin/courses'>
+                                Back to courses
+                            </Link>
+                        </Button>
+                    </div>
+
+                    <Separator className='my-8' />
+
                     <Card className='rounded-3xl mb-6'>
                         <CardHeader className='flex flex-row justify-between items-center'>
-                            <CardTitle>
-                                Add lessons (paste Vimeo links)
-                            </CardTitle>
+                            <CardTitle>Edit lessons</CardTitle>
                         </CardHeader>
 
                         <CardContent className='space-y-4'>
@@ -366,6 +386,8 @@ export default function LessonsClient({ id }: { id: string }) {
                                                 Vimeo link will be saved.
                                             </p>
                                         </div>
+
+                                        {/* PRODUCTS & RESOURCE LINKS */}
 
                                         <div className='flex items-center justify-between rounded-xl bg-muted p-3'>
                                             <p className='text-sm font-medium'>

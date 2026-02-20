@@ -187,6 +187,18 @@ export default function CoursesClient() {
                                                     Edit Lessons
                                                 </Link>
                                             </Button>
+                                            <Button asChild>
+                                                <Link
+                                                    href={`/admin/courses/${c.id}/products`}>
+                                                    Edit Products
+                                                </Link>
+                                            </Button>
+                                            <Button asChild>
+                                                <Link
+                                                    href={`/admin/courses/${c.id}/resources`}>
+                                                    Edit Resources
+                                                </Link>
+                                            </Button>
                                         </div>
                                     </CardHeader>
 

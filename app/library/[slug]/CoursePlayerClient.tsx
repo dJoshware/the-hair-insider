@@ -16,9 +16,11 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Overlay } from "@/components/site/Overlay";
 import { Navbar } from "@/components/site/navbar";
 import { SiteBreadcrumbs } from "@/components/site/breadcrumbs";
+import { ExternalLink, Download } from "lucide-react";
 
 type Course = {
     id: string;
@@ -41,6 +43,23 @@ type Lesson = {
     video_url: string;
 };
 
+type ProductLink = {
+    id: string;
+    title: string;
+    url: string;
+    lesson_id: string | null;
+    sort_order: number | null;
+};
+
+type ResourceLink = {
+    id: string;
+    title: string;
+    url: string | null; // cited link
+    storage_path: string | null; // pdf in bucket
+    lesson_id: string | null;
+    sort_order: number | null;
+};
+
 export default function CoursePlayerClient({ slug }: { slug: string }) {
     const router = useRouter();
 
@@ -53,12 +72,29 @@ export default function CoursePlayerClient({ slug }: { slug: string }) {
     const [activeLessonId, setActiveLessonId] = React.useState<string | null>(
         null,
     );
+    const [products, setProducts] = React.useState<ProductLink[]>([]);
+    const [resources, setResources] = React.useState<ResourceLink[]>([]);
+    const [linksLoading, setLinksLoading] = React.useState(false);
 
     // Derived: active lesson object
     const activeLesson = React.useMemo(() => {
         if (!activeLessonId) return null;
         return lessons.find(l => l.id === activeLessonId) ?? null;
     }, [activeLessonId, lessons]);
+
+    const visibleProducts = React.useMemo(() => {
+        if (!activeLessonId) return products.filter(p => !p.lesson_id);
+        return products.filter(
+            p => !p.lesson_id || p.lesson_id === activeLessonId,
+        );
+    }, [products, activeLessonId]);
+
+    const visibleResources = React.useMemo(() => {
+        if (!activeLessonId) return resources.filter(r => !r.lesson_id);
+        return resources.filter(
+            r => !r.lesson_id || r.lesson_id === activeLessonId,
+        );
+    }, [resources, activeLessonId]);
 
     React.useEffect(() => {
         const run = async () => {
@@ -161,6 +197,44 @@ export default function CoursePlayerClient({ slug }: { slug: string }) {
         if (slug) run();
     }, [router, slug]);
 
+    React.useEffect(() => {
+        if (!course?.id) return;
+
+        let cancelled = false;
+
+        (async () => {
+            setLinksLoading(true);
+
+            const [prodRes, resRes] = await Promise.all([
+                supabase
+                    .from("course_products")
+                    .select("id, title, url, lesson_id, sort_order")
+                    .eq("course_id", course.id)
+                    .order("sort_order", { ascending: true }),
+                supabase
+                    .from("course_resources")
+                    .select(
+                        "id, title, url, storage_path, lesson_id, sort_order",
+                    )
+                    .eq("course_id", course.id)
+                    .order("sort_order", { ascending: true }),
+            ]);
+
+            if (cancelled) return;
+
+            if (!prodRes.error)
+                setProducts((prodRes.data ?? []) as ProductLink[]);
+            if (!resRes.error)
+                setResources((resRes.data ?? []) as ResourceLink[]);
+
+            setLinksLoading(false);
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [course?.id]);
+
     function lessonsForModule(moduleId: string) {
         return lessons
             .filter(l => l.module_id === moduleId)
@@ -178,6 +252,17 @@ export default function CoursePlayerClient({ slug }: { slug: string }) {
             return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
 
         return url;
+    }
+
+    async function resolveStorageUrl(
+        storagePath: string,
+    ): Promise<string | null> {
+        const BUCKET = "hair-insider-bucket";
+
+        const { data } = supabase.storage
+            .from(BUCKET)
+            .getPublicUrl(storagePath);
+        return data?.publicUrl ?? null;
     }
 
     const { ref: pageRef, inView: pageIn } = useInView({
@@ -408,9 +493,173 @@ export default function CoursePlayerClient({ slug }: { slug: string }) {
                                     )}
                                 </CardContent>
                             </Card>
+
+                            <Card className='rounded-3xl'>
+                                <CardContent>
+                                    <Tabs
+                                        defaultValue='products'
+                                        className='w-full'>
+                                        <TabsList className='grid w-full grid-cols-2'>
+                                            <TabsTrigger value='products'>
+                                                Products
+                                            </TabsTrigger>
+                                            <TabsTrigger value='resources'>
+                                                Resources
+                                            </TabsTrigger>
+                                        </TabsList>
+
+                                        <TabsContent
+                                            value='products'
+                                            className='mt-4'>
+                                            {linksLoading ? (
+                                                <p className='text-sm text-muted-foreground'>
+                                                    Loading…
+                                                </p>
+                                            ) : (activeLessonId
+                                                  ? visibleProducts
+                                                  : products
+                                              ).length === 0 ? (
+                                                <p className='text-sm text-muted-foreground'>
+                                                    No product links yet for
+                                                    this course.
+                                                </p>
+                                            ) : (
+                                                <div className='space-y-2'>
+                                                    {(activeLessonId
+                                                        ? visibleProducts
+                                                        : products
+                                                    ).map(p => (
+                                                        <a
+                                                            key={p.id}
+                                                            href={p.url}
+                                                            target='_blank'
+                                                            rel='noreferrer'
+                                                            className='flex items-center justify-between rounded-2xl border px-4 py-3 text-sm hover:bg-muted/40'>
+                                                            <span className='font-medium text-foreground'>
+                                                                {p.title}
+                                                            </span>
+                                                            <span className='text-muted-foreground'>
+                                                                Open →
+                                                            </span>
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            <p className='mt-3 text-xs text-muted-foreground'>
+                                                Product links open in a new tab.
+                                            </p>
+                                        </TabsContent>
+
+                                        <TabsContent
+                                            value='resources'
+                                            className='mt-4'>
+                                            {linksLoading ? (
+                                                <p className='text-sm text-muted-foreground'>
+                                                    Loading…
+                                                </p>
+                                            ) : (activeLessonId
+                                                  ? visibleResources
+                                                  : resources
+                                              ).length === 0 ? (
+                                                <p className='text-sm text-muted-foreground'>
+                                                    No resources yet for this
+                                                    course.
+                                                </p>
+                                            ) : (
+                                                <div className='space-y-2'>
+                                                    {(activeLessonId
+                                                        ? visibleResources
+                                                        : resources
+                                                    ).map(r => (
+                                                        <ResourceRow
+                                                            key={r.id}
+                                                            title={r.title}
+                                                            url={r.url}
+                                                            storagePath={
+                                                                r.storage_path
+                                                            }
+                                                            onResolveStorageUrl={
+                                                                resolveStorageUrl
+                                                            }
+                                                        />
+                                                    ))}
+                                                </div>
+                                            )}
+                                            <p className='mt-3 text-xs text-muted-foreground'>
+                                                Resources include cited sources
+                                                and downloadable PDFs.
+                                            </p>
+                                        </TabsContent>
+                                    </Tabs>
+                                </CardContent>
+                            </Card>
                         </div>
                     </div>
                 </FadeIn>
+            </div>
+        </div>
+    );
+}
+
+function ResourceRow({
+    title,
+    url,
+    storagePath,
+    onResolveStorageUrl,
+}: {
+    title: string;
+    url: string | null;
+    storagePath: string | null;
+    onResolveStorageUrl: (path: string) => Promise<string | null>;
+}) {
+    const [downloading, setDownloading] = React.useState(false);
+
+    async function onDownload() {
+        if (!storagePath) return;
+        setDownloading(true);
+        try {
+            const resolved = await onResolveStorageUrl(storagePath);
+            if (resolved) window.open(resolved, "_blank", "noreferrer");
+        } finally {
+            setDownloading(false);
+        }
+    }
+
+    return (
+        <div className='flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-sm'>
+            <div className='min-w-0'>
+                <p className='truncate font-medium text-foreground'>{title}</p>
+                {url ? (
+                    <p className='text-xs text-muted-foreground'>
+                        External Link
+                    </p>
+                ) : null}
+            </div>
+
+            <div className='shrink-0 flex gap-2'>
+                {url ? (
+                    <Button
+                        asChild
+                        variant='outline'
+                        size='sm'>
+                        <a
+                            href={url}
+                            target='_blank'
+                            rel='noreferrer'>
+                            Open
+                        </a>
+                    </Button>
+                ) : null}
+
+                {storagePath ? (
+                    <Button
+                        variant='secondary'
+                        size='sm'
+                        onClick={onDownload}
+                        disabled={downloading}>
+                        {downloading ? "Loading…" : "Download"}
+                    </Button>
+                ) : null}
             </div>
         </div>
     );

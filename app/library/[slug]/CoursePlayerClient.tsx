@@ -20,7 +20,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Overlay } from "@/components/site/Overlay";
 import { Navbar } from "@/components/site/navbar";
 import { SiteBreadcrumbs } from "@/components/site/breadcrumbs";
-import { ExternalLink, Download } from "lucide-react";
 
 type Course = {
     id: string;
@@ -501,10 +500,10 @@ export default function CoursePlayerClient({ slug }: { slug: string }) {
                                         className='w-full'>
                                         <TabsList className='grid w-full grid-cols-2'>
                                             <TabsTrigger value='products'>
-                                                Products
+                                                Products ({visibleProducts.length})
                                             </TabsTrigger>
                                             <TabsTrigger value='resources'>
-                                                Resources
+                                                Resources ({visibleResources.length})
                                             </TabsTrigger>
                                         </TabsList>
 

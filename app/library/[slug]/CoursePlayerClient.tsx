@@ -351,14 +351,14 @@ export default function CoursePlayerClient({ slug }: { slug: string }) {
                     <div className='grid gap-6 lg:grid-cols-[320px_1fr] mb-6'>
                         {/* Left: modules + lessons */}
                         <Card className='rounded-3xl'>
-                            <CardHeader className='flex-row items-center justify-between space-y-0'>
+                            {/* <CardHeader className='flex-row items-center justify-between space-y-0'>
                                 <CardTitle className='text-base'>
                                     Lessons
                                 </CardTitle>
                                 <Badge variant='secondary'>
                                     {lessons.length}
                                 </Badge>
-                            </CardHeader>
+                            </CardHeader> */}
                             <CardContent>
                                 <Accordion
                                     type='multiple'

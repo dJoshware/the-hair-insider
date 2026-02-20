@@ -626,7 +626,7 @@ function ResourceRow({
 
     return (
         <div className='flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-sm'>
-            <div className='min-w-0'>
+            <div className='w-56 sm:w-full'>
                 <p className='truncate font-medium text-foreground'>{title}</p>
                 {url ? (
                     <p className='text-xs text-muted-foreground'>

@@ -264,7 +264,7 @@ export default function ProductsClient({ id }: { id: string }) {
                             asChild
                             variant='secondary'>
                             <Link href='/admin/courses'>
-                                Back to course
+                                Back to courses
                             </Link>
                         </Button>
                     </div>

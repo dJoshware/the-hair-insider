@@ -297,8 +297,8 @@ export function Navbar() {
                                         variant='ghost'
                                         asChild
                                         className='justify-start'>
-                                        <Link href={hashHref("how")}>
-                                            How it works
+                                        <Link href='/privacy'>
+                                            Privacy
                                         </Link>
                                     </Button>
                                 </SheetClose>
@@ -308,8 +308,8 @@ export function Navbar() {
                                         variant='ghost'
                                         asChild
                                         className='justify-start'>
-                                        <Link href={hashHref("how")}>
-                                            How it works
+                                        <Link href='/terms'>
+                                            Terms
                                         </Link>
                                     </Button>
                                 </SheetClose>

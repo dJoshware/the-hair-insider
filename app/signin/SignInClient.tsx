@@ -20,21 +20,68 @@ import { Overlay } from "@/components/site/Overlay";
 import { Navbar } from "@/components/site/navbar";
 
 type Status = "idle" | "sending" | "success" | "error";
+type Mode = "signin" | "signup";
 
 function isValidEmail(email: string) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 }
 
 export default function SignInClient() {
+    const [mode, setMode] = React.useState<Mode>("signin");
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
+    const [confirmPassword, setConfirmPassword] = React.useState("");
     const [status, setStatus] = React.useState<Status>("idle");
     const [message, setMessage] = React.useState("");
 
-    const canSubmit = React.useMemo(
-        () => status !== "sending" && isValidEmail(email),
-        [email, status],
-    );
+    const params =
+        typeof window !== "undefined"
+            ? new URLSearchParams(window.location.search)
+            : null;
+
+    const next =
+        params?.get("next") ||
+        (typeof window !== "undefined"
+            ? localStorage.getItem("postAuthRedirect") || "/library"
+            : "/library");
+
+    const canSubmit = React.useMemo(() => {
+        if (status === "sending") return false;
+        if (!isValidEmail(email)) return false;
+        if (!password || password.length < 8) return false;
+        if (mode === "signup" && password !== confirmPassword) return false;
+        return true;
+    }, [status, email, password, confirmPassword, mode]);
+
+    async function signInWithPassword() {
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+        if (error) throw error;
+    }
+
+    async function signUpWithPassword() {
+        const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            // optional: you can add user metadata here later
+            // options: { data: { full_name: "" } }
+        });
+        if (error) throw error;
+
+        // If email confirmations are enabled, session will be null until confirmed
+        if (!data.session) {
+            setStatus("success");
+            setMessage(
+                "Check your email to confirm your account, then sign in.",
+            );
+            setMode("signin");
+            return "needs-confirm";
+        }
+
+        return "signed-in";
+    }
 
     async function onSubmit(e: React.SubmitEvent) {
         e.preventDefault();
@@ -46,55 +93,91 @@ export default function SignInClient() {
             return;
         }
 
-        setStatus("sending");
-
-        const params = new URLSearchParams(window.location.search);
-        const next = params.get("next");
-        if (next) localStorage.setItem("postAuthRedirect", next);
-
-        const redirectTo =
-            typeof window !== "undefined"
-                ? `${window.location.origin}/auth/callback`
-                : undefined;
-
-        const { error } = await supabase.auth.signInWithOtp({
-            email,
-            options: {
-                emailRedirectTo: redirectTo,
-            },
-        });
-
-        if (error) {
+        if (password.length < 8) {
             setStatus("error");
-            setMessage(error.message);
+            setMessage("Password must be at least 8 characters.");
             return;
         }
 
-        setStatus("success");
-        setMessage("Check your email for a secure sign-in link.");
+        if (mode === "signup" && password !== confirmPassword) {
+            setStatus("error");
+            setMessage("Passwords do not match.");
+            return;
+        }
+
+        setStatus("sending");
+
+        // persist next for safety (you already do this)
+        if (params) {
+            const n = params.get("next");
+            if (n) localStorage.setItem("postAuthRedirect", n);
+        }
+
+        try {
+            if (mode === "signin") {
+                await signInWithPassword();
+
+                const { data } = await supabase.auth.getSession();
+                const token = data.session?.access_token;
+
+                if (token) {
+                    fetch("/api/stripe/ensure-customer", {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({}),
+                    }).catch(() => {});
+                }
+
+                setStatus("success");
+                setMessage("Signed in. Redirecting…");
+                window.location.href = next;
+                return;
+            } else {
+                const result = await signUpWithPassword();
+                if (result === "signed-in") {
+                    setStatus("success");
+                    setMessage("Account created. Redirecting…");
+                    window.location.href = next;
+                }
+                // if needs-confirm, we already set the success message + switched mode
+                return;
+            }
+        } catch (err: any) {
+            setStatus("error");
+            setMessage(err?.message ?? "Something went wrong.");
+            return;
+        }
     }
 
-    async function onDevPasswordLogin(e: React.SubmitEvent) {
-        e.preventDefault();
+    async function onForgotPassword() {
         setMessage("");
         setStatus("sending");
 
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
+        try {
+            if (!isValidEmail(email)) {
+                setStatus("error");
+                setMessage("Enter your email above first.");
+                return;
+            }
 
-        if (error) {
+            const redirectTo = `${window.location.origin}/reset-password?next=${encodeURIComponent(
+                next,
+            )}`;
+
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo,
+            });
+            if (error) throw error;
+
+            setStatus("success");
+            setMessage("Check your email for a password reset link.");
+        } catch (err: any) {
             setStatus("error");
-            setMessage(error.message);
-            return;
+            setMessage(err?.message ?? "Could not send reset email.");
         }
-
-        setStatus("success");
-        setMessage("Signed in (dev mode). Redirecting…");
-
-        // Optional redirect
-        window.location.href = "/library";
     }
 
     const { ref: pageRef, inView: pageIn } = useInView({
@@ -104,10 +187,7 @@ export default function SignInClient() {
 
     return (
         <div className='relative min-h-[100dvh] text-foreground'>
-            {/* Fixed background and overlay layer */}
             <Overlay />
-
-            {/* Main content */}
             <Navbar />
 
             <main
@@ -120,11 +200,14 @@ export default function SignInClient() {
                         <Card className='rounded-3xl'>
                             <CardHeader>
                                 <CardTitle className='text-2xl'>
-                                    Sign in
+                                    {mode === "signin"
+                                        ? "Sign in"
+                                        : "Create account"}
                                 </CardTitle>
                                 <CardDescription>
-                                    Enter your email and we’ll send you a secure
-                                    sign-in link.
+                                    {mode === "signin"
+                                        ? "Sign in with your email and password."
+                                        : "Create your account to access your library."}
                                 </CardDescription>
                             </CardHeader>
 
@@ -143,56 +226,104 @@ export default function SignInClient() {
                                             onChange={e =>
                                                 setEmail(e.target.value)
                                             }
-                                            disabled={
-                                                status === "sending" ||
-                                                status === "success"
-                                            }
+                                            disabled={status === "sending"}
                                         />
                                     </div>
+
+                                    <div className='space-y-2'>
+                                        <Label htmlFor='password'>
+                                            {mode === "signin"
+                                                ? "Password"
+                                                : "Create a password"}
+                                        </Label>
+                                        <Input
+                                            id='password'
+                                            type='password'
+                                            autoComplete={
+                                                mode === "signin"
+                                                    ? "current-password"
+                                                    : "new-password"
+                                            }
+                                            placeholder='Minimum 8 characters'
+                                            value={password}
+                                            onChange={e =>
+                                                setPassword(e.target.value)
+                                            }
+                                            disabled={status === "sending"}
+                                        />
+                                    </div>
+
+                                    {mode === "signup" ? (
+                                        <div className='space-y-2'>
+                                            <Label htmlFor='confirmPassword'>
+                                                Confirm password
+                                            </Label>
+                                            <Input
+                                                id='confirmPassword'
+                                                type='password'
+                                                autoComplete='new-password'
+                                                placeholder='Re-enter password'
+                                                value={confirmPassword}
+                                                onChange={e =>
+                                                    setConfirmPassword(
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                disabled={status === "sending"}
+                                            />
+                                        </div>
+                                    ) : null}
 
                                     <Button
                                         type='submit'
                                         className='w-full'
                                         disabled={!canSubmit}>
                                         {status === "sending"
-                                            ? "Sending link..."
-                                            : "Email me a sign-in link"}
+                                            ? "Loading…"
+                                            : mode === "signin"
+                                              ? "Sign in"
+                                              : "Create account"}
                                     </Button>
+
+                                    <div className='flex items-center justify-between text-sm'>
+                                        <button
+                                            type='button'
+                                            className='underline underline-offset-4'
+                                            onClick={() => {
+                                                setStatus("idle");
+                                                setMessage("");
+                                                setMode(
+                                                    mode === "signin"
+                                                        ? "signup"
+                                                        : "signin",
+                                                );
+                                            }}>
+                                            {mode === "signin"
+                                                ? "Create account"
+                                                : "Back to sign in"}
+                                        </button>
+
+                                        {mode === "signin" ? (
+                                            <button
+                                                type='button'
+                                                className='underline underline-offset-4'
+                                                onClick={onForgotPassword}
+                                                disabled={status === "sending"}>
+                                                Forgot password
+                                            </button>
+                                        ) : (
+                                            <span className='text-muted-foreground'>
+                                                Already have an account?
+                                            </span>
+                                        )}
+                                    </div>
                                 </form>
-
-                                {process.env.NODE_ENV === "development" && (
-                                    <form
-                                        onSubmit={onDevPasswordLogin}
-                                        className='mt-8 space-y-4 border-t pt-6'>
-                                        <p className='text-xs text-muted-foreground'>
-                                            Dev login (password)
-                                        </p>
-
-                                        <input
-                                            type='password'
-                                            value={password}
-                                            onChange={e =>
-                                                setPassword(e.target.value)
-                                            }
-                                            placeholder='Password'
-                                            className='w-full rounded-md border px-3 py-2 text-sm'
-                                        />
-
-                                        <Button
-                                            type='submit'
-                                            variant='secondary'
-                                            className='w-full'>
-                                            Sign in (dev)
-                                        </Button>
-                                    </form>
-                                )}
 
                                 {status === "success" && (
                                     <Alert className='bg-green-400'>
-                                        <AlertTitle>Link sent</AlertTitle>
+                                        <AlertTitle>Success</AlertTitle>
                                         <AlertDescription className='text-foreground'>
-                                            {message} If you don’t see it in a
-                                            minute, check spam/promotions.
+                                            {message}
                                         </AlertDescription>
                                     </Alert>
                                 )}
@@ -200,7 +331,7 @@ export default function SignInClient() {
                                 {status === "error" && (
                                     <Alert className='bg-red-400'>
                                         <AlertTitle>
-                                            Couldn’t send link
+                                            Something went wrong
                                         </AlertTitle>
                                         <AlertDescription className='text-foreground'>
                                             {message}

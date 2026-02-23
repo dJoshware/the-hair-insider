@@ -11,7 +11,7 @@ export function OrgJsonLd() {
         // Add real socials when ready:
         sameAs: [
             "https://www.instagram.com/thehairinsider",
-            // "https://www.youtube.com/@yourhandle",
+            "https://www.youtube.com/@TheHairInsider",
             "https://www.tiktok.com/@thehairinsider",
         ],
     };

@@ -20,7 +20,7 @@ const LEGAL_LINKS = [
 // Update these when ready
 const SOCIAL_LINKS = [
     { href: "https://instagram.com/thehairinsider", label: "Instagram" },
-    // { href: "https://youtube.com/", label: "YouTube" },
+    { href: "https://www.youtube.com/@TheHairInsider", label: "YouTube" },
     { href: "https://tiktok.com/@thehairinsider", label: "TikTok" },
 ];
 

@@ -71,7 +71,7 @@ export function Navbar() {
                                     className={cn(
                                         "text-sm font-medium transition-colors hover:text-foreground",
                                     )}>
-                                    Start here
+                                    Start Here
                                 </NavigationMenuLink>
                             </Link>
                         </NavigationMenuItem>
@@ -84,20 +84,20 @@ export function Navbar() {
                                     className={cn(
                                         "text-sm font-medium transition-colors hover:text-foreground",
                                     )}>
-                                    What it is
+                                    What It Is
                                 </NavigationMenuLink>
                             </Link>
                         </NavigationMenuItem>
 
                         <NavigationMenuItem>
                             <Link
-                                href={hashHref("how")}
+                                href={hashHref("inside")}
                                 passHref>
                                 <NavigationMenuLink
                                     className={cn(
                                         "text-sm font-medium transition-colors hover:text-foreground",
                                     )}>
-                                    How it works
+                                    Inside The Course
                                 </NavigationMenuLink>
                             </Link>
                         </NavigationMenuItem>
@@ -110,7 +110,7 @@ export function Navbar() {
                                     className={cn(
                                         "text-sm font-medium transition-colors hover:text-foreground",
                                     )}>
-                                    Meet your stylist
+                                    Meet Your Stylist
                                 </NavigationMenuLink>
                             </Link>
                         </NavigationMenuItem>
@@ -185,7 +185,7 @@ export function Navbar() {
                                         asChild
                                         className='justify-start'>
                                         <Link href={hashHref("hero")}>
-                                            Start here
+                                            Start Here
                                         </Link>
                                     </Button>
                                 </SheetClose>
@@ -196,7 +196,7 @@ export function Navbar() {
                                         asChild
                                         className='justify-start'>
                                         <Link href={hashHref("what")}>
-                                            What it is
+                                            What It Is
                                         </Link>
                                     </Button>
                                 </SheetClose>
@@ -206,8 +206,8 @@ export function Navbar() {
                                         variant='ghost'
                                         asChild
                                         className='justify-start'>
-                                        <Link href={hashHref("how")}>
-                                            How it works
+                                        <Link href={hashHref("inside")}>
+                                            Inside The Course
                                         </Link>
                                     </Button>
                                 </SheetClose>
@@ -218,7 +218,7 @@ export function Navbar() {
                                         asChild
                                         className='justify-start'>
                                         <Link href={hashHref("stylist")}>
-                                            Meet your stylist
+                                            Meet Your Stylist
                                         </Link>
                                     </Button>
                                 </SheetClose>

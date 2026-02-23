@@ -39,11 +39,7 @@ export default function SignInClient() {
             ? new URLSearchParams(window.location.search)
             : null;
 
-    const next =
-        params?.get("next") ||
-        (typeof window !== "undefined"
-            ? localStorage.getItem("postAuthRedirect") || "/"
-            : "/");
+    const destination = params?.get("next") || "/";
 
     const canSubmit = React.useMemo(() => {
         if (status === "sending") return false;
@@ -105,7 +101,7 @@ export default function SignInClient() {
 
                 setStatus("success");
                 setMessage("Signed in. Redirecting…");
-                window.location.href = next;
+                window.location.href = destination;
                 return;
             }
 
@@ -139,7 +135,7 @@ export default function SignInClient() {
 
             setStatus("success");
             setMessage("Account created. Redirecting…");
-            window.location.href = next;
+            window.location.href = destination;
         } catch (err: any) {
             setStatus("error");
             setMessage(err?.message ?? "Something went wrong.");
@@ -158,7 +154,7 @@ export default function SignInClient() {
             }
 
             try {
-                localStorage.setItem("postAuthRedirect", next);
+                localStorage.removeItem("postAuthRedirect");
             } catch {}
             const redirectTo = `${window.location.origin}`;
             await supabase.auth.resetPasswordForEmail(email, { redirectTo });

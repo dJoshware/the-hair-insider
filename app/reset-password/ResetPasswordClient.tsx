@@ -27,8 +27,8 @@ export default function ResetPasswordClient() {
         typeof window !== "undefined"
             ? new URLSearchParams(window.location.search).get("next") ||
               localStorage.getItem("postAuthRedirect") ||
-              "/"
-            : "/";
+              "/library"
+            : "/library";
 
     const [pw1, setPw1] = React.useState("");
     const [pw2, setPw2] = React.useState("");
@@ -121,7 +121,7 @@ export default function ResetPasswordClient() {
                 localStorage.removeItem("postAuthRedirect");
             } catch {}
 
-            router.replace(next);
+            router.replace("/");
         } catch (err: any) {
             setStatus("error");
             setMessage(err?.message ?? "Could not update password.");

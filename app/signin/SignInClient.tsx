@@ -83,7 +83,7 @@ export default function SignInClient() {
         return "signed-in";
     }
 
-    async function onSubmit(e: React.SubmitEvent) {
+    async function onSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         setMessage("");
 
@@ -107,7 +107,6 @@ export default function SignInClient() {
 
         setStatus("sending");
 
-        // persist next for safety (you already do this)
         if (params) {
             const n = params.get("next");
             if (n) localStorage.setItem("postAuthRedirect", n);
@@ -115,11 +114,13 @@ export default function SignInClient() {
 
         try {
             if (mode === "signin") {
-                await signInWithPassword();
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                });
+                if (error) throw error;
 
-                const { data } = await supabase.auth.getSession();
                 const token = data.session?.access_token;
-
                 if (token) {
                     fetch("/api/stripe/ensure-customer", {
                         method: "POST",
@@ -135,20 +136,42 @@ export default function SignInClient() {
                 setMessage("Signed in. Redirecting…");
                 window.location.href = next;
                 return;
-            } else {
-                const result = await signUpWithPassword();
-                if (result === "signed-in") {
-                    setStatus("success");
-                    setMessage("Account created. Redirecting…");
-                    window.location.href = next;
-                }
-                // if needs-confirm, we already set the success message + switched mode
+            }
+
+            // signup
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+            });
+            if (error) throw error;
+
+            // If email confirmations are ON, session will be null until they confirm
+            if (!data.session) {
+                setStatus("success");
+                setMessage(
+                    "Check your email to confirm your account, then sign in.",
+                );
+                setMode("signin");
                 return;
             }
+
+            // If confirmations are OFF, they may be signed in immediately
+            const token = data.session.access_token;
+            fetch("/api/stripe/ensure-customer", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({}),
+            }).catch(() => {});
+
+            setStatus("success");
+            setMessage("Account created. Redirecting…");
+            window.location.href = next;
         } catch (err: any) {
             setStatus("error");
             setMessage(err?.message ?? "Something went wrong.");
-            return;
         }
     }
 

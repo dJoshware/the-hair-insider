@@ -240,97 +240,99 @@ export default function CourseDetailClient({
             <SiteBreadcrumbs />
             <div
                 ref={pageRef}
-                className='mx-auto max-w-6xl px-6 pt-8'>
+                className='mx-auto max-w-6xl px-6 pt-8 mb-8'>
                 <FadeIn
                     inView={pageIn}
                     delayMs={100}>
                     <div className='flex flex-col gap-10 md:flex-row md:items-start md:justify-between'>
                         {/* Left: Content */}
                         <div className='max-w-2xl'>
-                            <div className='flex items-center gap-3'>
-                                <Badge variant='secondary'>Course</Badge>
-                                {owned ? (
-                                    <Badge variant='default'>Owned</Badge>
+                            <div className='bg-background/35 rounded-3xl p-6'>
+                                <div className='flex items-center gap-3'>
+                                    <Badge variant='secondary'>Course</Badge>
+                                    {owned ? (
+                                        <Badge variant='default'>Owned</Badge>
+                                    ) : null}
+                                </div>
+
+                                <h1 className='mt-4 text-3xl font-semibold tracking-tight sm:text-4xl'>
+                                    {course.title}
+                                </h1>
+
+                                {course.subtitle ? (
+                                    <p className='mt-3 text-lg'>
+                                        {course.subtitle}
+                                    </p>
+                                ) : null}
+
+                                {course.description ? (
+                                    <p className='mt-6 text-base leading-7'>
+                                        {course.description}
+                                    </p>
+                                ) : (
+                                    <p className='mt-6 text-base leading-7'>
+                                        A short, structured mini-course designed
+                                        to help you stop guessing and build a
+                                        routine that makes sense.
+                                    </p>
+                                )}
+
+                                <div className='mt-8 flex flex-col gap-3 sm:flex-row sm:items-center'>
+                                    {owned ? (
+                                        <>
+                                            <Button
+                                                asChild
+                                                variant='secondary'
+                                                className='h-12 px-6'>
+                                                <Link href={`/library/${slug}`}>
+                                                    Go to course
+                                                </Link>
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Button
+                                                className='h-12 px-6'
+                                                onClick={onGetAccess}
+                                                disabled={
+                                                    buying ||
+                                                    !course.stripe_price_id
+                                                }>
+                                                {buying
+                                                    ? "Redirecting…"
+                                                    : "BUY NOW"}
+                                            </Button>
+
+                                            <Button
+                                                asChild
+                                                variant='secondary'
+                                                className='h-12 px-6'>
+                                                <Link href='/library'>
+                                                    Go to library
+                                                </Link>
+                                            </Button>
+                                        </>
+                                    )}
+                                </div>
+
+                                {buyError ? (
+                                    <p className='mt-3 text-sm text-destructive'>
+                                        {buyError}
+                                    </p>
+                                ) : null}
+
+                                {!authLoading && !signedIn ? (
+                                    <p className='mt-4 text-sm'>
+                                        Already purchased?{" "}
+                                        <Link
+                                            href='/signin'
+                                            className='font-medium text-foreground underline underline-offset-4'>
+                                            Sign in
+                                        </Link>
+                                        .
+                                    </p>
                                 ) : null}
                             </div>
-
-                            <h1 className='mt-4 text-3xl font-semibold tracking-tight sm:text-4xl'>
-                                {course.title}
-                            </h1>
-
-                            {course.subtitle ? (
-                                <p className='mt-3 text-lg'>
-                                    {course.subtitle}
-                                </p>
-                            ) : null}
-
-                            {course.description ? (
-                                <p className='mt-6 text-base leading-7'>
-                                    {course.description}
-                                </p>
-                            ) : (
-                                <p className='mt-6 text-base leading-7'>
-                                    A short, structured mini-course designed to
-                                    help you stop guessing and build a routine
-                                    that makes sense.
-                                </p>
-                            )}
-
-                            <div className='mt-8 flex flex-col gap-3 sm:flex-row sm:items-center'>
-                                {owned ? (
-                                    <>
-                                        <Button
-                                            asChild
-                                            variant='secondary'
-                                            className='h-12 px-6'>
-                                            <Link href={`/library/${slug}`}>
-                                                Go to course
-                                            </Link>
-                                        </Button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Button
-                                            className='h-12 px-6'
-                                            onClick={onGetAccess}
-                                            disabled={
-                                                buying ||
-                                                !course.stripe_price_id
-                                            }>
-                                            {buying
-                                                ? "Redirecting…"
-                                                : "BUY NOW"}
-                                        </Button>
-
-                                        <Button
-                                            asChild
-                                            variant='secondary'
-                                            className='h-12 px-6'>
-                                            <Link href='/library'>
-                                                Go to library
-                                            </Link>
-                                        </Button>
-                                    </>
-                                )}
-                            </div>
-
-                            {buyError ? (
-                                <p className='mt-3 text-sm text-destructive'>
-                                    {buyError}
-                                </p>
-                            ) : null}
-
-                            {!authLoading && !signedIn ? (
-                                <p className='mt-4 text-sm'>
-                                    Already purchased?{" "}
-                                    <Link
-                                        href='/signin'
-                                        className='font-medium text-foreground underline underline-offset-4'>
-                                        Sign in
-                                    </Link>
-                                    .
-                                </p>
-                            ) : null}
 
                             <Separator className='my-10' />
 
@@ -345,7 +347,10 @@ export default function CourseDetailClient({
                                         <ul className='space-y-2'>
                                             <li>High-end industry knowledge</li>
                                             <li>Clear routine guidance</li>
-                                            <li>Downloadable PDFs for each module</li>
+                                            <li>
+                                                Downloadable PDFs for each
+                                                module
+                                            </li>
                                             <li>Lifetime access</li>
                                         </ul>
                                     </CardContent>
@@ -414,7 +419,9 @@ export default function CourseDetailClient({
                                             {/* If modules exist, fetch and render */}
                                             <span>Modules</span>
                                             <span className='text-foreground'>
-                                                {stats ? stats.lessonsCount : '—'}
+                                                {stats
+                                                    ? stats.lessonsCount
+                                                    : "—"}
                                             </span>
                                         </div>
                                         {/* <div className='flex items-center justify-between'>
@@ -428,7 +435,11 @@ export default function CourseDetailClient({
                                             {/* Fetch and render total duration */}
                                             <span>Duration</span>
                                             <span className='text-foreground'>
-                                                {stats ? formatDuration(stats.durationSeconds) : '—'}
+                                                {stats
+                                                    ? formatDuration(
+                                                          stats.durationSeconds,
+                                                      )
+                                                    : "—"}
                                             </span>
                                         </div>
                                     </div>

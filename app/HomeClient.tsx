@@ -55,7 +55,7 @@ export default function HomeClient() {
                             inView={heroIn}
                             delayMs={100}>
                             <div className='grid gap-10 md:grid-cols-2 md:items-center'>
-                                <div className='space-y-6 bg-background/35 border-solid border-2 border-foreground rounded-3xl p-6'>
+                                <div className='space-y-6 bg-background/35 rounded-3xl p-6'>
                                     <h1 className='text-4xl font-semibold tracking-tight sm:text-5xl'>
                                         Healthy Hair, Explained Simply.
                                     </h1>
@@ -164,7 +164,7 @@ export default function HomeClient() {
                                 inView={whatIn}
                                 delayMs={200}>
                                 <div className='grid gap-10 md:grid-cols-2'>
-                                    <div className='space-y-4 bg-background/35 border-solid border-2 border-foreground rounded-3xl p-6'>
+                                    <div className='space-y-4 bg-background/35 rounded-3xl p-6'>
                                         <Badge
                                             variant='secondary'
                                             className='w-fit'>
@@ -230,7 +230,7 @@ export default function HomeClient() {
                             <FadeIn
                                 inView={insideIn}
                                 delayMs={200}>
-                                <div className='space-y-4 bg-background/35 border-solid border-2 border-foreground rounded-3xl p-6 w-fit'>
+                                <div className='space-y-4 bg-background/35 rounded-3xl p-6 w-fit'>
                                     <h2 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
                                         Inside The Course
                                     </h2>
@@ -306,7 +306,7 @@ export default function HomeClient() {
                                 inView={educatorIn}
                                 delayMs={200}>
                                 <div className='grid gap-10 md:grid-cols-2 md:items-center'>
-                                    <div className='space-y-4 bg-background/35 border-solid border-2 border-foreground rounded-3xl p-6'>
+                                    <div className='space-y-4 bg-background/35 rounded-3xl p-6'>
                                         <h2 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
                                             Meet Your Educator
                                         </h2>

@@ -23,11 +23,11 @@ export default function HomeClient() {
         triggerOnce: true,
         threshold: 0.2,
     });
-    const { ref: howRef, inView: howIn } = useInView({
+    const { ref: insideRef, inView: insideIn } = useInView({
         triggerOnce: true,
         threshold: 0.2,
     });
-    const { ref: stylistRef, inView: stylistIn } = useInView({
+    const { ref: educatorRef, inView: educatorIn } = useInView({
         triggerOnce: true,
         threshold: 0.2,
     });
@@ -55,7 +55,7 @@ export default function HomeClient() {
                             inView={heroIn}
                             delayMs={100}>
                             <div className='grid gap-10 md:grid-cols-2 md:items-center'>
-                                <div className='space-y-6 border-solid border-2 border-foreground rounded-3xl p-6'>
+                                <div className='space-y-6 bg-background/35 border-solid border-2 border-foreground rounded-3xl p-6'>
                                     <h1 className='text-4xl font-semibold tracking-tight sm:text-5xl'>
                                         Healthy Hair, Explained Simply.
                                     </h1>
@@ -95,37 +95,42 @@ export default function HomeClient() {
                                 <Card className='rounded-3xl'>
                                     <CardHeader className='flex-row items-center justify-between'>
                                         <CardTitle className='text-base'>
-                                            Included in the course
+                                            Included In The Course
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className='space-y-4'>
                                         <ul className='space-y-3 text-sm'>
                                             <li>
                                                 <p className='font-medium text-foreground'>
-                                                    Hair type clarity
+                                                    Hair Type Clarity
                                                 </p>
                                                 <p>
-                                                    Stop trial and error and
-                                                    understand what applies to
+                                                    Stop guessing. Learn exactly
+                                                    how your hair behaves and
+                                                    what actually applies to
                                                     you.
                                                 </p>
                                             </li>
                                             <li>
                                                 <p className='font-medium text-foreground'>
-                                                    Routine builder
+                                                    Routine Builder
                                                 </p>
                                                 <p>
-                                                    A routine you can do weekly
-                                                    without overthinking.
+                                                    Build a simple, repeatable
+                                                    weekly routine that supports
+                                                    growth and retention —
+                                                    without overcomplicating it.
                                                 </p>
                                             </li>
                                             <li>
                                                 <p className='font-medium text-foreground'>
-                                                    Downloadable guides
+                                                    Downloadable Guides
                                                 </p>
                                                 <p>
-                                                    PDFs and checklists inside
-                                                    your library.
+                                                    Structured PDFs and
+                                                    checklists inside your
+                                                    library so you can implement
+                                                    with confidence.
                                                 </p>
                                             </li>
                                         </ul>
@@ -134,12 +139,13 @@ export default function HomeClient() {
 
                                         <div className='rounded-2xl bg-muted p-4'>
                                             <p className='text-xs font-medium'>
-                                                Quick promise
+                                                Our Promise
                                             </p>
                                             <p className='mt-1 text-sm text-foreground'>
                                                 If you can wash your hair, you
-                                                can do this. We keep it simple,
-                                                practical, and consistent.
+                                                can follow this. We keep it
+                                                practical, consistent, and
+                                                rooted in real hair science.
                                             </p>
                                         </div>
                                     </CardContent>
@@ -158,41 +164,42 @@ export default function HomeClient() {
                                 inView={whatIn}
                                 delayMs={200}>
                                 <div className='grid gap-10 md:grid-cols-2'>
-                                    <div className='space-y-4 border-solid border-2 border-foreground rounded-3xl p-6'>
+                                    <div className='space-y-4 bg-background/35 border-solid border-2 border-foreground rounded-3xl p-6'>
                                         <Badge
                                             variant='secondary'
                                             className='w-fit'>
                                             Education-First Hair Care
                                         </Badge>
                                         <h2 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
-                                            What is it
+                                            What Is It?
                                         </h2>
                                         <p className='text-lg leading-8'>
-                                            A course-driven education library
-                                            designed to help you build a hair
-                                            routine that protects length,
-                                            supports the scalp, and makes your
-                                            hair feel consistently good.
+                                            A structured education library that
+                                            teaches you how to build a hair
+                                            routine that actually works — so you
+                                            stop guessing, stop wasting money,
+                                            and finally understand how to grow
+                                            and retain healthy length.
                                         </p>
                                     </div>
 
                                     <div className='grid gap-4 sm:grid-cols-2'>
                                         {[
                                             {
-                                                title: "Education-first",
-                                                desc: "Understand why you’re doing each step.",
+                                                title: "Education-First",
+                                                desc: "Learn the why behind every step — so you're not just following advice, you're understanding it",
                                             },
                                             {
-                                                title: "No product overload",
-                                                desc: "Fewer products, better results, less confusion.",
+                                                title: "No Product Overload",
+                                                desc: "Fewer intentional products. Better results. Less confusion.",
                                             },
                                             {
-                                                title: "Designed for busy people",
-                                                desc: "Short lessons and clear routines.",
+                                                title: "Designed for Busy People",
+                                                desc: "Short, focused lessons and clear routines you can actually maintain.",
                                             },
                                             {
-                                                title: "Gated library access",
-                                                desc: "Buy once, unlock your content instantly.",
+                                                title: "Gated Library Access",
+                                                desc: "Purchase once. Unlock instant, lifetime access to your course library.",
                                             },
                                         ].map(item => (
                                             <Card
@@ -214,44 +221,59 @@ export default function HomeClient() {
                         </div>
                     </section>
 
-                    {/* How it works */}
+                    {/* Inside The Course */}
                     <section
-                        ref={howRef}
-                        id='how'
+                        ref={insideRef}
+                        id='inside'
                         className='border-t'>
                         <div className='mx-auto max-w-6xl px-6 py-14 sm:py-20'>
                             <FadeIn
-                                inView={howIn}
+                                inView={insideIn}
                                 delayMs={200}>
-                                <h2 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
-                                    How it works
-                                </h2>
+                                <div className='space-y-4 bg-background/35 border-solid border-2 border-foreground rounded-3xl p-6 w-fit'>
+                                    <h2 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
+                                        Inside The Course
+                                    </h2>
+                                    <p className='text-lg leading-8'>
+                                        Your access begins the moment you
+                                        enroll. Inside, you&#39;ll find a
+                                        structured education library designed to
+                                        help you understand your hair and build
+                                        a routine that supports real growth and
+                                        length retention.
+                                    </p>
+                                    <p className='text-lg leading-8'>
+                                        Short, focused lessons walk you through
+                                        the foundations. Downloadable guides
+                                        help you implement with clarity.
+                                        Everything is designed to be simple,
+                                        practical, and repeatable.
+                                    </p>
+                                    <p className='text-lg leading-8'>
+                                        Purchase once. Return anytime. Build
+                                        with confidence.
+                                    </p>
+                                </div>
 
                                 <div className='mt-10 grid gap-4 md:grid-cols-3'>
                                     {[
                                         {
-                                            step: "01",
-                                            title: "Purchase access",
-                                            desc: "Choose the course offer and check out securely.",
+                                            title: "Private Library Access",
+                                            desc: "Unlock your content instantly.",
                                         },
                                         {
-                                            step: "02",
-                                            title: "Sign in instantly",
-                                            desc: "Passwordless sign-in keeps it simple and secure.",
+                                            title: "Foundational Lessons",
+                                            desc: "Clear, structured education that builds understanding step by step.",
                                         },
                                         {
-                                            step: "03",
-                                            title: "Use the library",
-                                            desc: "Watch lessons, download PDFs, build your routine.",
+                                            title: "Implementation Tools",
+                                            desc: "Downloadable guides designed to help you apply what you learn.",
                                         },
                                     ].map(s => (
                                         <Card
-                                            key={s.step}
+                                            key={s.title}
                                             className='rounded-3xl'>
                                             <CardHeader>
-                                                <p className='text-xs font-semibold'>
-                                                    STEP {s.step}
-                                                </p>
                                                 <CardTitle className='text-lg'>
                                                     {s.title}
                                                 </CardTitle>
@@ -276,36 +298,49 @@ export default function HomeClient() {
 
                     {/* Meet your stylist */}
                     <section
-                        ref={stylistRef}
-                        id='stylist'
+                        ref={educatorRef}
+                        id='educator'
                         className='border-t'>
                         <div className='mx-auto max-w-6xl px-6 pt-14 sm:py-20'>
                             <FadeIn
-                                inView={stylistIn}
+                                inView={educatorIn}
                                 delayMs={200}>
                                 <div className='grid gap-10 md:grid-cols-2 md:items-center'>
-                                    <div className='space-y-4 border-solid border-2 border-foreground rounded-3xl p-6'>
+                                    <div className='space-y-4 bg-background/35 border-solid border-2 border-foreground rounded-3xl p-6'>
                                         <h2 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
-                                            Meet your stylist
+                                            Meet Your Educator
                                         </h2>
                                         <p className='text-lg leading-8'>
-                                            Hi, I’m Lauren. I’ve spent years
-                                            behind the chair helping clients get
-                                            real results with routines that make
-                                            sense. This course is everything I
-                                            wish people knew before they spent
-                                            money on the wrong products.
+                                            Hi, I&#39;m Lauren — a licensed
+                                            cosmetologist with over 8 years of
+                                            experience specializing in color,
+                                            extensions, and corrective routines.
+                                            I&#39;ve worked with hundreds of
+                                            clients who&#39;ve felt stuck in
+                                            trial and error.
+                                        </p>
+                                        <p className='text-lg leading-8'>
+                                            What I saw over and over wasn&#39;t
+                                            a product problem — it was a clarity
+                                            problem.
+                                        </p>
+                                        <p className='text-lg leading-8'>
+                                            This course is built from real-world
+                                            experience behind the chair, focused
+                                            on helping you understand your hair
+                                            so you can stop guessing and start
+                                            seeing consistent results.
                                         </p>
 
                                         <div className='flex flex-wrap gap-2'>
                                             <Badge variant='secondary'>
-                                                Color + extensions background
+                                                Color + Extensions Background
                                             </Badge>
                                             <Badge variant='secondary'>
-                                                Routine-based education
+                                                Routine-Based Education
                                             </Badge>
                                             <Badge variant='secondary'>
-                                                Healthy length focus
+                                                Health + Length Focus
                                             </Badge>
                                         </div>
                                     </div>
@@ -322,13 +357,22 @@ export default function HomeClient() {
                                             />
                                         </div>
 
-                                        <div className='px-2 pb-2 pt-3'>
-                                            <p className='text-sm'>
-                                                Lauren Jackson
-                                            </p>
-                                            <p className='text-xs font-medium'>
-                                                Your Stylist + Educator
-                                            </p>
+                                        <div className='flex items-center justify-between gap-3 p-5'>
+                                            <div className='min-w-0'>
+                                                <p className='text-sm'>
+                                                    Lauren Jackson
+                                                </p>
+                                                <p className='text-xs font-medium'>
+                                                    Your Stylist + Educator
+                                                </p>
+                                            </div>
+
+                                            <Button
+                                                size='sm'
+                                                variant='default'
+                                                className='shrink-0'>
+                                                <Link href='/about'>About Me</Link>
+                                            </Button>
                                         </div>
                                     </div>
                                 </div>

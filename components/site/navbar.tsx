@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -26,6 +26,7 @@ import { Menu } from "lucide-react";
 import Image from "next/image";
 
 export function Navbar() {
+    const router = useRouter();
     const { signedIn, loading } = useAuth();
     const admin = useAdminStatus();
     const showAdmin = !admin.loading && admin.signedIn && admin.isAdmin;
@@ -35,6 +36,7 @@ export function Navbar() {
 
     async function signOut() {
         await supabase.auth.signOut();
+        router.push('/');
     }
 
     // Use /#hash on home, and /?scroll=... on other pages (optional)

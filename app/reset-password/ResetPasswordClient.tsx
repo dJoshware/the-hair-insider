@@ -53,7 +53,7 @@ export default function ResetPasswordClient() {
         const run = async () => {
             const params = new URLSearchParams(window.location.search);
             const token_hash = params.get("token_hash");
-            const type = params.get("type"); // should be "recovery"
+            const type = params.get("type") || "recovery";
 
             // If we have a token_hash link, exchange it for a session
             if (token_hash && type === "recovery") {

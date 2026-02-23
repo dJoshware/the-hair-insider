@@ -4,7 +4,7 @@ import { Separator } from "@/components/ui/separator";
 
 const SITE_LINKS = [
     { href: "/#hero", label: "Start Here" },
-    { href: "/#what", label: "What It Is" },
+    { href: "/#what", label: "What Is It?" },
     { href: "/#inside", label: "Inside The Course" },
     { href: "/#educator", label: "Meet Your Educator" },
     { href: "/courses", label: "Courses" },

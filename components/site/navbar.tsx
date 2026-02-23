@@ -84,7 +84,7 @@ export function Navbar() {
                                     className={cn(
                                         "text-sm font-medium transition-colors hover:text-foreground",
                                     )}>
-                                    What It Is
+                                    What Is It?
                                 </NavigationMenuLink>
                             </Link>
                         </NavigationMenuItem>
@@ -196,7 +196,7 @@ export function Navbar() {
                                         asChild
                                         className='justify-start'>
                                         <Link href={hashHref("what")}>
-                                            What It Is
+                                            What Is It?
                                         </Link>
                                     </Button>
                                 </SheetClose>

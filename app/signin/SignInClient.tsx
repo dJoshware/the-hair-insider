@@ -42,8 +42,8 @@ export default function SignInClient() {
     const next =
         params?.get("next") ||
         (typeof window !== "undefined"
-            ? localStorage.getItem("postAuthRedirect") || "/library"
-            : "/library");
+            ? localStorage.getItem("postAuthRedirect") || "/"
+            : "/");
 
     const canSubmit = React.useMemo(() => {
         if (status === "sending") return false;

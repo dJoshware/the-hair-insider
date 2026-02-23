@@ -35,7 +35,7 @@ export default function ForgotPasswordClient() {
             ? new URLSearchParams(window.location.search)
             : null;
 
-    const next = params?.get("next") || "/library";
+    const next = params?.get("next") || "/";
 
     async function onSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();

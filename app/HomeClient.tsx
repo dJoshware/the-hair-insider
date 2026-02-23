@@ -73,7 +73,7 @@ export default function HomeClient() {
                                         <Button
                                             asChild
                                             className='h-12 px-6'>
-                                            <Link href='/courses/hair-insider-mini-course'>
+                                            <Link href='/courses/hair-growth-foundations-mini-course'>
                                                 Start Here
                                             </Link>
                                         </Button>

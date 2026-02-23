@@ -26,7 +26,9 @@ const SOCIAL_LINKS = [
 
 export function Footer() {
     return (
-        <footer className='mt-16 text-secondary'>
+        <footer
+            className='mt-16 text-secondary'
+            id='site-footer'>
             <Separator />
 
             <div className='mx-auto max-w-6xl px-6 py-12'>

@@ -279,9 +279,7 @@ export default function LessonsClient({ id }: { id: string }) {
                         <Button
                             asChild
                             variant='secondary'>
-                            <Link href='/admin/courses'>
-                                Back to courses
-                            </Link>
+                            <Link href='/admin/courses'>Back to courses</Link>
                         </Button>
                     </div>
 

@@ -41,13 +41,14 @@ export function Navbar() {
     const hashHref = (hash: string) => (onHome ? `/#${hash}` : `/#${hash}`);
 
     return (
-        <header className='top-0 z-50 border-b bg-background'>
+        <header
+            className='top-0 z-50 border-b bg-background'
+            id='site-navbar'>
             <div className='mx-auto flex h-16 max-w-6xl items-center justify-between px-6'>
-                <Link
-                    href='/'>
+                <Link href='/'>
                     <Image
-                        src="/thi_navbar_logo.svg"
-                        alt="The Hair Insider"
+                        src='/thi_navbar_logo.svg'
+                        alt='The Hair Insider'
                         height={1}
                         width={222}
                         style={{
@@ -225,9 +226,7 @@ export function Navbar() {
                                         variant='ghost'
                                         asChild
                                         className='justify-start'>
-                                        <Link href='/contact'>
-                                            Contact Us
-                                        </Link>
+                                        <Link href='/contact'>Contact Us</Link>
                                     </Button>
                                 </SheetClose>
 
@@ -297,9 +296,7 @@ export function Navbar() {
                                         variant='ghost'
                                         asChild
                                         className='justify-start'>
-                                        <Link href='/privacy'>
-                                            Privacy
-                                        </Link>
+                                        <Link href='/privacy'>Privacy</Link>
                                     </Button>
                                 </SheetClose>
 
@@ -308,9 +305,7 @@ export function Navbar() {
                                         variant='ghost'
                                         asChild
                                         className='justify-start'>
-                                        <Link href='/terms'>
-                                            Terms
-                                        </Link>
+                                        <Link href='/terms'>Terms</Link>
                                     </Button>
                                 </SheetClose>
                             </div>

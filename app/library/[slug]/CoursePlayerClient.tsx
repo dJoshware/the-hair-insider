@@ -316,7 +316,9 @@ export default function CoursePlayerClient({ slug }: { slug: string }) {
     }
 
     return (
-        <div className='relative min-h-[100dvh] text-foreground'>
+        <div
+            className='relative min-h-[100dvh] text-foreground'
+            id='course-player-ui'>
             {/* Fixed background and overlay layer */}
             <Overlay />
 
@@ -500,10 +502,12 @@ export default function CoursePlayerClient({ slug }: { slug: string }) {
                                         className='w-full'>
                                         <TabsList className='grid w-full grid-cols-2'>
                                             <TabsTrigger value='products'>
-                                                Products ({visibleProducts.length})
+                                                Products (
+                                                {visibleProducts.length})
                                             </TabsTrigger>
                                             <TabsTrigger value='resources'>
-                                                Resources ({visibleResources.length})
+                                                Resources (
+                                                {visibleResources.length})
                                             </TabsTrigger>
                                         </TabsList>
 

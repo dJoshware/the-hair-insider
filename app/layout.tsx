@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import BfcacheReload from "./_components/BFcacheReload";
 import { Bodoni_Moda, Luxurious_Script } from "next/font/google";
 import "./globals.css";
 
@@ -61,6 +62,7 @@ export default function RootLayout({
                 antialiased
                 ${bodoniModa.className}
             `}>
+                <BfcacheReload />
                 {children}
             </body>
         </html>

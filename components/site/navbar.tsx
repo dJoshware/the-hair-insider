@@ -104,13 +104,13 @@ export function Navbar() {
 
                         <NavigationMenuItem>
                             <Link
-                                href={hashHref("stylist")}
+                                href={hashHref("educator")}
                                 passHref>
                                 <NavigationMenuLink
                                     className={cn(
                                         "text-sm font-medium transition-colors hover:text-foreground",
                                     )}>
-                                    Meet Your Stylist
+                                    Meet Your Educator
                                 </NavigationMenuLink>
                             </Link>
                         </NavigationMenuItem>
@@ -217,8 +217,8 @@ export function Navbar() {
                                         variant='ghost'
                                         asChild
                                         className='justify-start'>
-                                        <Link href={hashHref("stylist")}>
-                                            Meet Your Stylist
+                                        <Link href={hashHref("educator")}>
+                                            Meet Your Educator
                                         </Link>
                                     </Button>
                                 </SheetClose>

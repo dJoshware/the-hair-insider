@@ -53,36 +53,6 @@ export default function SignInClient() {
         return true;
     }, [status, email, password, confirmPassword, mode]);
 
-    async function signInWithPassword() {
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
-        if (error) throw error;
-    }
-
-    async function signUpWithPassword() {
-        const { data, error } = await supabase.auth.signUp({
-            email,
-            password,
-            // optional: you can add user metadata here later
-            // options: { data: { full_name: "" } }
-        });
-        if (error) throw error;
-
-        // If email confirmations are enabled, session will be null until confirmed
-        if (!data.session) {
-            setStatus("success");
-            setMessage(
-                "Check your email to confirm your account, then sign in.",
-            );
-            setMode("signin");
-            return "needs-confirm";
-        }
-
-        return "signed-in";
-    }
-
     async function onSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         setMessage("");
@@ -113,6 +83,7 @@ export default function SignInClient() {
         }
 
         try {
+            // Sign In
             if (mode === "signin") {
                 const { data, error } = await supabase.auth.signInWithPassword({
                     email,
@@ -138,7 +109,7 @@ export default function SignInClient() {
                 return;
             }
 
-            // signup
+            // Sign Up
             const { data, error } = await supabase.auth.signUp({
                 email,
                 password,
@@ -186,14 +157,11 @@ export default function SignInClient() {
                 return;
             }
 
-            const redirectTo = `${window.location.origin}/reset-password?next=${encodeURIComponent(
-                next,
-            )}`;
-
-            const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo,
-            });
-            if (error) throw error;
+            try {
+                localStorage.setItem("postAuthRedirect", next);
+            } catch {}
+            const redirectTo = `${window.location.origin}`;
+            await supabase.auth.resetPasswordForEmail(email, { redirectTo });
 
             setStatus("success");
             setMessage("Check your email for a password reset link.");

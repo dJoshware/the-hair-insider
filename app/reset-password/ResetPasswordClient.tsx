@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useInView } from "react-intersection-observer";
 import { FadeIn } from "@/components/site/FadeIn";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,13 +20,20 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Overlay } from "@/components/site/Overlay";
 import { Navbar } from "@/components/site/navbar";
 
-export default function ResetPasswordPage() {
+export default function ResetPasswordClient() {
     const router = useRouter();
-    const params = useSearchParams();
-    const next = params.get("next") || "/library";
+
+    const next =
+        typeof window !== "undefined"
+            ? new URLSearchParams(window.location.search).get("next") ||
+              localStorage.getItem("postAuthRedirect") ||
+              "/library"
+            : "/library";
 
     const [pw1, setPw1] = React.useState("");
     const [pw2, setPw2] = React.useState("");
+    const [show, setShow] = React.useState(false);
+
     const [status, setStatus] = React.useState<
         "idle" | "saving" | "success" | "error"
     >("idle");
@@ -34,21 +41,58 @@ export default function ResetPasswordPage() {
     const [ready, setReady] = React.useState(false);
 
     React.useEffect(() => {
+        let cancelled = false;
+
         const { data: sub } = supabase.auth.onAuthStateChange(event => {
+            if (cancelled) return;
             if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") {
                 setReady(true);
             }
         });
 
-        setTimeout(async () => {
-            const { data } = await supabase.auth.getSession();
-            if (data.session) setReady(true);
-        }, 250);
+        const run = async () => {
+            const params = new URLSearchParams(window.location.search);
+            const token_hash = params.get("token_hash");
+            const type = params.get("type"); // should be "recovery"
 
-        return () => sub.subscription.unsubscribe();
+            // If we have a token_hash link, exchange it for a session
+            if (token_hash && type === "recovery") {
+                const { error } = await supabase.auth.verifyOtp({
+                    token_hash,
+                    type: "recovery",
+                });
+
+                if (cancelled) return;
+
+                if (error) {
+                    setMessage(error.message);
+                    setStatus("error");
+                    setReady(false);
+                } else {
+                    // ✅ clear token from URL only after success
+                    window.history.replaceState({}, "", "/reset-password");
+                    setReady(true);
+                }
+                return;
+            }
+
+            // Fallback: check session shortly after mount
+            setTimeout(async () => {
+                if (cancelled) return;
+                const { data } = await supabase.auth.getSession();
+                if (data.session && !cancelled) setReady(true);
+            }, 250);
+        };
+
+        run();
+
+        return () => {
+            cancelled = true;
+            sub.subscription.unsubscribe();
+        };
     }, []);
 
-    async function onSubmit(e: React.SubmitEvent) {
+    async function onSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         setMessage("");
 
@@ -71,6 +115,12 @@ export default function ResetPasswordPage() {
 
             setStatus("success");
             setMessage("Password updated. Redirecting…");
+
+            // optional: clear postAuthRedirect now that we're using next
+            try {
+                localStorage.removeItem("postAuthRedirect");
+            } catch {}
+
             router.replace(next);
         } catch (err: any) {
             setStatus("error");
@@ -120,32 +170,66 @@ export default function ResetPasswordPage() {
                                             <Label htmlFor='pw1'>
                                                 New password
                                             </Label>
-                                            <Input
-                                                id='pw1'
-                                                type='password'
-                                                autoComplete='new-password'
-                                                value={pw1}
-                                                onChange={e =>
-                                                    setPw1(e.target.value)
-                                                }
-                                                disabled={status === "saving"}
-                                            />
+                                            <div className='relative'>
+                                                <Input
+                                                    id='pw1'
+                                                    type={
+                                                        show
+                                                            ? "text"
+                                                            : "password"
+                                                    }
+                                                    autoComplete='new-password'
+                                                    value={pw1}
+                                                    onChange={e =>
+                                                        setPw1(e.target.value)
+                                                    }
+                                                    disabled={
+                                                        status === "saving"
+                                                    }
+                                                    className='pr-20'
+                                                />
+                                                <button
+                                                    type='button'
+                                                    onClick={() =>
+                                                        setShow(v => !v)
+                                                    }
+                                                    className='absolute right-3 top-1/2 -translate-y-1/2 text-xs underline underline-offset-4'>
+                                                    {show ? "Hide" : "Show"}
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <div className='space-y-2'>
                                             <Label htmlFor='pw2'>
                                                 Confirm new password
                                             </Label>
-                                            <Input
-                                                id='pw2'
-                                                type='password'
-                                                autoComplete='new-password'
-                                                value={pw2}
-                                                onChange={e =>
-                                                    setPw2(e.target.value)
-                                                }
-                                                disabled={status === "saving"}
-                                            />
+                                            <div className='relative'>
+                                                <Input
+                                                    id='pw2'
+                                                    type={
+                                                        show
+                                                            ? "text"
+                                                            : "password"
+                                                    }
+                                                    autoComplete='new-password'
+                                                    value={pw2}
+                                                    onChange={e =>
+                                                        setPw2(e.target.value)
+                                                    }
+                                                    disabled={
+                                                        status === "saving"
+                                                    }
+                                                    className='pr-20'
+                                                />
+                                                <button
+                                                    type='button'
+                                                    onClick={() =>
+                                                        setShow(v => !v)
+                                                    }
+                                                    className='absolute right-3 top-1/2 -translate-y-1/2 text-xs underline underline-offset-4'>
+                                                    {show ? "Hide" : "Show"}
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <Button

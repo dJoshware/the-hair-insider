@@ -37,7 +37,7 @@ export default function ForgotPasswordClient() {
 
     const next = params?.get("next") || "/library";
 
-    async function onSubmit(e: React.SubmitEvent) {
+    async function onSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         setMessage("");
 
@@ -50,11 +50,11 @@ export default function ForgotPasswordClient() {
         setStatus("sending");
 
         try {
-            const redirectTo = `${window.location.origin}/reset-password?next=${encodeURIComponent(next)}`;
-            const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo,
-            });
-            if (error) throw error;
+            try {
+                localStorage.setItem("postAuthRedirect", next);
+            } catch {}
+            const redirectTo = `${window.location.origin}`;
+            await supabase.auth.resetPasswordForEmail(email, { redirectTo });
 
             setStatus("success");
             setMessage("Check your email for a password reset link.");

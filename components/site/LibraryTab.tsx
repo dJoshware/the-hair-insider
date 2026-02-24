@@ -57,71 +57,81 @@ export function LibraryTab() {
     }, [router]);
 
     return (
-        <div className='mt-6'>
-            {loading ? (
-                <p className='text-sm'>Loading…</p>
-            ) : err ? (
-                <Card className='rounded-3xl'>
-                    <CardHeader>
-                        <CardTitle className='text-base'>
-                            Couldn’t load your library
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className='text-sm'>
-                        {err}
-                        <div className='mt-4'>
-                            <Button
-                                asChild
-                                variant='outline'>
-                                <Link href='/courses'>Browse courses</Link>
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            ) : items.length === 0 ? (
-                <Card className='rounded-3xl'>
-                    <CardHeader>
-                        <CardTitle className='text-base'>
-                            No access yet
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className='text-sm'>
-                        When you purchase a course, it will appear here.
-                        <div className='mt-4'>
-                            <Button asChild>
-                                <Link href='/courses'>Browse courses</Link>
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            ) : (
-                <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-                    {items
-                        .flatMap(row => row.courses ?? [])
-                        .filter(Boolean)
-                        .map(c => (
-                            <Link
-                                key={c.id}
-                                href={`/library/${c.slug}`}>
-                                <Card className='rounded-3xl transition-shadow hover:shadow-md'>
-                                    <CardHeader>
-                                        <CardTitle className='text-lg'>
-                                            {c.title}
-                                        </CardTitle>
-                                        {c.subtitle ? (
-                                            <p className='text-sm'>
-                                                {c.subtitle}
-                                            </p>
-                                        ) : null}
-                                    </CardHeader>
-                                    <CardContent className='text-sm'>
-                                        Open course →
-                                    </CardContent>
-                                </Card>
-                            </Link>
-                        ))}
+        <>
+            <div className='flex items-end justify-between gap-6'>
+                <div>
+                    <h2 className='text-2xl font-semibold tracking-tight'>
+                        My Courses
+                    </h2>
                 </div>
-            )}
-        </div>
+            </div>
+
+            <div className='mt-6'>
+                {loading ? (
+                    <p className='text-sm'>Loading…</p>
+                ) : err ? (
+                    <Card className='rounded-3xl'>
+                        <CardHeader>
+                            <CardTitle className='text-base'>
+                                Couldn’t load your library
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className='text-sm'>
+                            {err}
+                            <div className='mt-4'>
+                                <Button
+                                    asChild
+                                    variant='outline'>
+                                    <Link href='/courses'>Browse courses</Link>
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ) : items.length === 0 ? (
+                    <Card className='rounded-3xl'>
+                        <CardHeader>
+                            <CardTitle className='text-base'>
+                                No access yet
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className='text-sm'>
+                            When you purchase a course, it will appear here.
+                            <div className='mt-4'>
+                                <Button asChild>
+                                    <Link href='/courses'>Browse courses</Link>
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+                        {items
+                            .flatMap(row => row.courses ?? [])
+                            .filter(Boolean)
+                            .map(c => (
+                                <Link
+                                    key={c.id}
+                                    href={`/library/${c.slug}`}>
+                                    <Card className='rounded-3xl transition-shadow hover:shadow-md'>
+                                        <CardHeader>
+                                            <CardTitle className='text-lg'>
+                                                {c.title}
+                                            </CardTitle>
+                                            {c.subtitle ? (
+                                                <p className='text-sm'>
+                                                    {c.subtitle}
+                                                </p>
+                                            ) : null}
+                                        </CardHeader>
+                                        <CardContent className='text-sm'>
+                                            Open course →
+                                        </CardContent>
+                                    </Card>
+                                </Link>
+                            ))}
+                    </div>
+                )}
+            </div>
+        </>
     );
 }

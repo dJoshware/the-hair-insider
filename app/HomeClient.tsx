@@ -69,13 +69,15 @@ export default function HomeClient() {
                                         against it.
                                     </p>
 
-                                    <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
+                                    <div className='flex flex-col gap-3 sm:flex-row items-center sm:justify-center'>
                                         <Button
                                             asChild
                                             className='h-12 px-6'>
-                                            <Link href='/courses/hair-growth-foundations-mini-course'>
-                                                Start Here
-                                            </Link>
+                                            <a
+                                                href='https://vbbazoujjawlegemwyrd.supabase.co/storage/v1/object/public/hair-insider-bucket/Files/The%20Ultimate%20Haircare%20Checklist.pdf'
+                                                download>
+                                                Download The Free Checklist
+                                            </a>
                                         </Button>
                                     </div>
 
@@ -371,7 +373,9 @@ export default function HomeClient() {
                                                 size='sm'
                                                 variant='default'
                                                 className='shrink-0'>
-                                                <Link href='/about'>About Me</Link>
+                                                <Link href='/about'>
+                                                    About Me
+                                                </Link>
                                             </Button>
                                         </div>
                                     </div>

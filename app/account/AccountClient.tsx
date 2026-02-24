@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import { useAuth } from "@/lib/auth/useAuth";
 import { Overlay } from "@/components/site/Overlay";
@@ -24,12 +24,10 @@ type Status = "idle" | "saving" | "success" | "error";
 
 export default function AccountClient() {
     const router = useRouter();
-    const params = useSearchParams();
-    const initialTab = params.get("tab") || "library";
 
     const { signedIn, loading } = useAuth();
 
-    const [tab, setTab] = React.useState(initialTab);
+    const [tab, setTab] = React.useState("library");
 
     // profile state
     const [displayName, setDisplayName] = React.useState("");
@@ -43,6 +41,13 @@ export default function AccountClient() {
 
     const [status, setStatus] = React.useState<Status>("idle");
     const [message, setMessage] = React.useState("");
+
+    // Read tab once on mount
+    React.useEffect(() => {
+        const t =
+            new URLSearchParams(window.location.search).get("tab") || "library";
+        setTab(t);
+    }, []);
 
     // Load user
     React.useEffect(() => {
@@ -64,7 +69,7 @@ export default function AccountClient() {
         if (!loading && !signedIn) router.replace("/signin");
     }, [loading, signedIn, router]);
 
-    // Keep URL in sync (optional)
+    // Keep URL in sync
     React.useEffect(() => {
         const url = new URL(window.location.href);
         url.searchParams.set("tab", tab);
@@ -163,9 +168,7 @@ export default function AccountClient() {
                         <h1 className='text-3xl font-semibold tracking-tight'>
                             Account
                         </h1>
-                        <p className='mt-1 text-sm'>
-                            {email || " "}
-                        </p>
+                        <p className='mt-1 text-sm'>{email || " "}</p>
                     </div>
 
                     <Button

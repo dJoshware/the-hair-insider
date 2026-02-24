@@ -3,10 +3,9 @@ import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 
 const SITE_LINKS = [
-    { href: "/#hero", label: "Start Here" },
-    { href: "/#what", label: "What Is It?" },
-    { href: "/#inside", label: "Inside The Course" },
-    { href: "/#educator", label: "Meet Your Educator" },
+    { href: "/what-is-it", label: "What Is It?" },
+    { href: "/inside-the-course", label: "Inside The Course" },
+    { href: "/meet-your-educator", label: "Meet Your Educator" },
     { href: "/courses", label: "Courses" },
     { href: "/about", label: "About" },
     { href: "/contact", label: "Contact Us" },

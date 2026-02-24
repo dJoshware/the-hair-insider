@@ -217,6 +217,14 @@ export default function HomeClient() {
                                                 </CardContent>
                                             </Card>
                                         ))}
+                                        <Button
+                                            asChild
+                                            variant='default'
+                                            className='h-12 px-6 w-fit'>
+                                            <Link href='/what-is-it'>
+                                                Learn more
+                                            </Link>
+                                        </Button>
                                     </div>
                                 </div>
                             </FadeIn>
@@ -285,13 +293,13 @@ export default function HomeClient() {
                                             </CardContent>
                                         </Card>
                                     ))}
-                                </div>
-
-                                <div className='mt-10'>
                                     <Button
                                         asChild
-                                        className='h-12 px-6'>
-                                        <Link href='/courses'>See courses</Link>
+                                        variant='default'
+                                        className='h-12 px-6 w-fit'>
+                                        <Link href='/inside-the-course'>
+                                            Learn more
+                                        </Link>
                                     </Button>
                                 </div>
                             </FadeIn>
@@ -373,7 +381,7 @@ export default function HomeClient() {
                                                 size='sm'
                                                 variant='default'
                                                 className='shrink-0'>
-                                                <Link href='/about'>
+                                                <Link href='/meet-your-educator'>
                                                     About Me
                                                 </Link>
                                             </Button>

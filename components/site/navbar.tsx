@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth/useAuth";
 import { supabase } from "@/lib/supabase/client";
@@ -34,15 +34,10 @@ export function Navbar() {
     const admin = useAdminStatus();
     const showAdmin = !admin.loading && admin.signedIn && admin.isAdmin;
 
-    const pathname = usePathname();
-    const onHome = pathname === "/";
-
     async function signOut() {
         await supabase.auth.signOut();
         router.push("/");
     }
-
-    const hashHref = (hash: string) => (onHome ? `/#${hash}` : `/#${hash}`);
 
     return (
         <header
@@ -74,20 +69,17 @@ export function Navbar() {
                         <DropdownMenuContent
                             align='end'
                             className='w-56'>
-                            <DropdownMenuLabel>On this page</DropdownMenuLabel>
+                            <DropdownMenuLabel>Explore THI</DropdownMenuLabel>
                             <DropdownMenuItem asChild>
-                                <Link href={hashHref("hero")}>Start Here</Link>
+                                <Link href='/what-is-it'>What Is It?</Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                                <Link href={hashHref("what")}>What Is It?</Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <Link href={hashHref("inside")}>
+                                <Link href='/inside-the-course'>
                                     Inside The Course
                                 </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                                <Link href={hashHref("educator")}>
+                                <Link href='/meet-your-educator'>
                                     Meet Your Educator
                                 </Link>
                             </DropdownMenuItem>
@@ -125,7 +117,9 @@ export function Navbar() {
                             {!loading && signedIn ? (
                                 <>
                                     <DropdownMenuItem asChild>
-                                        <Link href='/account?tab=library'>Library</Link>
+                                        <Link href='/account?tab=library'>
+                                            Library
+                                        </Link>
                                     </DropdownMenuItem>
 
                                     {showAdmin ? (
@@ -183,18 +177,7 @@ export function Navbar() {
                                         variant='ghost'
                                         asChild
                                         className='justify-start'>
-                                        <Link href={hashHref("hero")}>
-                                            Start Here
-                                        </Link>
-                                    </Button>
-                                </SheetClose>
-
-                                <SheetClose asChild>
-                                    <Button
-                                        variant='ghost'
-                                        asChild
-                                        className='justify-start'>
-                                        <Link href={hashHref("what")}>
+                                        <Link href='/what-is-it'>
                                             What Is It?
                                         </Link>
                                     </Button>
@@ -205,7 +188,7 @@ export function Navbar() {
                                         variant='ghost'
                                         asChild
                                         className='justify-start'>
-                                        <Link href={hashHref("inside")}>
+                                        <Link href='/inside-the-course'>
                                             Inside The Course
                                         </Link>
                                     </Button>
@@ -216,7 +199,7 @@ export function Navbar() {
                                         variant='ghost'
                                         asChild
                                         className='justify-start'>
-                                        <Link href={hashHref("educator")}>
+                                        <Link href='/meet-your-educator'>
                                             Meet Your Educator
                                         </Link>
                                     </Button>

@@ -287,7 +287,7 @@ export default function CoursePlayerClient({ slug }: { slug: string }) {
                     <Button
                         asChild
                         variant='outline'>
-                        <Link href='/library'>Back to my library</Link>
+                        <Link href='/account?tab=library'>Back to my library</Link>
                     </Button>
                 </div>
 
@@ -306,7 +306,7 @@ export default function CoursePlayerClient({ slug }: { slug: string }) {
                             <Button
                                 asChild
                                 variant='outline'>
-                                <Link href='/library'>Library</Link>
+                                <Link href='/account?tab=library'>Library</Link>
                             </Button>
                         </div>
                     </CardContent>

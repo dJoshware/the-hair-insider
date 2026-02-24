@@ -1,5 +1,5 @@
+import { redirect } from "next/navigation";
 import type { Metadata } from "next";
-import LibraryClient from "./LibraryClient";
 
 export const metadata: Metadata = {
     title: "Library",
@@ -9,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function LibraryPage() {
-    return <LibraryClient />;
+    redirect("/account?tab=library");
 }

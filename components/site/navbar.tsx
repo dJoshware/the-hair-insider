@@ -2,14 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-    NavigationMenu,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
-} from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth/useAuth";
 import { supabase } from "@/lib/supabase/client";
 import { useAdminStatus } from "@/lib/admin/useAdminStatus";
@@ -22,7 +15,17 @@ import {
     SheetTrigger,
     SheetClose,
 } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import { Menu, ChevronDown } from "lucide-react";
 import Image from "next/image";
 
 export function Navbar() {
@@ -36,10 +39,9 @@ export function Navbar() {
 
     async function signOut() {
         await supabase.auth.signOut();
-        router.push('/');
+        router.push("/");
     }
 
-    // Use /#hash on home, and /?scroll=... on other pages (optional)
     const hashHref = (hash: string) => (onHome ? `/#${hash}` : `/#${hash}`);
 
     return (
@@ -53,119 +55,119 @@ export function Navbar() {
                         alt='The Hair Insider'
                         height={1}
                         width={222}
-                        style={{
-                            marginLeft: -20,
-                            marginTop: 5,
-                        }}
+                        style={{ marginLeft: -20, marginTop: 5 }}
                     />
                 </Link>
 
-                {/* Desktop anchors */}
-                <NavigationMenu className='hidden md:flex'>
-                    <NavigationMenuList className='gap-6'>
-                        <NavigationMenuItem>
-                            <Link
-                                href={hashHref("hero")}
-                                passHref>
-                                <NavigationMenuLink
-                                    className={cn(
-                                        "text-sm font-medium transition-colors hover:text-foreground",
-                                    )}>
-                                    Start Here
-                                </NavigationMenuLink>
-                            </Link>
-                        </NavigationMenuItem>
+                {/* Desktop dropdowns */}
+                <div className='hidden md:flex items-center gap-3'>
+                    {/* Explore dropdown */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant='ghost'
+                                className='gap-1'>
+                                Explore <ChevronDown className='h-4 w-4' />
+                            </Button>
+                        </DropdownMenuTrigger>
 
-                        <NavigationMenuItem>
-                            <Link
-                                href={hashHref("what")}
-                                passHref>
-                                <NavigationMenuLink
-                                    className={cn(
-                                        "text-sm font-medium transition-colors hover:text-foreground",
-                                    )}>
-                                    What Is It?
-                                </NavigationMenuLink>
-                            </Link>
-                        </NavigationMenuItem>
-
-                        <NavigationMenuItem>
-                            <Link
-                                href={hashHref("inside")}
-                                passHref>
-                                <NavigationMenuLink
-                                    className={cn(
-                                        "text-sm font-medium transition-colors hover:text-foreground",
-                                    )}>
+                        <DropdownMenuContent
+                            align='end'
+                            className='w-56'>
+                            <DropdownMenuLabel>On this page</DropdownMenuLabel>
+                            <DropdownMenuItem asChild>
+                                <Link href={hashHref("hero")}>Start Here</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href={hashHref("what")}>What Is It?</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href={hashHref("inside")}>
                                     Inside The Course
-                                </NavigationMenuLink>
-                            </Link>
-                        </NavigationMenuItem>
-
-                        <NavigationMenuItem>
-                            <Link
-                                href={hashHref("educator")}
-                                passHref>
-                                <NavigationMenuLink
-                                    className={cn(
-                                        "text-sm font-medium transition-colors hover:text-foreground",
-                                    )}>
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href={hashHref("educator")}>
                                     Meet Your Educator
-                                </NavigationMenuLink>
-                            </Link>
-                        </NavigationMenuItem>
-                    </NavigationMenuList>
-                </NavigationMenu>
+                                </Link>
+                            </DropdownMenuItem>
 
-                <div className='flex items-center gap-3'>
-                    {/* Desktop auth links */}
-                    {!loading && signedIn ? (
-                        <>
+                            <DropdownMenuSeparator />
+
+                            <DropdownMenuItem asChild>
+                                <Link href='/about'>About</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href='/contact'>Contact Us</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href='/privacy'>Privacy Policy</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href='/terms'>Terms of Service</Link>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    {/* Account dropdown */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
                             <Button
                                 variant='ghost'
-                                asChild
-                                className='hidden sm:inline-flex'>
-                                <Link href='/library'>Library</Link>
+                                className='gap-1'>
+                                Account <ChevronDown className='h-4 w-4' />
                             </Button>
+                        </DropdownMenuTrigger>
 
-                            {showAdmin ? (
-                                <Button
-                                    variant='ghost'
-                                    asChild
-                                    className='hidden sm:inline-flex'>
-                                    <Link href='/admin/courses'>Admin</Link>
-                                </Button>
-                            ) : null}
+                        <DropdownMenuContent
+                            align='end'
+                            className='w-56'>
+                            {!loading && signedIn ? (
+                                <>
+                                    <DropdownMenuItem asChild>
+                                        <Link href='/account'>Account</Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link href='/account?tab=library'>Library</Link>
+                                    </DropdownMenuItem>
 
-                            <Button
-                                variant='ghost'
-                                onClick={signOut}
-                                className='hidden sm:inline-flex'>
-                                Sign out
-                            </Button>
-                        </>
-                    ) : (
-                        <Button
-                            variant='ghost'
-                            asChild
-                            className='hidden sm:inline-flex'>
-                            <Link href='/signin'>Sign in</Link>
-                        </Button>
-                    )}
+                                    {showAdmin ? (
+                                        <DropdownMenuItem asChild>
+                                            <Link href='/admin/courses'>
+                                                Admin
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    ) : null}
 
-                    <Button
-                        asChild
-                        className='hidden sm:inline-flex'>
+                                    <DropdownMenuSeparator />
+
+                                    <DropdownMenuItem onClick={signOut}>
+                                        Sign out
+                                    </DropdownMenuItem>
+                                </>
+                            ) : (
+                                <>
+                                    <DropdownMenuItem asChild>
+                                        <Link href='/signin'>Sign in</Link>
+                                    </DropdownMenuItem>
+                                </>
+                            )}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    {/* Primary CTA */}
+                    <Button asChild>
                         <Link href='/courses'>View courses</Link>
                     </Button>
+                </div>
 
-                    {/* Mobile hamburger */}
+                {/* Mobile hamburger menu */}
+                <div className='flex items-center gap-3 md:hidden'>
                     <Sheet>
                         <SheetTrigger asChild>
                             <Button
                                 variant='ghost'
                                 size='icon'
-                                className='sm:hidden'
                                 aria-label='Open menu'>
                                 <Menu className='h-5 w-5' />
                             </Button>
@@ -252,7 +254,7 @@ export function Navbar() {
                                                 variant='ghost'
                                                 asChild
                                                 className='justify-start'>
-                                                <Link href='/library'>
+                                                <Link href='/account?tab=library'>
                                                     Library
                                                 </Link>
                                             </Button>

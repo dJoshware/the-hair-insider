@@ -307,8 +307,8 @@ export default function CourseDetailClient({
                                                 asChild
                                                 variant='secondary'
                                                 className='h-12 px-6'>
-                                                <Link href='/library'>
-                                                    Go to library
+                                                <Link href='/account?tab=library'>
+                                                    Go to your library
                                                 </Link>
                                             </Button>
                                         </>

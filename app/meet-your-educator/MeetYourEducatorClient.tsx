@@ -79,14 +79,8 @@ export default function MeetYourEducatorClient() {
                                         asChild
                                         className='h-12 px-6'>
                                         <Link href='/courses'>
-                                            Explore courses
+                                            Browse Courses
                                         </Link>
-                                    </Button>
-                                    <Button
-                                        asChild
-                                        variant='secondary'
-                                        className='h-12 px-6'>
-                                        <Link href='/about'>About page</Link>
                                     </Button>
                                 </div>
                             </div>
@@ -137,7 +131,7 @@ export default function MeetYourEducatorClient() {
                             <div className='grid gap-10 md:grid-cols-2'>
                                 <div className='space-y-6 bg-background/35 rounded-3xl p-6'>
                                     <h2 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
-                                        Why this exists
+                                        Why This Exists
                                     </h2>
 
                                     <p className='text-lg leading-8'>
@@ -159,7 +153,7 @@ export default function MeetYourEducatorClient() {
 
                                     <div className='rounded-2xl bg-muted p-4'>
                                         <p className='text-xs font-medium'>
-                                            My approach
+                                            My Approach
                                         </p>
                                         <p className='mt-1 text-sm text-foreground'>
                                             We focus on understanding, not
@@ -209,14 +203,14 @@ export default function MeetYourEducatorClient() {
                                 <Button
                                     asChild
                                     className='h-12 px-6'>
-                                    <Link href='/what-is-it'>What is it?</Link>
+                                    <Link href='/what-is-it'>What Is It?</Link>
                                 </Button>
                                 <Button
                                     asChild
-                                    variant='outline'
+                                    variant='secondary'
                                     className='h-12 px-6'>
                                     <Link href='/inside-the-course'>
-                                        Inside the course
+                                        Inside The Course
                                     </Link>
                                 </Button>
                             </div>

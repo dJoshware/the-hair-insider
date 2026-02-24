@@ -58,13 +58,13 @@ export default function InsideTheCourseClient() {
                                 <Button
                                     asChild
                                     className='h-12 px-6'>
-                                    <Link href='/courses'>See courses</Link>
+                                    <Link href='/courses'>Browse Courses</Link>
                                 </Button>
                                 <Button
                                     asChild
                                     variant='secondary'
                                     className='h-12 px-6'>
-                                    <Link href='/what-is-it'>What is it?</Link>
+                                    <Link href='/what-is-it'>What Is It?</Link>
                                 </Button>
                             </div>
                         </div>
@@ -82,7 +82,7 @@ export default function InsideTheCourseClient() {
                             <div className='grid gap-10 md:grid-cols-2'>
                                 <div className='space-y-6 bg-background/35 rounded-3xl p-6'>
                                     <h2 className='text-2xl font-semibold tracking-tight sm:text-3xl'>
-                                        What you get
+                                        What You Get
                                     </h2>
 
                                     <p className='text-lg leading-8'>
@@ -176,17 +176,10 @@ export default function InsideTheCourseClient() {
                             <div className='mt-10 flex flex-col gap-3 sm:flex-row sm:items-center'>
                                 <Button
                                     asChild
-                                    className='h-12 px-6'>
+                                    className='h-12 px-6'
+                                    variant='secondary'>
                                     <Link href='/meet-your-educator'>
-                                        Meet your educator
-                                    </Link>
-                                </Button>
-                                <Button
-                                    asChild
-                                    variant='outline'
-                                    className='h-12 px-6'>
-                                    <Link href='/courses'>
-                                        Browse the library
+                                        Meet Your Educator
                                     </Link>
                                 </Button>
                             </div>

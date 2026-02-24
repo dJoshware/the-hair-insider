@@ -125,9 +125,6 @@ export function Navbar() {
                             {!loading && signedIn ? (
                                 <>
                                     <DropdownMenuItem asChild>
-                                        <Link href='/account'>Account</Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem asChild>
                                         <Link href='/account?tab=library'>Library</Link>
                                     </DropdownMenuItem>
 

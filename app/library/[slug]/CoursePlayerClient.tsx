@@ -59,6 +59,24 @@ type ResourceLink = {
     sort_order: number | null;
 };
 
+function sortResourcesFilesFirst(list: ResourceLink[]) {
+    return [...list].sort((a, b) => {
+        const aIsFile = !!a.storage_path;
+        const bIsFile = !!b.storage_path;
+
+        // Files first
+        if (aIsFile !== bIsFile) return aIsFile ? -1 : 1;
+
+        // Then by explicit sort_order if present
+        const ao = a.sort_order ?? 999999;
+        const bo = b.sort_order ?? 999999;
+        if (ao !== bo) return ao - bo;
+
+        // Stable tie-breaker
+        return a.title.localeCompare(b.title);
+    });
+}
+
 export default function CoursePlayerClient({ slug }: { slug: string }) {
     const router = useRouter();
 
@@ -89,10 +107,13 @@ export default function CoursePlayerClient({ slug }: { slug: string }) {
     }, [products, activeLessonId]);
 
     const visibleResources = React.useMemo(() => {
-        if (!activeLessonId) return resources.filter(r => !r.lesson_id);
-        return resources.filter(
-            r => !r.lesson_id || r.lesson_id === activeLessonId,
-        );
+        const base = !activeLessonId
+            ? resources.filter(r => !r.lesson_id)
+            : resources.filter(
+                  r => !r.lesson_id || r.lesson_id === activeLessonId,
+              );
+
+        return sortResourcesFilesFirst(base);
     }, [resources, activeLessonId]);
 
     React.useEffect(() => {
@@ -108,7 +129,7 @@ export default function CoursePlayerClient({ slug }: { slug: string }) {
                 return;
             }
 
-            // 1) Fetch course (published)
+            // Fetch course
             const { data: courseData, error: courseErr } = await supabase
                 .from("courses")
                 .select("id, slug, title, subtitle")
@@ -122,7 +143,7 @@ export default function CoursePlayerClient({ slug }: { slug: string }) {
                 return;
             }
 
-            // 2) Confirm entitlement (avoid confusing RLS blank state)
+            // Confirm entitlement
             const { data: ent, error: entErr } = await supabase
                 .from("entitlements")
                 .select("id, status")
@@ -145,7 +166,7 @@ export default function CoursePlayerClient({ slug }: { slug: string }) {
 
             setCourse(courseData);
 
-            // 3) Fetch modules (RLS protected)
+            // Fetch modules
             const { data: modulesData, error: modErr } = await supabase
                 .from("modules")
                 .select("id, title, order")
@@ -162,7 +183,7 @@ export default function CoursePlayerClient({ slug }: { slug: string }) {
             const mods = (modulesData ?? []) as Module[];
             setModules(mods);
 
-            // 4) Fetch lessons for those modules (RLS protected)
+            // Fetch lessons for those modules
             const moduleIds = mods.map(m => m.id);
             if (moduleIds.length === 0) {
                 setLessons([]);
@@ -187,7 +208,7 @@ export default function CoursePlayerClient({ slug }: { slug: string }) {
             const les = (lessonsData ?? []) as Lesson[];
             setLessons(les);
 
-            // 5) Default active lesson = first lesson
+            // Default active lesson = first lesson
             if (les.length > 0) setActiveLessonId(les[0].id);
 
             setLoading(false);
@@ -241,9 +262,6 @@ export default function CoursePlayerClient({ slug }: { slug: string }) {
     }
 
     function normalizeEmbed(url: string) {
-        // For Vimeo player links, this is usually already embeddable:
-        // https://player.vimeo.com/video/12345
-        // If you stored https://vimeo.com/12345, you can convert it here.
         if (url.includes("player.vimeo.com")) return url;
 
         const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
@@ -287,7 +305,9 @@ export default function CoursePlayerClient({ slug }: { slug: string }) {
                     <Button
                         asChild
                         variant='outline'>
-                        <Link href='/account?tab=library'>Back to my library</Link>
+                        <Link href='/account?tab=library'>
+                            Back to my library
+                        </Link>
                     </Button>
                 </div>
 
@@ -572,7 +592,9 @@ export default function CoursePlayerClient({ slug }: { slug: string }) {
                                                 <div className='space-y-2'>
                                                     {(activeLessonId
                                                         ? visibleResources
-                                                        : resources
+                                                        : sortResourcesFilesFirst(
+                                                              resources,
+                                                          )
                                                     ).map(r => (
                                                         <ResourceRow
                                                             key={r.id}

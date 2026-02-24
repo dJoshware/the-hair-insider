@@ -656,7 +656,7 @@ function ResourceRow({
 
                 {storagePath ? (
                     <Button
-                        variant='secondary'
+                        variant='outline'
                         size='sm'
                         onClick={onDownload}
                         disabled={downloading}>

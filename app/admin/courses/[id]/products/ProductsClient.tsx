@@ -29,6 +29,7 @@ type LessonRow = {
 
 type ProductRow = {
     id?: string;
+    lesson_id?: string | null;
     title: string;
     url: string;
     sort_order?: number | null;
@@ -230,6 +231,17 @@ export default function ProductsClient({ id }: { id: string }) {
         }
     }
 
+    const lessonTitleById = React.useMemo(() => {
+        const m = new Map<string, string>();
+        for (const l of lessons) m.set(l.id, l.title);
+        return m;
+    }, [lessons]);
+
+    function assignedLabel(lessonId?: string | null) {
+        if (!lessonId) return "Course-wide";
+        return lessonTitleById.get(lessonId) ?? "Unknown lesson";
+    }
+
     const { ref: pageRef, inView: pageIn } = useInView({
         triggerOnce: true,
         threshold: 0.2,
@@ -263,9 +275,7 @@ export default function ProductsClient({ id }: { id: string }) {
                         <Button
                             asChild
                             variant='secondary'>
-                            <Link href='/admin/courses'>
-                                Back to courses
-                            </Link>
+                            <Link href='/admin/courses'>Back to courses</Link>
                         </Button>
                     </div>
 
@@ -325,9 +335,22 @@ export default function ProductsClient({ id }: { id: string }) {
                                             key={p.id ?? idx}
                                             className='rounded-2xl border p-4 space-y-3'>
                                             <div className='flex items-center justify-between gap-3'>
-                                                <p className='text-sm font-medium'>
-                                                    Product link
-                                                </p>
+                                                <div className='min-w-0'>
+                                                    <p className='text-sm font-medium'>
+                                                        Product link
+                                                    </p>
+                                                    <p className='text-xs text-muted-foreground'>
+                                                        Assigned to:{" "}
+                                                        <span className='text-foreground'>
+                                                            {assignedLabel(
+                                                                p.lesson_id ??
+                                                                    (scopeLessonId ||
+                                                                        null),
+                                                            )}
+                                                        </span>
+                                                    </p>
+                                                </div>
+
                                                 <Button
                                                     type='button'
                                                     variant='ghost'

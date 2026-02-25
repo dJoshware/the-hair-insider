@@ -29,6 +29,7 @@ type LessonRow = {
 
 type ResourceRow = {
     id?: string;
+    lesson_id?: string | null;
     title: string;
     url: string; // citation URL (optional, allow blank)
     storage_path: string; // pdf path (optional, allow blank)
@@ -169,6 +170,7 @@ export default function ResourcesClient({ id }: { id: string }) {
             const rows = (json.resources ?? []) as any[];
             const mapped: ResourceRow[] = rows.map(r => ({
                 id: r.id,
+                lesson_id: r.lesson_id ?? null,
                 title: String(r.title ?? ""),
                 url: String(r.url ?? ""),
                 storage_path: String(r.storage_path ?? ""),
@@ -249,6 +251,7 @@ export default function ResourcesClient({ id }: { id: string }) {
             const rows = (json.resources ?? []) as any[];
             const mapped: ResourceRow[] = rows.map(r => ({
                 id: r.id,
+                lesson_id: r.lesson_id ?? null,
                 title: String(r.title ?? ""),
                 url: String(r.url ?? ""),
                 storage_path: String(r.storage_path ?? ""),
@@ -262,6 +265,17 @@ export default function ResourcesClient({ id }: { id: string }) {
         } finally {
             setSaving(false);
         }
+    }
+
+    const lessonTitleById = React.useMemo(() => {
+        const m = new Map<string, string>();
+        for (const l of lessons) m.set(l.id, l.title);
+        return m;
+    }, [lessons]);
+
+    function assignedLabel(lessonId?: string | null) {
+        if (!lessonId) return "Course-wide";
+        return lessonTitleById.get(lessonId) ?? "Unknown lesson";
     }
 
     const { ref: pageRef, inView: pageIn } = useInView({
@@ -297,9 +311,7 @@ export default function ResourcesClient({ id }: { id: string }) {
                         <Button
                             asChild
                             variant='secondary'>
-                            <Link href='/admin/courses'>
-                                Back to courses
-                            </Link>
+                            <Link href='/admin/courses'>Back to courses</Link>
                         </Button>
                     </div>
 
@@ -355,9 +367,21 @@ export default function ResourcesClient({ id }: { id: string }) {
                                             key={r.id ?? idx}
                                             className='rounded-2xl border p-4 space-y-3'>
                                             <div className='flex items-center justify-between gap-3'>
-                                                <p className='text-sm font-medium'>
-                                                    Resource
-                                                </p>
+                                                <div className='min-w-0'>
+                                                    <p className='text-sm font-medium'>
+                                                        Resource
+                                                    </p>
+                                                    <p className='text-xs text-muted-foreground'>
+                                                        Assigned to:{" "}
+                                                        <span className='text-foreground'>
+                                                            {assignedLabel(
+                                                                r.lesson_id ??
+                                                                    (scopeLessonId ||
+                                                                        null),
+                                                            )}
+                                                        </span>
+                                                    </p>
+                                                </div>
                                                 <Button
                                                     type='button'
                                                     variant='ghost'

@@ -69,18 +69,6 @@ export default function HomeClient() {
                                         against it.
                                     </p>
 
-                                    <div className='flex flex-col gap-3 sm:flex-row items-center sm:justify-center'>
-                                        <Button
-                                            asChild
-                                            className='h-12 px-6'>
-                                            <a
-                                                href='https://vbbazoujjawlegemwyrd.supabase.co/storage/v1/object/public/hair-insider-bucket/Files/The%20Ultimate%20Haircare%20Checklist.pdf'
-                                                download>
-                                                Download The Free Checklist
-                                            </a>
-                                        </Button>
-                                    </div>
-
                                     <div className='flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm'>
                                         <Badge variant='secondary'>
                                             In-Depth Lessons
@@ -91,6 +79,36 @@ export default function HomeClient() {
                                         <Badge variant='secondary'>
                                             Simple Routines
                                         </Badge>
+                                    </div>
+
+                                    {/* Start Here */}
+                                    <p className='text-3xl font-semibold tracking-tight'>
+                                        Start here
+                                    </p>
+                                    <p className='text-sm text-foreground'>
+                                        Choose your next step. Download the free
+                                        checklist or start with the mini course.
+                                    </p>
+
+                                    <div className='mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center'>
+                                        <Button
+                                            asChild
+                                            className='h-12 px-6'>
+                                            <Link href='/courses/hair-growth-foundations-mini-course'>
+                                                Start the Mini Course
+                                            </Link>
+                                        </Button>
+
+                                        <Button
+                                            asChild
+                                            variant='secondary'
+                                            className='h-12 px-6'>
+                                            <a
+                                                href='https://vbbazoujjawlegemwyrd.supabase.co/storage/v1/object/public/hair-insider-bucket/Files/The%20Ultimate%20Haircare%20Checklist.pdf'
+                                                download>
+                                                Download The Free Checklist
+                                            </a>
+                                        </Button>
                                     </div>
                                 </div>
 

@@ -110,7 +110,11 @@ export async function GET(
         .eq('course_id', courseId)
         .order('sort_order', { ascending: true });
 
-    if (lessonFilter) q = q.eq('lesson_id', lessonFilter);
+    if (lessonFilter) {
+        q = q.eq('lesson_id', lessonFilter);
+    } else {
+        q = q.is('lesson_id', null);
+    }
 
     const { data, error } = await q;
 

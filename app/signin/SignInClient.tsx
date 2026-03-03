@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Overlay } from "@/components/site/Overlay";
 import { Navbar } from "@/components/site/navbar";
+import { GoogleSignInButton } from "@/components/site/GoogleSignIn";
 
 type Status = "idle" | "sending" | "success" | "error";
 type Mode = "signin" | "signup";
@@ -272,7 +273,18 @@ export default function SignInClient() {
                                               : "Create account"}
                                     </Button>
 
-                                    <div className='flex items-center justify-between text-sm'>
+                                    <div className='my-2 flex items-center gap-3'>
+                                        <div className='h-px flex-1 bg-border' />
+                                        <span className='text-xs text-muted-foreground'>
+                                            or
+                                        </span>
+                                        <div className='h-px flex-1 bg-border' />
+                                    </div>
+
+                                    <GoogleSignInButton />
+
+                                    {/* Bottom row actions */}
+                                    <div className='flex items-center justify-between text-sm w-[300]'>
                                         <button
                                             type='button'
                                             className='underline underline-offset-4'
@@ -325,21 +337,6 @@ export default function SignInClient() {
                                         </AlertDescription>
                                     </Alert>
                                 )}
-
-                                <div className='text-sm text-muted-foreground'>
-                                    <p className='leading-6'>
-                                        Use the same email you used at checkout.
-                                    </p>
-                                    <p className='mt-2 leading-6'>
-                                        Don’t have access yet?{" "}
-                                        <Link
-                                            href='/courses'
-                                            className='font-medium text-foreground underline underline-offset-4'>
-                                            View courses
-                                        </Link>
-                                        .
-                                    </p>
-                                </div>
                             </CardContent>
                         </Card>
                     </div>

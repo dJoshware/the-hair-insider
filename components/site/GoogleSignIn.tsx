@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 
@@ -33,11 +32,14 @@ function GoogleGIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export function GoogleSignInButton() {
-    const searchParams = useSearchParams();
-
     const onGoogle = async () => {
-        const next = searchParams.get("next") || "/dashboard";
-        localStorage.setItem("postAuthRedirect", next);
+        const params = new URLSearchParams(window.location.search);
+        const next = params.get("next") || "/dashboard";
+
+        try {
+            localStorage.setItem("postAuthRedirect", next);
+        } catch {}
+
         const origin = window.location.origin;
 
         const { error } = await supabase.auth.signInWithOAuth({
@@ -56,7 +58,8 @@ export function GoogleSignInButton() {
     return (
         <Button
             type='button'
-            className='bg-foreground h-12 w-full rounded-2xl'
+            variant='outline'
+            className='h-12 w-full rounded-2xl'
             onClick={onGoogle}>
             <GoogleGIcon className='mr-2 h-5 w-5' />
             Continue with Google

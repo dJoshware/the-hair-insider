@@ -90,7 +90,8 @@ export default function HomeClient() {
                                         checklist or start with the mini course.
                                     </p>
 
-                                    <div className='mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center'>
+                                    {/* <div className='mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center'> */}
+                                    <div className='mt-4 flex flex-col gap-3 sm:flex-row'>
                                         <Button
                                             asChild
                                             className='h-12 px-6'>
@@ -99,7 +100,7 @@ export default function HomeClient() {
                                             </Link>
                                         </Button>
 
-                                        <Button
+                                        {/* <Button
                                             asChild
                                             variant='secondary'
                                             className='h-12 px-6'>
@@ -108,7 +109,7 @@ export default function HomeClient() {
                                                 download>
                                                 Download The Free Checklist
                                             </a>
-                                        </Button>
+                                        </Button> */}
                                     </div>
                                 </div>
 

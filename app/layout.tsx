@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import ExternalReturnReload from "./_components/ExternalReturnReload";
 import { Bodoni_Moda, Luxurious_Script } from "next/font/google";
 import "./globals.css";
@@ -57,6 +58,13 @@ export default function RootLayout({
                 ${luxuriousScript.variable}
             `}
             suppressHydrationWarning>
+            <head>
+                <Script
+                    id='mcjs'
+                    strategy='afterInteractive'
+                    src='https://chimpstatic.com/mcjs-connected/js/users/115024abbbe42dfa2d699bd2f/fc03026f639a875a05b88dc5c.js'
+                />
+            </head>
             <body
                 className={`
                 antialiased

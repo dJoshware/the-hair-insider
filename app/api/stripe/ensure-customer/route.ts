@@ -1,84 +1,73 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { createClient } from '@supabase/supabase-js';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 
 function getStripe() {
-    const key = process.env.STRIPE_SECRET_KEY;
+    const key = process.env.STRIPE_SECRET_KEY!;
     if (!key) throw new Error('Missing STRIPE_SECRET_KEY');
     return new Stripe(key);
 }
 
-const admin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SECRET_KEY!,
-);
-
-export async function POST(req: Request) {
+export async function POST() {
     const stripe = getStripe();
     try {
-        const authHeader = req.headers.get('authorization') || '';
-        const token = authHeader.startsWith('Bearer ')
-            ? authHeader.slice('Bearer '.length)
-            : null;
-
-        if (!token) {
-            return NextResponse.json(
-                { error: 'Not authenticated.' },
-                { status: 401 },
-            );
-        }
-
+        // 1) Auth from cookies (provider-agnostic)
+        const supabase = await createSupabaseServerClient();
         const { data: userData, error: userErr } =
-            await admin.auth.getUser(token);
+            await supabase.auth.getUser();
+
         if (userErr || !userData.user) {
             return NextResponse.json(
-                { error: 'Invalid session.' },
+                { error: 'Not authenticated', details: userErr?.message },
                 { status: 401 },
             );
         }
 
         const user = userData.user;
 
-        // Check if we already have a stripe customer id
-        const { data: _stripe, error: _stripeErr } = await admin
+        // 2) Read/write using service role client
+        const admin = createSupabaseAdminClient();
+
+        const { data: row, error: rowErr } = await admin
             .from('stripe')
             .select('stripe_customer_id')
             .eq('id', user.id)
             .maybeSingle();
 
-        if (_stripeErr) {
+        if (rowErr)
             return NextResponse.json(
-                { error: _stripeErr.message },
+                { error: rowErr.message },
                 { status: 500 },
             );
-        }
 
-        if (_stripe?.stripe_customer_id) {
+        if (row?.stripe_customer_id) {
             return NextResponse.json({
-                stripe_customer_id: _stripe.stripe_customer_id,
+                stripe_customer_id: row.stripe_customer_id,
             });
         }
 
-        // Create stripe customer
+        // 3) Create Stripe customer
         const customer = await stripe.customers.create({
             email: user.email ?? undefined,
             metadata: { supabase_user_id: user.id },
         });
 
-        // Store it
         const { error: upsertErr } = await admin.from('stripe').upsert({
             id: user.id,
             stripe_customer_id: customer.id,
         });
 
-        if (upsertErr) {
+        if (upsertErr)
             return NextResponse.json(
                 { error: upsertErr.message },
                 { status: 500 },
             );
-        }
 
-        return NextResponse.json({ stripe_customer_id: customer.id });
+        return NextResponse.json({
+            stripe_customer_id: customer.id,
+            created: true,
+        });
     } catch (e) {
         return NextResponse.json(
             { error: e instanceof Error ? e.message : 'Unknown error' },

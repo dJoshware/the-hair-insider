@@ -13,28 +13,32 @@ export default function CallbackClient() {
 
         const run = async () => {
             // retry a few times in case session isn't available immediately
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 30; i++) {
                 const { data } = await supabase.auth.getSession();
                 if (data.session) {
                     if (cancelled) return;
 
                     setStatus("Finalizing your account...");
 
-                    const token = data.session.access_token;
+                    // const token = data.session.access_token;
 
                     // Ensure Stripe customer exists (non-blocking)
                     try {
                         const res = await fetch("/api/stripe/ensure-customer", {
                             method: "POST",
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({}),
+                            // headers: {
+                            //     Authorization: `Bearer ${token}`,
+                            //     "Content-Type": "application/json",
+                            // },
+                            // body: "{}",
                         });
-                        // If it fails, ignore so login still succeeds
-                        // (but ensure-customer route should be idempotent)
-                        void res;
+
+                        if (!res.ok) {
+                            console.error(
+                                "ensure-customer failed",
+                                await res.text(),
+                            );
+                        }
                     } catch {}
 
                     const next = localStorage.getItem("postAuthRedirect");

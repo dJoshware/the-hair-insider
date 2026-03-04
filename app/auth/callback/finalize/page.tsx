@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import CallbackClient from "./CallbackClient";
+import CallbackClient from "../CallbackClient";
 
 export const metadata: Metadata = {
     title: "Signing you in",

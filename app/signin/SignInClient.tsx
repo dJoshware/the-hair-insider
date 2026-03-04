@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { useInView } from "react-intersection-observer";
 import { FadeIn } from "@/components/site/FadeIn";
 import { supabase } from "@/lib/supabase/client";
@@ -19,12 +18,65 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Overlay } from "@/components/site/Overlay";
 import { Navbar } from "@/components/site/navbar";
 import { GoogleSignInButton } from "@/components/site/GoogleSignIn";
+import { Eye, EyeOff } from "lucide-react";
 
 type Status = "idle" | "sending" | "success" | "error";
 type Mode = "signin" | "signup";
 
 function isValidEmail(email: string) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+}
+
+function PasswordField({
+    id,
+    label,
+    value,
+    onChange,
+    disabled,
+    autoComplete,
+    placeholder,
+}: {
+    id: string;
+    label: string;
+    value: string;
+    onChange: (v: string) => void;
+    disabled?: boolean;
+    autoComplete?: string;
+    placeholder?: string;
+}) {
+    const [show, setShow] = React.useState(false);
+
+    return (
+        <div className='space-y-2'>
+            <Label htmlFor={id}>{label}</Label>
+
+            <div className='relative'>
+                <Input
+                    id={id}
+                    type={show ? "text" : "password"}
+                    autoComplete={autoComplete}
+                    placeholder={placeholder}
+                    value={value}
+                    onChange={e => onChange(e.target.value)}
+                    disabled={disabled}
+                    className='pr-10'
+                />
+
+                <button
+                    type='button'
+                    aria-label={show ? "Hide password" : "Show password"}
+                    onClick={() => setShow(s => !s)}
+                    disabled={disabled}
+                    className='absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground disabled:opacity-50'>
+                    {show ? (
+                        <EyeOff className='h-4 w-4' />
+                    ) : (
+                        <Eye className='h-4 w-4' />
+                    )}
+                </button>
+            </div>
+        </div>
+    );
 }
 
 export default function SignInClient() {
@@ -80,7 +132,6 @@ export default function SignInClient() {
         }
 
         try {
-            // Sign In
             if (mode === "signin") {
                 const { data, error } = await supabase.auth.signInWithPassword({
                     email,
@@ -106,14 +157,12 @@ export default function SignInClient() {
                 return;
             }
 
-            // Sign Up
             const { data, error } = await supabase.auth.signUp({
                 email,
                 password,
             });
             if (error) throw error;
 
-            // If email confirmations are ON, session will be null until they confirm
             if (!data.session) {
                 setStatus("success");
                 setMessage(
@@ -123,7 +172,6 @@ export default function SignInClient() {
                 return;
             }
 
-            // If confirmations are OFF, they may be signed in immediately
             const token = data.session.access_token;
             fetch("/api/stripe/ensure-customer", {
                 method: "POST",
@@ -218,48 +266,34 @@ export default function SignInClient() {
                                         />
                                     </div>
 
-                                    <div className='space-y-2'>
-                                        <Label htmlFor='password'>
-                                            {mode === "signin"
+                                    <PasswordField
+                                        id='password'
+                                        label={
+                                            mode === "signin"
                                                 ? "Password"
-                                                : "Create a password"}
-                                        </Label>
-                                        <Input
-                                            id='password'
-                                            type='password'
-                                            autoComplete={
-                                                mode === "signin"
-                                                    ? "current-password"
-                                                    : "new-password"
-                                            }
-                                            placeholder='Minimum 8 characters'
-                                            value={password}
-                                            onChange={e =>
-                                                setPassword(e.target.value)
-                                            }
-                                            disabled={status === "sending"}
-                                        />
-                                    </div>
+                                                : "Create a password"
+                                        }
+                                        value={password}
+                                        onChange={setPassword}
+                                        disabled={status === "sending"}
+                                        autoComplete={
+                                            mode === "signin"
+                                                ? "current-password"
+                                                : "new-password"
+                                        }
+                                        placeholder='Minimum 8 characters'
+                                    />
 
                                     {mode === "signup" ? (
-                                        <div className='space-y-2'>
-                                            <Label htmlFor='confirmPassword'>
-                                                Confirm password
-                                            </Label>
-                                            <Input
-                                                id='confirmPassword'
-                                                type='password'
-                                                autoComplete='new-password'
-                                                placeholder='Re-enter password'
-                                                value={confirmPassword}
-                                                onChange={e =>
-                                                    setConfirmPassword(
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                disabled={status === "sending"}
-                                            />
-                                        </div>
+                                        <PasswordField
+                                            id='confirmPassword'
+                                            label='Confirm password'
+                                            value={confirmPassword}
+                                            onChange={setConfirmPassword}
+                                            disabled={status === "sending"}
+                                            autoComplete='new-password'
+                                            placeholder='Re-enter password'
+                                        />
                                     ) : null}
 
                                     <Button
@@ -283,7 +317,6 @@ export default function SignInClient() {
 
                                     <GoogleSignInButton />
 
-                                    {/* Bottom row actions */}
                                     <div className='flex items-center justify-between text-sm w-[300]'>
                                         <button
                                             type='button'

@@ -58,7 +58,7 @@ export function GoogleSignInButton() {
     return (
         <Button
             type='button'
-            variant='outline'
+            variant='default'
             className='h-12 w-full rounded-2xl'
             onClick={onGoogle}>
             <GoogleGIcon className='mr-2 h-5 w-5' />

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import { requireAdminFromRequest } from '@/lib/admin/requireAdmin';
 import { normalizeVimeoEmbedUrl } from '@/lib/vimeo';
 
@@ -20,10 +20,7 @@ type LessonInsert = {
 
 type LessonRow = LessonInsert & { id: string };
 
-const adminDb = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SECRET_KEY!,
-);
+const adminDb = createSupabaseAdminClient();
 
 async function verifyModuleBelongsToCourse(moduleId: string, courseId: string) {
     const { data: mod, error: modErr } = await adminDb

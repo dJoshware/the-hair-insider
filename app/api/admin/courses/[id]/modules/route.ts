@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import { requireAdminFromRequest } from '@/lib/admin/requireAdmin';
 
-const adminDb = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SECRET_KEY!,
-);
+const adminDb = createSupabaseAdminClient();
 
 type Ctx = { params: Promise<{ id: string }> };
 

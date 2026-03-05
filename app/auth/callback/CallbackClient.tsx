@@ -39,7 +39,9 @@ export default function CallbackClient() {
                                 await res.text(),
                             );
                         }
-                    } catch {}
+                    } catch (e) {
+                        console.error("ensure-customer threw:", e);
+                    }
 
                     const next = localStorage.getItem("postAuthRedirect");
                     if (next) localStorage.removeItem("postAuthRedirect");

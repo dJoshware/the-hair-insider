@@ -9,26 +9,38 @@ function getStripe() {
     return new Stripe(key);
 }
 
-export async function POST() {
+export async function POST(req: Request) {
     const stripe = getStripe();
     try {
-        // 1) Auth from cookies (provider-agnostic)
-        const supabase = await createSupabaseServerClient();
-        const { data: userData, error: userErr } =
-            await supabase.auth.getUser();
+        const admin = createSupabaseAdminClient();
+        let user = null;
 
-        if (userErr || !userData.user) {
+        // 1) Try Bearer token first (email/password signin path)
+        const authHeader = req.headers.get('authorization') || '';
+        const token = authHeader.startsWith('Bearer ')
+            ? authHeader.slice('Bearer '.length)
+            : null;
+
+        if (token) {
+            const { data, error } = await admin.auth.getUser(token);
+            if (!error && data.user) user = data.user;
+        }
+
+        // 2) Fall back to cookies (OAuth / magic link path)
+        if (!user) {
+            const supabase = await createSupabaseServerClient();
+            const { data } = await supabase.auth.getUser();
+            user = data.user ?? null;
+        }
+
+        if (!user) {
             return NextResponse.json(
-                { error: 'Not authenticated', details: userErr?.message },
+                { error: 'Not authenticated' },
                 { status: 401 },
             );
         }
 
-        const user = userData.user;
-
-        // 2) Read/write using service role client
-        const admin = createSupabaseAdminClient();
-
+        // 3) Check for existing Stripe customer
         const { data: row, error: rowErr } = await admin
             .from('stripe')
             .select('stripe_customer_id')
@@ -47,7 +59,7 @@ export async function POST() {
             });
         }
 
-        // 3) Create Stripe customer
+        // 4) Create Stripe customer
         const customer = await stripe.customers.create({
             email: user.email ?? undefined,
             metadata: { supabase_user_id: user.id },

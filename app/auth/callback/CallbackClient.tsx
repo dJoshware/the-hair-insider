@@ -20,17 +20,15 @@ export default function CallbackClient() {
 
                     setStatus("Finalizing your account...");
 
-                    // const token = data.session.access_token;
-
                     // Ensure Stripe customer exists (non-blocking)
                     try {
                         const res = await fetch("/api/stripe/ensure-customer", {
                             method: "POST",
-                            // headers: {
-                            //     Authorization: `Bearer ${token}`,
-                            //     "Content-Type": "application/json",
-                            // },
-                            // body: "{}",
+                            headers: {
+                                Authorization: `Bearer ${data.session.access_token}`,
+                                "Content-Type": "application/json",
+                            },
+                            body: "{}",
                         });
 
                         if (!res.ok) {

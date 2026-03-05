@@ -397,6 +397,7 @@ export default function HomeClient() {
                                             </div>
 
                                             <Button
+                                                asChild
                                                 size='sm'
                                                 variant='default'
                                                 className='shrink-0'>

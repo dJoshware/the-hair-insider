@@ -17,7 +17,6 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Overlay } from "@/components/site/Overlay";
 import { Navbar } from "@/components/site/navbar";
-import { GoogleSignInButton } from "@/components/site/GoogleSignIn";
 import { Eye, EyeOff } from "lucide-react";
 
 type Status = "idle" | "sending" | "success" | "error";
@@ -49,7 +48,6 @@ function PasswordField({
     return (
         <div className='space-y-2'>
             <Label htmlFor={id}>{label}</Label>
-
             <div className='relative'>
                 <Input
                     id={id}
@@ -61,7 +59,6 @@ function PasswordField({
                     disabled={disabled}
                     className='pr-10'
                 />
-
                 <button
                     type='button'
                     aria-label={show ? "Hide password" : "Show password"}
@@ -102,7 +99,7 @@ export default function SignInClient() {
         return true;
     }, [status, email, password, confirmPassword, mode]);
 
-    async function onSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+    async function onSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
         e.preventDefault();
         setMessage("");
 
@@ -126,9 +123,8 @@ export default function SignInClient() {
 
         setStatus("sending");
 
-        if (params) {
-            const n = params.get("next");
-            if (n) localStorage.setItem("postAuthRedirect", n);
+        if (params?.get("next")) {
+            localStorage.setItem("postAuthRedirect", params.get("next")!);
         }
 
         try {
@@ -205,8 +201,10 @@ export default function SignInClient() {
             try {
                 localStorage.removeItem("postAuthRedirect");
             } catch {}
-            const redirectTo = `${window.location.origin}`;
-            await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+
+            await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/auth/callback`,
+            });
 
             setStatus("success");
             setMessage("Check your email for a password reset link.");
@@ -232,7 +230,7 @@ export default function SignInClient() {
                 <FadeIn
                     inView={pageIn}
                     delayMs={100}>
-                    <div className='w-full max-w-md'>
+                    <div className='w-[350px] max-w-md'>
                         <Card className='rounded-3xl'>
                             <CardHeader>
                                 <CardTitle className='text-2xl'>
@@ -284,7 +282,7 @@ export default function SignInClient() {
                                         placeholder='Minimum 8 characters'
                                     />
 
-                                    {mode === "signup" ? (
+                                    {mode === "signup" && (
                                         <PasswordField
                                             id='confirmPassword'
                                             label='Confirm password'
@@ -294,7 +292,7 @@ export default function SignInClient() {
                                             autoComplete='new-password'
                                             placeholder='Re-enter password'
                                         />
-                                    ) : null}
+                                    )}
 
                                     <Button
                                         type='submit'
@@ -307,17 +305,7 @@ export default function SignInClient() {
                                               : "Create account"}
                                     </Button>
 
-                                    <div className='my-2 flex items-center gap-3'>
-                                        <div className='h-px flex-1 bg-border' />
-                                        <span className='text-xs text-muted-foreground'>
-                                            or
-                                        </span>
-                                        <div className='h-px flex-1 bg-border' />
-                                    </div>
-
-                                    <GoogleSignInButton />
-
-                                    <div className='flex items-center justify-between text-sm w-[300]'>
+                                    <div className='flex items-center justify-between text-sm w-full'>
                                         <button
                                             type='button'
                                             className='underline underline-offset-4'

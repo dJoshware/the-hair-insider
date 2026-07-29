@@ -114,6 +114,10 @@ export default function SignInClient() {
                 },
                 body: JSON.stringify({}),
             }).catch(() => {});
+            fetch("/api/entitlements/claim-pending", {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}` },
+            }).catch(() => {});
         }
         fetch("/api/mailchimp/subscribe", {
             method: "POST",

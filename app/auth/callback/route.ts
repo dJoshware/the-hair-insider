@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { claimPendingEntitlements } from '@/lib/entitlements/claimPending';
 import crypto from 'crypto';
 
 async function subscribeToMailchimp(email: string) {
@@ -50,6 +51,12 @@ export async function GET(req: Request) {
             // Same-device confirmation; subscribe to Mailchimp now that we have the session
             subscribeToMailchimp(data.session.user.email).catch(e =>
                 console.error('Mailchimp callback error:', e),
+            );
+            claimPendingEntitlements(
+                data.session.user.id,
+                data.session.user.email,
+            ).catch(e =>
+                console.error('Claim pending entitlements error:', e),
             );
         }
     }

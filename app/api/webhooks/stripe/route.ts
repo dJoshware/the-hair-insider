@@ -110,19 +110,14 @@ export async function POST(req: Request) {
             );
         }
 
-        // Payment Link purchases won't have user_id, so look up by email
-        if (!user_id) {
-            const email = session.customer_details?.email;
-            if (email) {
-                const { data: rows } = await admin.rpc('get_user_id_by_email', { p_email: email });
-                if (rows?.[0]?.id) user_id = rows[0].id;
-            }
-        }
+        const email = session.customer_details?.email ?? null;
 
-        if (!user_id) {
-            // No matching account, can't grant entitlement yet
-            console.warn('Stripe webhook: no user_id resolved for session', session.id);
-            return NextResponse.json({ received: true });
+        // Payment Link purchases won't have user_id, so look up by email
+        if (!user_id && email) {
+            const { data: rows } = await admin.rpc('get_user_id_by_email', {
+                p_email: email,
+            });
+            if (rows?.[0]?.id) user_id = rows[0].id;
         }
 
         const stripeCustomerId =
@@ -162,6 +157,41 @@ export async function POST(req: Request) {
             } catch (e) {
                 console.error('Founder promo check failed:', e);
             }
+        }
+
+        if (!user_id) {
+            // No account exists yet (e.g. a cold Payment Link buyer who
+            // hasn't signed up). Stash the purchase so it can be claimed
+            // as soon as an account with this email exists.
+            if (!email) {
+                console.warn(
+                    'Stripe webhook: no user_id or email on session',
+                    session.id,
+                );
+                return NextResponse.json({ received: true });
+            }
+
+            const pending = courseIdsToGrant.map(cid => ({
+                email,
+                course_id: cid,
+                is_founder: isFounder,
+                stripe_customer_id: stripeCustomerId,
+                stripe_checkout_session_id: session.id,
+                stripe_payment_intent_id: stripePaymentIntentId,
+            }));
+
+            const { error: pendingError } = await admin
+                .from('pending_entitlements')
+                .insert(pending);
+
+            if (pendingError) {
+                console.error(
+                    'Failed to store pending entitlement:',
+                    pendingError,
+                );
+            }
+
+            return NextResponse.json({ received: true });
         }
 
         const entitlements = courseIdsToGrant.map(cid => ({

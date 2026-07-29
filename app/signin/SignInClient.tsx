@@ -106,6 +106,13 @@ export default function SignInClient() {
         }
         const token = data.session?.access_token;
         if (token) {
+            // Claim any purchase made before this account existed first, so
+            // ensure-customer can find its Stripe customer id afterward
+            // instead of minting a duplicate.
+            await fetch("/api/entitlements/claim-pending", {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}` },
+            }).catch(() => {});
             fetch("/api/stripe/ensure-customer", {
                 method: "POST",
                 headers: {
@@ -113,10 +120,6 @@ export default function SignInClient() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({}),
-            }).catch(() => {});
-            fetch("/api/entitlements/claim-pending", {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
             }).catch(() => {});
         }
         fetch("/api/mailchimp/subscribe", {

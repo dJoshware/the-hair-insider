@@ -56,16 +56,43 @@ export async function POST(req: Request) {
             });
         }
 
-        // Create stripe customer
-        const customer = await stripe.customers.create({
-            email: user.email ?? undefined,
-            metadata: { supabase_user_id: user.id },
-        });
+        // A guest Payment Link purchase (before this account existed) may
+        // have already created a Stripe customer for this email. Reuse it
+        // instead of minting a duplicate.
+        let customerId: string | null = null;
+
+        const { data: entitlementRow } = await admin
+            .from('entitlements')
+            .select('stripe_customer_id')
+            .eq('user_id', user.id)
+            .not('stripe_customer_id', 'is', null)
+            .limit(1)
+            .maybeSingle();
+
+        if (entitlementRow?.stripe_customer_id) {
+            customerId = entitlementRow.stripe_customer_id;
+        } else if (user.email) {
+            const existing = await stripe.customers.list({
+                email: user.email,
+                limit: 1,
+            });
+            if (existing.data[0]) customerId = existing.data[0].id;
+        }
+
+        let created = false;
+        if (!customerId) {
+            const customer = await stripe.customers.create({
+                email: user.email ?? undefined,
+                metadata: { supabase_user_id: user.id },
+            });
+            customerId = customer.id;
+            created = true;
+        }
 
         // Store it
         const { error: upsertErr } = await admin.from('stripe').upsert({
             id: user.id,
-            stripe_customer_id: customer.id,
+            stripe_customer_id: customerId,
         });
 
         if (upsertErr) {
@@ -75,9 +102,17 @@ export async function POST(req: Request) {
             );
         }
 
+        // Backfill any entitlements missing a customer id (e.g. a manually
+        // granted or pending-claimed purchase that predates this lookup)
+        await admin
+            .from('entitlements')
+            .update({ stripe_customer_id: customerId })
+            .eq('user_id', user.id)
+            .is('stripe_customer_id', null);
+
         return NextResponse.json({
-            stripe_customer_id: customer.id,
-            created: true,
+            stripe_customer_id: customerId,
+            created,
         });
     } catch (e) {
         return NextResponse.json(

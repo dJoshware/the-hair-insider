@@ -23,6 +23,12 @@ const ADMIN_SECTIONS = [
         description: "Manage the ShopMy product catalog and links.",
         badge: null,
     },
+    {
+        title: "Welcome Sequence",
+        href: "/admin/welcome-sequence",
+        description: "Test and monitor the 7-day welcome email drip.",
+        badge: null,
+    },
 ];
 
 export default function AdminClient() {

@@ -122,11 +122,11 @@ export default function SignInClient() {
                 body: JSON.stringify({}),
             }).catch(() => {});
         }
-        fetch("/api/mailchimp/subscribe", {
+        fetch("/api/resend/subscribe", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email: email.trim() }),
-        }).catch(e => console.error("Mailchimp subscribe error:", e));
+        }).catch(e => console.error("Resend subscribe error:", e));
         setStatus("success");
         setMessage("Signed in. Redirecting…");
         window.location.href = destination;

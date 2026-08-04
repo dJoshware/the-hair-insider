@@ -28,7 +28,7 @@ export default function EmailConfirmedPage() {
                 },
                 body: JSON.stringify({}),
             }).catch(() => {});
-            fetch("/api/mailchimp/subscribe", {
+            fetch("/api/resend/subscribe", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email: session.user.email }),

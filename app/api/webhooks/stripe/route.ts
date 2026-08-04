@@ -1,23 +1,26 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
-import crypto from 'crypto';
+import { Resend } from 'resend';
 import { sendThankYouEmail } from '@/lib/email/sendThankYou';
 
 export const runtime = 'nodejs';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const resend = new Resend(process.env.RESEND_API_KEY!);
 
 const admin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SECRET_KEY!,
 );
 
-const SLUG_TO_MAILCHIMP_TAG: Record<string, string> = {
-    'hair-growth-foundations-mini-course': 'growth-mini-course-purchased',
-    'hair-growth-bundle': 'growth-bundle-purchased',
-    'hair-growth-workbook': 'growth-workbook-purchased',
-    'hair-growth-edit': 'growth-edit-purchased',
+// Matches the contact properties the "Welcome Hair Insider!" Resend
+// Automation checks to exit the welcome sequence early on purchase.
+const SLUG_TO_RESEND_PROPERTY: Record<string, string> = {
+    'hair-growth-foundations-mini-course': 'growth_mini_course_purchased',
+    'hair-growth-bundle': 'growth_bundle_purchased',
+    'hair-growth-workbook': 'growth_workbook_purchased',
+    'hair-growth-edit': 'growth_edit_purchased',
 };
 
 // Limited-run founder pricing: first 100 redemptions of this code on the
@@ -40,35 +43,14 @@ async function usedFounderPromo(sessionId: string): Promise<boolean> {
     });
 }
 
-async function addMailchimpTag(email: string, tag: string) {
-    const apiKey = process.env.MAILCHIMP_API_KEY!;
-    const audienceId = process.env.MAILCHIMP_AUDIENCE_ID!;
-    const prefix = process.env.MAILCHIMP_SERVER_PREFIX!;
-
-    const emailHash = crypto
-        .createHash('md5')
-        .update(email.toLowerCase())
-        .digest('hex');
-
-    const basicAuth = Buffer.from(`anystring:${apiKey}`).toString('base64');
-
-    const res = await fetch(
-        `https://${prefix}.api.mailchimp.com/3.0/lists/${audienceId}/members/${emailHash}/tags`,
-        {
-            method: 'POST',
-            headers: {
-                Authorization: `Basic ${basicAuth}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                tags: [{ name: tag, status: 'active' }],
-            }),
-        },
-    );
-
-    if (!res.ok) {
-        const text = await res.text();
-        console.error('Mailchimp tag failed:', text);
+async function markResendPurchase(email: string, property: string) {
+    try {
+        await resend.contacts.update({
+            email: email.trim().toLowerCase(),
+            properties: { [property]: 'true' },
+        });
+    } catch (e) {
+        console.error('Resend contact purchase property update failed:', e);
     }
 }
 
@@ -221,7 +203,7 @@ export async function POST(req: Request) {
                 userData.user?.user_metadata?.full_name?.split(' ')[0] ?? '';
 
             const slug = purchasedCourse?.slug ?? '';
-            const mailchimpTag = SLUG_TO_MAILCHIMP_TAG[slug];
+            const resendProperty = SLUG_TO_RESEND_PROPERTY[slug];
 
             if (isFounder && !userData.user?.user_metadata?.is_founder) {
                 await admin.auth.admin.updateUserById(user_id, {
@@ -234,8 +216,8 @@ export async function POST(req: Request) {
 
             if (email) {
                 await Promise.all([
-                    ...(mailchimpTag
-                        ? [addMailchimpTag(email, mailchimpTag)]
+                    ...(resendProperty
+                        ? [markResendPurchase(email, resendProperty)]
                         : []),
                     sendThankYouEmail({
                         email,

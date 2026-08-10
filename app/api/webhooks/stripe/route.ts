@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 import { sendThankYouEmail } from '@/lib/email/sendThankYou';
 import { SLUG_TO_RESEND_PROPERTY, markResendPurchase } from '@/lib/email/resendPurchase';
+import { notifyBillingMismatch } from '@/lib/email/notifyBillingMismatch';
 
 export const runtime = 'nodejs';
 
@@ -238,6 +239,49 @@ export async function POST(req: Request) {
                     { error: error.message },
                     { status: 500 },
                 );
+            }
+        }
+
+        return NextResponse.json({ received: true });
+    }
+
+    if (event.type === 'customer.updated') {
+        const customer = event.data.object as Stripe.Customer;
+        const previous = (event.data as { previous_attributes?: Partial<Stripe.Customer> })
+            .previous_attributes;
+
+        // Only act when this event actually represents a name/email change
+        // in the billing portal, not some unrelated customer update.
+        const nameChanged = !!previous && 'name' in previous;
+        const emailChanged = !!previous && 'email' in previous;
+
+        if (nameChanged || emailChanged) {
+            try {
+                const { data: stripeRow } = await admin
+                    .from('stripe')
+                    .select('id')
+                    .eq('stripe_customer_id', customer.id)
+                    .maybeSingle();
+
+                if (stripeRow?.id) {
+                    const { data: userData } = await admin.auth.admin.getUserById(
+                        stripeRow.id,
+                    );
+                    const accountEmail = userData.user?.email;
+                    const accountName =
+                        userData.user?.user_metadata?.display_name ?? '';
+
+                    if (accountEmail) {
+                        await notifyBillingMismatch({
+                            accountEmail,
+                            accountName,
+                            billingEmail: customer.email ?? null,
+                            billingName: customer.name ?? null,
+                        });
+                    }
+                }
+            } catch (e) {
+                console.error('Billing mismatch check failed:', e);
             }
         }
 

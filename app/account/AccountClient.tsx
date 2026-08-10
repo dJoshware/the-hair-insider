@@ -24,6 +24,8 @@ import { Separator } from "@/components/ui/separator";
 
 type Status = "idle" | "saving" | "success" | "error";
 
+const STRIPE_PORTAL_URL = "https://billing.stripe.com/p/login/7sY6oIbT56x4b5Y0PV4c800";
+
 export default function AccountClient() {
     const router = useRouter();
 
@@ -351,6 +353,37 @@ export default function AccountClient() {
                                                 : "Update email"}
                                         </Button>
                                     </form>
+                                </CardContent>
+                            </Card>
+
+                            <Card className='rounded-3xl'>
+                                <CardHeader>
+                                    <CardTitle className='text-base'>
+                                        Billing
+                                    </CardTitle>
+                                    <CardDescription>
+                                        Update your payment method, view
+                                        receipts, or manage your billing
+                                        details directly with Stripe.
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <Button asChild>
+                                        <a
+                                            href={STRIPE_PORTAL_URL}
+                                            target='_blank'
+                                            rel='noopener noreferrer'>
+                                            Manage billing
+                                        </a>
+                                    </Button>
+                                    <p className='mt-3 text-xs text-muted-foreground'>
+                                        Note: this manages your Stripe
+                                        billing profile only. Changing your
+                                        name or email here won&apos;t update
+                                        your Hair Insider account, if you
+                                        want those to match, update them
+                                        above too.
+                                    </p>
                                 </CardContent>
                             </Card>
 

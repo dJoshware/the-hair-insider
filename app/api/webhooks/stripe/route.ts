@@ -1,27 +1,17 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
-import { Resend } from 'resend';
 import { sendThankYouEmail } from '@/lib/email/sendThankYou';
+import { SLUG_TO_RESEND_PROPERTY, markResendPurchase } from '@/lib/email/resendPurchase';
 
 export const runtime = 'nodejs';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-const resend = new Resend(process.env.RESEND_API_KEY!);
 
 const admin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SECRET_KEY!,
 );
-
-// Matches the contact properties the "Welcome Hair Insider!" Resend
-// Automation checks to exit the welcome sequence early on purchase.
-const SLUG_TO_RESEND_PROPERTY: Record<string, string> = {
-    'hair-growth-foundations-mini-course': 'growth_mini_course_purchased',
-    'hair-growth-bundle': 'growth_bundle_purchased',
-    'hair-growth-workbook': 'growth_workbook_purchased',
-    'hair-growth-edit': 'growth_edit_purchased',
-};
 
 // Limited-run founder pricing: first 100 redemptions of this code on the
 // Growth Edit are enforced by Stripe's own max_redemptions, so a
@@ -41,17 +31,6 @@ async function usedFounderPromo(sessionId: string): Promise<boolean> {
             promo.code === FOUNDER_PROMO_CODE
         );
     });
-}
-
-async function markResendPurchase(email: string, property: string) {
-    try {
-        await resend.contacts.update({
-            email: email.trim().toLowerCase(),
-            properties: { [property]: 'true' },
-        });
-    } catch (e) {
-        console.error('Resend contact purchase property update failed:', e);
-    }
 }
 
 export async function POST(req: Request) {

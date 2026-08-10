@@ -399,7 +399,7 @@ function WorkbookCard({
                     />
                 )}
 
-                {founderSeats && !owned && (
+                {founderSeats && (
                     <div className='space-y-1.5'>
                         <div className='flex items-center justify-between text-xs font-medium'>
                             <span>

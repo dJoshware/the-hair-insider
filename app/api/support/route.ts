@@ -31,18 +31,12 @@ export async function POST(req: Request) {
         }
 
         const apiKey = process.env.RESEND_API_KEY;
-        const to = process.env.SUPPORT_TO_EMAIL;
+        const to = process.env.RESEND_REPLY_TO ?? 'thehairinsidersociety@gmail.com';
         const from = process.env.SUPPORT_FROM_EMAIL;
 
         if (!apiKey) {
             return NextResponse.json(
                 { error: 'Missing RESEND_API_KEY' },
-                { status: 500 },
-            );
-        }
-        if (!to) {
-            return NextResponse.json(
-                { error: 'Missing SUPPORT_TO_EMAIL' },
                 { status: 500 },
             );
         }

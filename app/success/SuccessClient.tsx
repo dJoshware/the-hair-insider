@@ -54,9 +54,9 @@ export default function SuccessClient() {
                 <p className='mt-3 text-sm'>
                     If you experience a problem with your content, please{" "}
                     <a
-                        href='/contact'
+                        href='/support'
                         className='underline font-bold'>
-                        contact us
+                        contact support
                     </a>
                     .
                 </p>

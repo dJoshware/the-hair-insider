@@ -121,7 +121,7 @@ export default function AboutClient() {
                         <p className='bg-background/50 rounded-3xl p-6 text-lg font-semibold leading-8'>
                             Questions?{" "}
                             <Link
-                                href='/contact'
+                                href='/support'
                                 className='font-medium underline underline-offset-4'>
                                 Reach out.
                             </Link>{" "}

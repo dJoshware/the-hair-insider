@@ -52,7 +52,7 @@ export async function sendThankYouEmail({
     const resend = new Resend(process.env.RESEND_API_KEY!);
     const { error } = await resend.emails.send({
         from:
-            process.env.CONTACT_FROM_EMAIL ??
+            process.env.SUPPORT_FROM_EMAIL ??
             'The Hair Insider <hello@the-hair-insider.com>',
         replyTo: process.env.RESEND_REPLY_TO ?? 'thehairinsidersociety@gmail.com',
         to: email,

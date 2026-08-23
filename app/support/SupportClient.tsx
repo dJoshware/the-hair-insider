@@ -12,9 +12,9 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { ContactForm } from "@/components/site/ContactForm";
+import { SupportForm } from "@/components/site/SupportForm";
 
-export default function ContactClient() {
+export default function SupportClient() {
     const { ref: pageRef, inView: pageIn } = useInView({
         triggerOnce: true,
         threshold: 0.2,
@@ -38,7 +38,7 @@ export default function ContactClient() {
                         <Card className='rounded-3xl'>
                             <CardHeader>
                                 <CardTitle className='text-2xl'>
-                                    Contact Us
+                                    Support
                                 </CardTitle>
                                 <CardDescription>
                                     Send a message and we’ll get back to you by
@@ -47,7 +47,7 @@ export default function ContactClient() {
                             </CardHeader>
 
                             <CardContent className='space-y-6'>
-                                <ContactForm />
+                                <SupportForm />
 
                                 <div className='text-sm'>
                                     <p className='mt-2 leading-6'>

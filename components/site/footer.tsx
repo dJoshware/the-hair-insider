@@ -10,7 +10,7 @@ const SITE_LINKS = [
     { href: "/#shop", label: "Shop" },
     { href: "/faq", label: "FAQ" },
     { href: "/about", label: "About" },
-    { href: "/contact", label: "Contact Us" },
+    { href: "/support", label: "Support" },
 ];
 
 const LEGAL_LINKS = [

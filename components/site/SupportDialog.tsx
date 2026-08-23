@@ -9,20 +9,20 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ContactForm } from "@/components/site/ContactForm";
+import { SupportForm } from "@/components/site/SupportForm";
 
-export function ContactDialog() {
+export function SupportDialog() {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant='ghost'>Contact</Button>
+                <Button variant='ghost'>Support</Button>
             </DialogTrigger>
 
             <DialogContent className='sm:max-w-lg'>
                 <DialogHeader>
-                    <DialogTitle>Contact</DialogTitle>
+                    <DialogTitle>Support</DialogTitle>
                 </DialogHeader>
-                <ContactForm inDialog />
+                <SupportForm inDialog />
             </DialogContent>
         </Dialog>
     );

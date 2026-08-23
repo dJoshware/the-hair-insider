@@ -162,9 +162,9 @@ export default function TermsClient() {
                                 <p>
                                     To request a refund,{" "}
                                     <a
-                                        href='/contact'
+                                        href='/support'
                                         className='underline font-bold'>
-                                        contact us
+                                        contact support
                                     </a>{" "}
                                     with your order email and the product name.
                                 </p>
@@ -270,9 +270,9 @@ export default function TermsClient() {
                                 <p>
                                     Questions?{" "}
                                     <Link
-                                        href='/contact'
+                                        href='/support'
                                         className='font-medium text-foreground underline underline-offset-4'>
-                                        Contact us
+                                        Contact support
                                     </Link>
                                     .
                                 </p>

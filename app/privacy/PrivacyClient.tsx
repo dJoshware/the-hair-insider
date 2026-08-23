@@ -61,8 +61,8 @@ export default function PrivacyClient() {
                                         example, transaction identifiers).
                                     </li>
                                     <li>
-                                        Contact submissions: details you submit
-                                        via our contact form.
+                                        Support submissions: details you submit
+                                        via our support form.
                                     </li>
                                     <li>
                                         Usage data: basic analytics and logs
@@ -186,9 +186,9 @@ export default function PrivacyClient() {
                                 <p>
                                     For requests,{" "}
                                     <a
-                                        href='/contact'
+                                        href='/support'
                                         className='underline font-bold'>
-                                        contact us
+                                        contact support
                                     </a>
                                     . We may need to verify your identity before
                                     fulfilling certain requests.
@@ -207,7 +207,7 @@ export default function PrivacyClient() {
                                     The Hair Insider is not intended for
                                     children under 13. If you believe a child
                                     has provided personal information, contact
-                                    us so we can delete it.
+                                    support so we can delete it.
                                 </p>
                             </CardContent>
                         </Card>

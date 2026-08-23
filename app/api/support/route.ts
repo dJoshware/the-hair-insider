@@ -31,8 +31,8 @@ export async function POST(req: Request) {
         }
 
         const apiKey = process.env.RESEND_API_KEY;
-        const to = process.env.CONTACT_TO_EMAIL;
-        const from = process.env.CONTACT_FROM_EMAIL;
+        const to = process.env.SUPPORT_TO_EMAIL;
+        const from = process.env.SUPPORT_FROM_EMAIL;
 
         if (!apiKey) {
             return NextResponse.json(
@@ -42,13 +42,13 @@ export async function POST(req: Request) {
         }
         if (!to) {
             return NextResponse.json(
-                { error: 'Missing CONTACT_TO_EMAIL' },
+                { error: 'Missing SUPPORT_TO_EMAIL' },
                 { status: 500 },
             );
         }
         if (!from) {
             return NextResponse.json(
-                { error: 'Missing CONTACT_FROM_EMAIL' },
+                { error: 'Missing SUPPORT_FROM_EMAIL' },
                 { status: 500 },
             );
         }
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
             <head>
                 <meta charset="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <title>New contact message</title>
+                <title>New support message</title>
             </head>
 
             <body style="
@@ -105,7 +105,7 @@ export async function POST(req: Request) {
                                 font-weight: 600;
                                 line-height: 1.3;
                             ">
-                            New contact message
+                            New support message
                             </h1>
                         </td>
                         </tr>
@@ -178,7 +178,7 @@ export async function POST(req: Request) {
                                 line-height: 1.5;
                                 color: #343430;
                             ">
-                            Sent from the Hair Insider contact form.
+                            Sent from the Hair Insider support form.
                             </p>
                         </td>
                         </tr>

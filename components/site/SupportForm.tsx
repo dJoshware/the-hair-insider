@@ -9,7 +9,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type Props = { inDialog?: boolean };
 
-export function ContactForm({ inDialog }: Props) {
+export function SupportForm({ inDialog }: Props) {
     const [name, setName] = React.useState("");
     const [email, setEmail] = React.useState("");
     const [topic, setTopic] = React.useState("");
@@ -30,7 +30,7 @@ export function ContactForm({ inDialog }: Props) {
         setErrorMsg(null);
 
         try {
-            const res = await fetch("/api/contact", {
+            const res = await fetch("/api/support", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name, email, topic, message, company }),

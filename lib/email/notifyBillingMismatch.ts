@@ -47,7 +47,7 @@ export async function notifyBillingMismatch({
     `;
 
     const { error } = await resend.emails.send({
-        from: process.env.CONTACT_FROM_EMAIL ?? 'The Hair Insider <hello@the-hair-insider.com>',
+        from: process.env.SUPPORT_FROM_EMAIL ?? 'The Hair Insider <hello@the-hair-insider.com>',
         replyTo: process.env.RESEND_REPLY_TO ?? 'thehairinsidersociety@gmail.com',
         to: accountEmail,
         subject: 'Your billing details don’t match your account',

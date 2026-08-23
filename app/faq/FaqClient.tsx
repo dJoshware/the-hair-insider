@@ -75,11 +75,11 @@ const FAQ_SECTIONS = [
             },
             {
                 q: "Is there a refund policy?",
-                a: "Yes. If you're not satisfied within 7 days of purchase, reach out through the contact page and we'll make it right. We want you to feel confident in the decision.",
+                a: "Yes. If you're not satisfied within 7 days of purchase, reach out through the support page and we'll make it right. We want you to feel confident in the decision.",
             },
             {
                 q: "Can I buy a course as a gift?",
-                a: "Not directly through the current checkout flow, but if you'd like to gift access to someone, reach out via the contact page and we can help arrange it.",
+                a: "Not directly through the current checkout flow, but if you'd like to gift access to someone, reach out via the support page and we can help arrange it.",
             },
         ],
     },
@@ -146,7 +146,7 @@ export default function FaqClient() {
                                 decide. If something&apos;s still not answered
                                 here,{" "}
                                 <a
-                                    href='/contact'
+                                    href='/support'
                                     className='underline underline-offset-4'>
                                     reach out
                                 </a>{" "}

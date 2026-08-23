@@ -96,7 +96,7 @@ export function Navbar() {
                                 <Link href='/about'>About</Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                                <Link href='/contact'>Contact Us</Link>
+                                <Link href='/support'>Support</Link>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -214,7 +214,7 @@ export function Navbar() {
                                         variant='ghost'
                                         asChild
                                         className='justify-start'>
-                                        <Link href='/contact'>Contact Us</Link>
+                                        <Link href='/support'>Support</Link>
                                     </Button>
                                 </SheetClose>
                                 <div className='my-2 border-t' />

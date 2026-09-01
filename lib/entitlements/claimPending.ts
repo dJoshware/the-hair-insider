@@ -28,7 +28,6 @@ export async function claimPendingEntitlements(
         stripe_customer_id: p.stripe_customer_id,
         stripe_checkout_session_id: p.stripe_checkout_session_id,
         stripe_payment_intent_id: p.stripe_payment_intent_id,
-        is_founder: p.is_founder,
     }));
 
     const { error: upsertErr } = await admin
@@ -36,19 +35,6 @@ export async function claimPendingEntitlements(
         .upsert(entitlements, { onConflict: 'user_id,course_id' });
 
     if (upsertErr) throw new Error(upsertErr.message);
-
-    const anyFounder = pending.some(p => p.is_founder);
-    if (anyFounder) {
-        const { data: userData } = await admin.auth.admin.getUserById(userId);
-        if (!userData.user?.user_metadata?.is_founder) {
-            await admin.auth.admin.updateUserById(userId, {
-                user_metadata: {
-                    ...userData.user?.user_metadata,
-                    is_founder: true,
-                },
-            });
-        }
-    }
 
     // The webhook that first saw this purchase couldn't send a thank-you
     // email or mark the Resend purchase property (no account existed yet

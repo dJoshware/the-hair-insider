@@ -324,9 +324,6 @@ function WorkbookCard({
     buyCta = "Get the digital workbook",
     detailNote = "Already own the mini course? Add the digital workbook to your toolkit, sold separately.",
     promoCode,
-    founderSeats,
-    priceCents,
-    founderDiscountCents,
 }: {
     course: Course;
     owned: boolean;
@@ -339,21 +336,7 @@ function WorkbookCard({
     buyCta?: string;
     detailNote?: string;
     promoCode?: string;
-    founderSeats?: { claimed: number; total: number };
-    priceCents?: { amount: number; currency: string };
-    founderDiscountCents?: number;
 }) {
-    const founderSeatsRemaining =
-        !!founderSeats && founderSeats.claimed < founderSeats.total;
-    const founderPriceText =
-        founderSeatsRemaining && priceCents && founderDiscountCents
-            ? new Intl.NumberFormat("en-US", {
-                  style: "currency",
-                  currency: priceCents.currency.toUpperCase(),
-              }).format(
-                  Math.max(0, priceCents.amount - founderDiscountCents) / 100,
-              )
-            : null;
     const [open, setOpen] = React.useState(false);
     const [faqOpen, setFaqOpen] = React.useState(false);
     const faqs = PRODUCT_FAQS[course.slug];
@@ -399,48 +382,7 @@ function WorkbookCard({
                     />
                 )}
 
-                {founderSeats && (
-                    <div className='space-y-1.5'>
-                        <div className='flex items-center justify-between text-xs font-medium'>
-                            <span>
-                                {founderSeats.claimed >= founderSeats.total
-                                    ? "Founders claimed"
-                                    : "Founders"}
-                            </span>
-                            <span>
-                                {Math.min(
-                                    founderSeats.claimed,
-                                    founderSeats.total,
-                                )}
-                                /{founderSeats.total} claimed
-                            </span>
-                        </div>
-                        <div className='h-1.5 w-full rounded-full bg-muted overflow-hidden'>
-                            <div
-                                className='h-full rounded-full bg-amber-500'
-                                style={{
-                                    width: `${Math.min(100, (founderSeats.claimed / founderSeats.total) * 100)}%`,
-                                }}
-                            />
-                        </div>
-                    </div>
-                )}
-
-                {course.stripe_price_id && !owned && founderPriceText && (
-                    <div className='flex items-center gap-2 flex-wrap'>
-                        <span className='text-3xl font-semibold tracking-tight'>
-                            {founderPriceText}
-                        </span>
-                        <span className='text-lg text-muted-foreground line-through'>
-                            {priceText ?? "$–"}
-                        </span>
-                        <span className='text-xs font-semibold text-amber-600'>
-                            <em>for founders</em>
-                        </span>
-                    </div>
-                )}
-
-                {course.stripe_price_id && !owned && !founderPriceText && (
+                {course.stripe_price_id && !owned && (
                     <p className='text-3xl font-semibold tracking-tight'>
                         {priceText ?? "$–"}
                     </p>
@@ -561,27 +503,11 @@ export default function HomeClient() {
         new Set(),
     );
     const [prices, setPrices] = React.useState<Record<string, string>>({});
-    const [priceCents, setPriceCents] = React.useState<
-        Record<string, { amount: number; currency: string }>
-    >({});
     const [stats, setStats] = React.useState<Record<string, Stats>>({});
     const [buying, setBuying] = React.useState<string | null>(null);
     const [buyErrors, setBuyErrors] = React.useState<Record<string, string>>(
         {},
     );
-    const [founderSeats, setFounderSeats] = React.useState<{
-        claimed: number;
-        total: number;
-    } | null>(null);
-
-    React.useEffect(() => {
-        fetch("/api/founder-count")
-            .then(res => (res.ok ? res.json() : null))
-            .then(json => {
-                if (json) setFounderSeats(json);
-            })
-            .catch(() => {});
-    }, []);
 
     React.useEffect(() => {
         function handleShopClick(e: MouseEvent) {
@@ -645,13 +571,6 @@ export default function HomeClient() {
                                 setPrices(prev => ({
                                     ...prev,
                                     [c.id]: formatted,
-                                }));
-                                setPriceCents(prev => ({
-                                    ...prev,
-                                    [c.id]: {
-                                        amount: json.unitAmount,
-                                        currency: json.currency,
-                                    },
                                 }));
                             }
                         }
@@ -840,19 +759,6 @@ export default function HomeClient() {
                                                             PRODUCT_PROMO_CODES[
                                                                 "hair-growth-edit"
                                                             ]
-                                                        }
-                                                        founderSeats={
-                                                            founderSeats ??
-                                                            undefined
-                                                        }
-                                                        priceCents={
-                                                            priceCents[
-                                                                growthEditCourse
-                                                                    .id
-                                                            ]
-                                                        }
-                                                        founderDiscountCents={
-                                                            2000
                                                         }
                                                     />
                                                 )}

@@ -31,15 +31,12 @@ import {
 
 import { Menu, ChevronDown } from "lucide-react";
 import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
 
 export function Navbar() {
     const router = useRouter();
-    const { signedIn, loading, user } = useAuth();
+    const { signedIn, loading } = useAuth();
     const admin = useAdminStatus();
     const showAdmin = !admin.loading && admin.signedIn && admin.isAdmin;
-    const isFounder = !!(user?.user_metadata as any)?.is_founder;
-    // const isFounder = true;
 
     async function signOut() {
         await supabase.auth.signOut();
@@ -61,11 +58,6 @@ export function Navbar() {
                             style={{ marginLeft: -20, marginTop: 5 }}
                         />
                     </Link>
-                    {isFounder && (
-                        <Badge className='bg-cyan-500 text-white shrink-0'>
-                            Founder
-                        </Badge>
-                    )}
                 </div>
 
                 {/* Desktop nav */}

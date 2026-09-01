@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase/client';
 
 const SLUG_TO_PAYMENT_LINK: Record<string, string> = {
     'hair-growth-bundle': 'https://buy.stripe.com/7sY6oIbT56x4b5Y0PV4c800',
+    'hair-growth-edit': 'https://buy.stripe.com/00wbJ2aP1g7E5LEcyD4c802',
 };
 
 async function getValidToken(): Promise<string | null> {
@@ -12,19 +13,6 @@ async function getValidToken(): Promise<string | null> {
 }
 
 export async function startCheckout(courseSlug: string) {
-    // The Growth Edit's founder discount has to be attached server-side at
-    // session-creation time (not via a Payment Link's ?prefilled_promo_code,
-    // which races a fast checkout) so it's always actually applied.
-    if (courseSlug === 'hair-growth-edit') {
-        const res = await fetch('/api/checkout/growth-edit', { method: 'POST' });
-        const json = (await res.json()) as { url?: string; error?: string };
-        if (!res.ok || !json.url) {
-            throw new Error(json.error || 'Checkout failed.');
-        }
-        window.location.href = json.url;
-        return;
-    }
-
     const paymentLink = SLUG_TO_PAYMENT_LINK[courseSlug];
     if (paymentLink) {
         window.location.href = paymentLink;

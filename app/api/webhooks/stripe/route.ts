@@ -14,26 +14,6 @@ const admin = createClient(
     process.env.SUPABASE_SECRET_KEY!,
 );
 
-// Limited-run founder pricing: first 100 redemptions of this code on the
-// Growth Edit are enforced by Stripe's own max_redemptions, so a
-// successful checkout using it is definitionally one of the first 100.
-const FOUNDER_PROMO_CODE = 'FOUNDER20';
-const FOUNDER_ELIGIBLE_SLUGS = new Set(['hair-growth-edit']);
-
-async function usedFounderPromo(sessionId: string): Promise<boolean> {
-    const full = await stripe.checkout.sessions.retrieve(sessionId, {
-        expand: ['discounts.promotion_code'],
-    });
-    return (full.discounts ?? []).some(d => {
-        const promo = d.promotion_code;
-        return (
-            promo &&
-            typeof promo === 'object' &&
-            promo.code === FOUNDER_PROMO_CODE
-        );
-    });
-}
-
 export async function POST(req: Request) {
     const sig = req.headers.get('stripe-signature');
     if (!sig) {
@@ -109,18 +89,6 @@ export async function POST(req: Request) {
             for (const c of components ?? []) courseIdsToGrant.push(c.id);
         }
 
-        let isFounder = false;
-        if (
-            purchasedCourse?.slug &&
-            FOUNDER_ELIGIBLE_SLUGS.has(purchasedCourse.slug)
-        ) {
-            try {
-                isFounder = await usedFounderPromo(session.id);
-            } catch (e) {
-                console.error('Founder promo check failed:', e);
-            }
-        }
-
         if (!user_id) {
             // No account exists yet (e.g. a cold Payment Link buyer who
             // hasn't signed up). Stash the purchase so it can be claimed
@@ -136,7 +104,6 @@ export async function POST(req: Request) {
             const pending = courseIdsToGrant.map(cid => ({
                 email,
                 course_id: cid,
-                is_founder: isFounder,
                 stripe_customer_id: stripeCustomerId,
                 stripe_checkout_session_id: session.id,
                 stripe_payment_intent_id: stripePaymentIntentId,
@@ -163,7 +130,6 @@ export async function POST(req: Request) {
             stripe_customer_id: stripeCustomerId,
             stripe_checkout_session_id: session.id,
             stripe_payment_intent_id: stripePaymentIntentId,
-            is_founder: isFounder,
         }));
 
         const { error } = await admin
@@ -184,15 +150,6 @@ export async function POST(req: Request) {
 
             const slug = purchasedCourse?.slug ?? '';
             const resendProperty = SLUG_TO_RESEND_PROPERTY[slug];
-
-            if (isFounder && !userData.user?.user_metadata?.is_founder) {
-                await admin.auth.admin.updateUserById(user_id, {
-                    user_metadata: {
-                        ...userData.user?.user_metadata,
-                        is_founder: true,
-                    },
-                });
-            }
 
             if (email) {
                 await Promise.all([
